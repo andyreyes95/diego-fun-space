@@ -32,6 +32,19 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          GITHUB_PAGES: true
+
+      - name: Prepare nested Pages artifact
+        run: |
+          mkdir -p dist-pages/starcrest-dragons
+          cp -R dist/. dist-pages/starcrest-dragons/
+          cat > dist-pages/index.html <<'EOF'
+          <!doctype html>
+          <meta charset="utf-8">
+          <meta http-equiv="refresh" content="0; url=./starcrest-dragons/">
+          <script>location.replace('./starcrest-dragons/')</script>
+          EOF
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -39,7 +52,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: dist-pages
 
   deploy:
     environment:

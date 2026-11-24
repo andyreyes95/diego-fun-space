@@ -2,6 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  base: '/diego-fun-space/',
+  base: process.env.GITHUB_PAGES
+    ? '/diego-fun-space/starcrest-dragons/'
+    : '/',
   plugins: [react()],
 })
