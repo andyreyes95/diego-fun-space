@@ -40,10 +40,6 @@ function DragonIcon({
   silhouette?: boolean
   battleMode?: boolean
 }) {
-  const sheetIndex = species.dexNo - 1
-  const column = sheetIndex % 6
-  const row = Math.floor(sheetIndex / 6)
-
   if (battleMode) {
     return (
       <img
@@ -57,18 +53,12 @@ function DragonIcon({
   }
 
   return (
-    <div
+    <img
       className={silhouette ? 'dragon-icon dragon-silhouette' : 'dragon-icon'}
-      style={{
-        width: size,
-        height: size,
-        backgroundImage: `url('${import.meta.env.BASE_URL}dragon-roster.png')`,
-        backgroundSize: '600% 400%',
-        backgroundPosition: `${column * 20}% ${row * (100 / 3)}%`,
-        backgroundRepeat: 'no-repeat',
-      }}
-      role="img"
-      aria-label={silhouette ? 'Unknown dragon silhouette' : species.name}
+      src={`${import.meta.env.BASE_URL}dragon-cutouts/dragon-${String(species.dexNo).padStart(3, '0')}.png`}
+      width={size}
+      height={size}
+      alt={silhouette ? 'Unknown dragon silhouette' : species.name}
     />
   )
 }
@@ -217,8 +207,8 @@ function App() {
     }
     setActivePartyIndex(firstAbleDragon)
     const pool = planet === 1
-      ? ['embbite', 'puddlefin', 'spriglet', 'zappup', 'mistlet']
-      : ['frostle', 'lumopod', 'noxibear', 'spriglet', 'puddlefin']
+      ? ['embbite', 'puddlefin', 'spriglet', 'zappup', 'mistlet', 'shadee']
+      : ['frostle', 'lumopod', 'noxibear', 'shadee', 'spriglet', 'puddlefin']
     const speciesId = pool[Math.floor(Math.random() * pool.length)]
     const enemy = createDragon(speciesId, 5 + Math.floor(Math.random() * 4))
     markSeen(speciesId)
