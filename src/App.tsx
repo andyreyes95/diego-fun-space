@@ -48,7 +48,7 @@ function DragonIcon({
     return (
       <img
         className={silhouette ? 'dragon-icon dragon-cutout dragon-silhouette' : 'dragon-icon dragon-cutout'}
-        src={`/dragon-cutouts/dragon-${String(species.dexNo).padStart(3, '0')}.png`}
+        src={`${import.meta.env.BASE_URL}dragon-cutouts/dragon-${String(species.dexNo).padStart(3, '0')}.png`}
         width={size}
         height={size}
         alt={silhouette ? 'Unknown dragon silhouette' : species.name}
@@ -62,7 +62,7 @@ function DragonIcon({
       style={{
         width: size,
         height: size,
-        backgroundImage: `url('/dragon-roster.png')`,
+        backgroundImage: `url('${import.meta.env.BASE_URL}dragon-roster.png')`,
         backgroundSize: '600% 400%',
         backgroundPosition: `${column * 20}% ${row * (100 / 3)}%`,
         backgroundRepeat: 'no-repeat',

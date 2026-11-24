@@ -69,7 +69,7 @@ button {
   padding: 24px;
   background:
     linear-gradient(180deg, rgba(168, 218, 216, 0.18), rgba(250, 240, 193, 0.08)),
-    url('/willowvale.png') center 58% / cover no-repeat;
+    url('../public/willowvale.png') center 58% / cover no-repeat;
 }
 
 .title-sky {
@@ -294,7 +294,7 @@ button {
   border-bottom: 2px solid rgba(38, 50, 58, 0.12);
   background:
     linear-gradient(90deg, rgba(255, 253, 244, 0.96), rgba(247, 240, 216, 0.92)),
-    url('/willowvale.png') center 25% / cover no-repeat;
+    url('../public/willowvale.png') center 25% / cover no-repeat;
   padding: 10px clamp(14px, 3vw, 34px);
   backdrop-filter: blur(12px);
 }
@@ -479,7 +479,7 @@ button {
 .town-view {
   background:
     linear-gradient(180deg, rgba(188, 225, 222, 0.08), rgba(246, 224, 155, 0.12)),
-    url('/willowvale.png') center 58% / cover no-repeat;
+    url('../public/willowvale.png') center 58% / cover no-repeat;
 }
 
 .town-view::before {
@@ -655,7 +655,7 @@ button {
 .emberfall {
   background:
     linear-gradient(180deg, rgba(255, 207, 132, 0.08), rgba(115, 61, 48, 0.14)),
-    url('/emberfall.png') center 58% / cover no-repeat;
+    url('../public/emberfall.png') center 58% / cover no-repeat;
 }
 
 .planet-map {
@@ -691,7 +691,7 @@ button {
 .mossgrove {
   background:
     linear-gradient(180deg, rgba(151, 201, 194, 0.06), rgba(73, 125, 75, 0.12)),
-    url('/mossgrove.png') center 58% / cover no-repeat;
+    url('../public/mossgrove.png') center 58% / cover no-repeat;
 }
 
 .moss-map {
@@ -718,7 +718,7 @@ button {
   border-top: 2px solid rgba(38, 50, 58, 0.12);
   background:
     linear-gradient(180deg, rgba(255, 253, 244, 0.96), rgba(244, 235, 202, 0.96)),
-    url('/willowvale.png') center 80% / cover no-repeat;
+    url('../public/willowvale.png') center 80% / cover no-repeat;
   padding: 7px clamp(5px, 2vw, 22px) max(7px, env(safe-area-inset-bottom));
   box-shadow: 0 -8px 24px rgba(80, 91, 72, 0.06);
 }
@@ -759,14 +759,14 @@ button {
   grid-template-rows: 64px 1fr 210px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(38, 50, 58, 0.12)),
-    url('/battle-emberfall.png') center 48% / cover no-repeat;
+    url('../public/battle-emberfall.png') center 48% / cover no-repeat;
   overflow: hidden;
 }
 
 .battle-mossgrove {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(38, 50, 58, 0.10)),
-    url('/battle-mossgrove.png') center 48% / cover no-repeat;
+    url('../public/battle-mossgrove.png') center 48% / cover no-repeat;
 }
 
 .battle-screen.shake {
@@ -1074,7 +1074,7 @@ button {
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(20, 32, 82, 0.12), rgba(20, 32, 82, 0.28)),
-    url('/planet-map.png') center / cover no-repeat;
+    url('../public/planet-map.png') center / cover no-repeat;
   padding: 24px clamp(16px, 4vw, 48px);
 }
 
@@ -1154,15 +1154,15 @@ button {
 }
 
 .willow-preview {
-  background-image: url('/willowvale.png');
+  background-image: url('../public/willowvale.png');
 }
 
 .ember-preview {
-  background-image: url('/emberfall.png');
+  background-image: url('../public/emberfall.png');
 }
 
 .moss-preview {
-  background-image: url('/mossgrove.png');
+  background-image: url('../public/mossgrove.png');
 }
 
 .planet-node strong,
@@ -1220,7 +1220,7 @@ button {
   overflow: hidden;
   background:
     linear-gradient(rgba(255, 253, 244, 0.76), rgba(255, 253, 244, 0.88)),
-    url('/willowvale.png') center 62% / cover no-repeat;
+    url('../public/willowvale.png') center 62% / cover no-repeat;
   padding: 18px clamp(14px, 3vw, 34px);
 }
 
@@ -1545,21 +1545,21 @@ button {
   background:
     radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.95) 0 14%, transparent 14.5%),
     linear-gradient(145deg, rgba(169, 222, 218, 0.58), rgba(247, 210, 141, 0.42)),
-    url('/willowvale.png') center / cover no-repeat;
+    url('../public/willowvale.png') center / cover no-repeat;
 }
 
 .badge-celebration {
   background:
     radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.95) 0 14%, transparent 14.5%),
     linear-gradient(145deg, rgba(158, 202, 196, 0.58), rgba(239, 208, 127, 0.42)),
-    url('/emberfall.png') center / cover no-repeat;
+    url('../public/emberfall.png') center / cover no-repeat;
 }
 
 .catch-celebration {
   background:
     radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.95) 0 15%, transparent 15.5%),
     linear-gradient(145deg, rgba(175, 224, 216, 0.58), rgba(185, 211, 160, 0.42)),
-    url('/mossgrove.png') center / cover no-repeat;
+    url('../public/mossgrove.png') center / cover no-repeat;
 }
 
 .celebration-rays {
