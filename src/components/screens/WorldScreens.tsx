@@ -1,14 +1,13 @@
-import type { Dispatch, SetStateAction } from 'react'
 import type { GameSave, View } from '../../types'
+import { MapLocationCard } from '../MapLocationCard'
 
 interface TownScreenProps {
   save: GameSave
-  setView: (view: View) => void
-  setSave: Dispatch<SetStateAction<GameSave | null>>
+  onTravel: () => void
   onHeal: () => void
 }
 
-export function TownScreen({ save, setView, setSave, onHeal }: TownScreenProps) {
+export function TownScreen({ save, onTravel, onHeal }: TownScreenProps) {
   return (
     <section className="world-view town-view">
       <div className="world-copy">
@@ -20,21 +19,18 @@ export function TownScreen({ save, setView, setSave, onHeal }: TownScreenProps) 
         <div className="house house-left"><span>Lab</span></div>
         <div className="house house-right"><span>Dragon Center</span></div>
         <div className="town-portal" />
-        <button
-          className="map-location portal-location"
-          type="button"
-          onClick={() => {
-            setSave((current) => current ? { ...current, currentPlanet: 1 } : current)
-            setView('planet1')
-          }}
-        >
-          <span>Travel to Planet 1</span>
-          <strong>Emberfall</strong>
-        </button>
-        <button className="map-location center-location" type="button" onClick={onHeal}>
-          <span>Healing Center</span>
-          <strong>Rest your team</strong>
-        </button>
+        <MapLocationCard
+          className="portal-location"
+          eyebrow="Travel to Planet 1"
+          title="Emberfall"
+          onClick={onTravel}
+        />
+        <MapLocationCard
+          className="center-location"
+          eyebrow="Healing Center"
+          title="Rest your team"
+          onClick={onHeal}
+        />
       </div>
       <aside className="quest-card">
         <p>Next objective</p>
@@ -48,14 +44,13 @@ export function TownScreen({ save, setView, setSave, onHeal }: TownScreenProps) 
 interface PlanetScreenProps {
   save: GameSave
   planet: 1 | 2
-  setView: (view: View) => void
-  setSave: Dispatch<SetStateAction<GameSave | null>>
+  onViewChange: (view: View) => void
   onWildBattle: (planet: 1 | 2) => void
   onTrainerBattle: (kind: 'fireGym' | 'grassGym' | 'gang') => void
   onToast: (message: string) => void
 }
 
-export function PlanetScreen({ save, planet, setView, setSave, onWildBattle, onTrainerBattle, onToast }: PlanetScreenProps) {
+export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrainerBattle, onToast }: PlanetScreenProps) {
   if (planet === 1) {
     return (
       <section className="world-view planet-view emberfall">
@@ -68,27 +63,25 @@ export function PlanetScreen({ save, planet, setView, setSave, onWildBattle, onT
           <span className="planet-sun" />
           <span className="planet-rock rock-one" />
           <span className="planet-rock rock-two" />
-          <button className="map-location wild-location" type="button" onClick={() => onWildBattle(1)}>
-            <span>Explore</span><strong>Wild dragons</strong>
-          </button>
-          <button className="map-location gym-location" type="button" onClick={() => onTrainerBattle('fireGym')}>
-            <span>{save.badges.includes('Ember') ? 'Badge earned' : 'Fire Gym'}</span>
-            <strong>Challenge Sol</strong>
-          </button>
-          <button
-            className="map-location next-location"
-            type="button"
+          <MapLocationCard className="wild-location" eyebrow="Explore" title="Wild dragons" onClick={() => onWildBattle(1)} />
+          <MapLocationCard
+            className="gym-location"
+            eyebrow={save.badges.includes('Ember') ? 'Badge earned' : 'Fire Gym'}
+            title="Challenge Sol"
+            onClick={() => onTrainerBattle('fireGym')}
+          />
+          <MapLocationCard
+            className="next-location"
+            eyebrow="Next planet"
+            title="Mossgrove"
             onClick={() => {
               if (!save.badges.includes('Ember')) {
                 onToast('Beat Gym Leader Sol to unlock Mossgrove!')
                 return
               }
-              setSave((current) => current ? { ...current, currentPlanet: 2 } : current)
-              setView('planet2')
+              onViewChange('planet2')
             }}
-          >
-            <span>Next planet</span><strong>Mossgrove</strong>
-          </button>
+          />
         </div>
       </section>
     )
@@ -104,16 +97,14 @@ export function PlanetScreen({ save, planet, setView, setSave, onWildBattle, onT
       <div className="planet-map moss-map">
         <span className="giant-tree tree-one" />
         <span className="giant-tree tree-two" />
-        <button className="map-location wild-location" type="button" onClick={() => onWildBattle(2)}>
-          <span>Explore</span><strong>Wild dragons</strong>
-        </button>
-        <button className="map-location gym-location" type="button" onClick={() => onTrainerBattle('grassGym')}>
-          <span>{save.badges.includes('Bloom') ? 'Badge earned' : 'Grass Gym'}</span>
-          <strong>Challenge Moss</strong>
-        </button>
-        <button className="map-location gang-location" type="button" onClick={() => onTrainerBattle('gang')}>
-          <span>Dark Gang</span><strong>Break the ambush</strong>
-        </button>
+        <MapLocationCard className="wild-location" eyebrow="Explore" title="Wild dragons" onClick={() => onWildBattle(2)} />
+        <MapLocationCard
+          className="gym-location"
+          eyebrow={save.badges.includes('Bloom') ? 'Badge earned' : 'Grass Gym'}
+          title="Challenge Moss"
+          onClick={() => onTrainerBattle('grassGym')}
+        />
+        <MapLocationCard className="gang-location" eyebrow="Dark Gang" title="Break the ambush" onClick={() => onTrainerBattle('gang')} />
       </div>
     </section>
   )

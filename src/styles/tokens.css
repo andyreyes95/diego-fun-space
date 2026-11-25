@@ -1,0 +1,16 @@
+:root {
+  font-family: 'Nunito', system-ui, sans-serif;
+  color: #26323a;
+  background: #f5efdc;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --ink: #26323a;
+  --paper: #fffdf4;
+  --green: #5b7c4a;
+  --green-dark: #3f6338;
+  --gold: #e7b84b;
+  --coral: #e87555;
+  --sky: #a7d7df;
+  --shadow: 0 12px 30px rgba(53, 67, 58, 0.16);
+}

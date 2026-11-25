@@ -1,26 +1,57 @@
-import type { GameSave } from '../types'
+import type { DragonInstance, GameSave } from '../types'
+import { createInstanceId } from './registration'
 
 export const SAVE_KEY = 'starcrest-dragons-save-v1'
+export const SAVE_VERSION = 3
+
+function ensureInstanceIds(instances: DragonInstance[]): DragonInstance[] {
+  return instances.map((dragon) => ({
+    ...dragon,
+    instanceId: dragon.instanceId ?? createInstanceId(),
+  }))
+}
+
+export function migrateSave(parsed: Partial<GameSave> & { bench?: DragonInstance[] }): GameSave {
+  const party = ensureInstanceIds(parsed.party ?? [])
+  const reserve = ensureInstanceIds(parsed.reserve ?? parsed.bench ?? [])
+  const caught = parsed.caught ?? []
+  const captureCounts = parsed.captureCounts
+    ? { ...parsed.captureCounts }
+    : Object.fromEntries(caught.map((speciesId) => [speciesId, 1]))
+
+  return {
+    saveVersion: SAVE_VERSION,
+    playerName: parsed.playerName ?? 'Nova',
+    starterId: parsed.starterId ?? 'embbite',
+    party,
+    reserve,
+    seen: parsed.seen ?? [],
+    caught,
+    captureCounts,
+    badges: parsed.badges ?? [],
+    storyStep: parsed.storyStep ?? 0,
+    darkGangDefeated: parsed.darkGangDefeated ?? false,
+    currentPlanet: parsed.currentPlanet ?? 1,
+  }
+}
 
 export function loadSave(): GameSave | null {
   try {
     const saved = localStorage.getItem(SAVE_KEY)
     if (!saved) return null
-    const parsed = JSON.parse(saved) as Partial<GameSave>
+    const parsed = JSON.parse(saved) as Partial<GameSave> & { bench?: DragonInstance[] }
     if (!parsed.party || !parsed.caught) return null
-    return {
-      playerName: parsed.playerName ?? 'Nova',
-      starterId: parsed.starterId ?? 'embbite',
-      party: parsed.party,
-      bench: parsed.bench ?? [],
-      seen: parsed.seen ?? [],
-      caught: parsed.caught,
-      badges: parsed.badges ?? [],
-      storyStep: parsed.storyStep ?? 0,
-      darkGangDefeated: parsed.darkGangDefeated ?? false,
-      currentPlanet: parsed.currentPlanet ?? 1,
-    }
+    return migrateSave(parsed)
   } catch {
+    console.error('Unable to load the Starcrest Dragons save.')
     return null
   }
+}
+
+export function persistSave(save: GameSave): void {
+  localStorage.setItem(SAVE_KEY, JSON.stringify(save))
+}
+
+export function clearSave(): void {
+  localStorage.removeItem(SAVE_KEY)
 }

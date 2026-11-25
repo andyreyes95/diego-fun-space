@@ -64,7 +64,8 @@ export function BottomNav({ view, currentPlanet, setView, onReset }: BottomNavPr
         <span>{currentPlanet === 2 ? 'Mossgrove' : 'Emberfall'}</span>
       </button>
       {navButton('map', 'Planet Map', '◎')}
-      {navButton('dex', 'Dragon Dex', '◎')}
+      {navButton('dex', 'Dragon Dex', '🕮')}
+      {navButton('team', 'Team', '※')}
       <button className="nav-button" type="button" onClick={onReset}>Reset</button>
     </nav>
   )

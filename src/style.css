@@ -1,25 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap');
-
-:root {
-  font-family: 'Nunito', system-ui, sans-serif;
-  color: #26323a;
-  background: #f5efdc;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  --ink: #26323a;
-  --paper: #fffdf4;
-  --green: #5b7c4a;
-  --green-dark: #3f6338;
-  --gold: #e7b84b;
-  --coral: #e87555;
-  --sky: #a7d7df;
-  --shadow: 0 12px 30px rgba(53, 67, 58, 0.16);
-}
-
-* {
-  box-sizing: border-box;
-}
+@import './styles/tokens.css';
+@import './styles/reset.css';
 
 .dragon-icon {
   display: inline-block;
@@ -45,51 +26,6 @@
   filter: brightness(0) saturate(100%) opacity(0.82) drop-shadow(0 8px 10px rgba(38, 50, 58, 0.12));
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  height: 100vh;
-  overflow: hidden;
-}
-
-html,
-#app {
-  height: 100%;
-  overflow: hidden;
-}
-
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #9eb091 transparent;
-}
-
-*::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-*::-webkit-scrollbar-thumb {
-  border: 2px solid transparent;
-  border-radius: 999px;
-  background: #9eb091;
-  background-clip: padding-box;
-}
-
-button,
-input,
-select {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
 .title-screen {
   min-height: 100svh;
   display: grid;
@@ -99,7 +35,7 @@ button {
   padding: 24px;
   background:
     linear-gradient(180deg, rgba(168, 218, 216, 0.18), rgba(250, 240, 193, 0.08)),
-    url('../public/assets/maps/willowvale.png') center 58% / cover no-repeat;
+    url('/assets/maps/willowvale.png') center 58% / cover no-repeat;
 }
 
 .title-sky {
@@ -326,7 +262,7 @@ button {
   border-bottom: 2px solid rgba(38, 50, 58, 0.12);
   background:
     linear-gradient(90deg, rgba(255, 253, 244, 0.96), rgba(247, 240, 216, 0.92)),
-    url('../public/assets/maps/willowvale.png') center 25% / cover no-repeat;
+    url('/assets/maps/willowvale.png') center 25% / cover no-repeat;
   padding: 10px clamp(14px, 3vw, 34px);
   backdrop-filter: blur(12px);
 }
@@ -512,7 +448,7 @@ button {
 .town-view {
   background:
     linear-gradient(180deg, rgba(188, 225, 222, 0.08), rgba(246, 224, 155, 0.12)),
-    url('../public/assets/maps/willowvale.png') center 58% / cover no-repeat;
+    url('/assets/maps/willowvale.png') center 58% / cover no-repeat;
 }
 
 .town-view::before {
@@ -688,7 +624,7 @@ button {
 .emberfall {
   background:
     linear-gradient(180deg, rgba(255, 207, 132, 0.08), rgba(115, 61, 48, 0.14)),
-    url('../public/assets/maps/emberfall.png') center 58% / cover no-repeat;
+    url('/assets/maps/emberfall.png') center 58% / cover no-repeat;
 }
 
 .planet-map {
@@ -724,7 +660,7 @@ button {
 .mossgrove {
   background:
     linear-gradient(180deg, rgba(151, 201, 194, 0.06), rgba(73, 125, 75, 0.12)),
-    url('../public/assets/maps/mossgrove.png') center 58% / cover no-repeat;
+    url('/assets/maps/mossgrove.png') center 58% / cover no-repeat;
 }
 
 .moss-map {
@@ -748,11 +684,11 @@ button {
   z-index: 30;
   position: relative;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   border-top: 2px solid rgba(38, 50, 58, 0.12);
   background:
     linear-gradient(180deg, rgba(255, 253, 244, 0.96), rgba(244, 235, 202, 0.96)),
-    url('../public/assets/maps/willowvale.png') center 80% / cover no-repeat;
+    url('/assets/maps/willowvale.png') center 80% / cover no-repeat;
   padding: 7px clamp(5px, 2vw, 22px) max(7px, env(safe-area-inset-bottom));
   box-shadow: 0 -8px 24px rgba(80, 91, 72, 0.06);
 }
@@ -793,36 +729,32 @@ button {
   grid-template-rows: 64px 1fr 210px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(38, 50, 58, 0.12)),
-    url('../public/assets/battlegrounds/wild-emberfall.png') center 48% / cover no-repeat;
+    url('/assets/battlegrounds/wild-emberfall.png') center 48% / cover no-repeat;
   overflow: hidden;
-}
-
-.battle-screen.fixed-ember-wild-battle {
-  background: #26323a;
 }
 
 .battle-wild-mossgrove {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(38, 50, 58, 0.10)),
-    url('../public/assets/battlegrounds/wild-mossgrove.png') center 48% / cover no-repeat;
+    url('/assets/battlegrounds/wild-mossgrove.png') center 48% / cover no-repeat;
 }
 
 .battle-gym-emberfall {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(38, 50, 58, 0.10)),
-    url('../public/assets/battlegrounds/gym-emberfall.png') center 48% / cover no-repeat;
+    url('/assets/battlegrounds/gym-emberfall.png') center 48% / cover no-repeat;
 }
 
 .battle-gym-mossgrove {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(38, 50, 58, 0.10)),
-    url('../public/assets/battlegrounds/gym-mossgrove.png') center 48% / cover no-repeat;
+    url('/assets/battlegrounds/gym-mossgrove.png') center 48% / cover no-repeat;
 }
 
 .battle-gang-dark {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(38, 50, 58, 0.18)),
-    url('../public/assets/battlegrounds/gang-dark.png') center 48% / cover no-repeat;
+    url('/assets/battlegrounds/gang-dark.png') center 48% / cover no-repeat;
 }
 
 .battle-screen.shake {
@@ -895,7 +827,7 @@ button {
   inset: -18px;
   background:
     linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
-    url('../public/assets/battlegrounds/wild-emberfall.png') center / cover no-repeat;
+    url('/assets/battlegrounds/wild-emberfall.png') center / cover no-repeat;
   opacity: 0.65;
   filter: saturate(0.85) blur(2px);
   transform: scale(1.04);
@@ -905,25 +837,25 @@ button {
 .battle-wild-mossgrove .fixed-battle-arena::before {
   background:
     linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
-    url('../public/assets/battlegrounds/wild-mossgrove.png') center / cover no-repeat;
+    url('/assets/battlegrounds/wild-mossgrove.png') center / cover no-repeat;
 }
 
 .battle-gym-emberfall .fixed-battle-arena::before {
   background:
     linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
-    url('../public/assets/battlegrounds/gym-emberfall.png') center / cover no-repeat;
+    url('/assets/battlegrounds/gym-emberfall.png') center / cover no-repeat;
 }
 
 .battle-gym-mossgrove .fixed-battle-arena::before {
   background:
     linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
-    url('../public/assets/battlegrounds/gym-mossgrove.png') center / cover no-repeat;
+    url('/assets/battlegrounds/gym-mossgrove.png') center / cover no-repeat;
 }
 
 .battle-gang-dark .fixed-battle-arena::before {
   background:
     linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
-    url('../public/assets/battlegrounds/gang-dark.png') center / cover no-repeat;
+    url('/assets/battlegrounds/gang-dark.png') center / cover no-repeat;
 }
 
 .fixed-battle-arena .battle-stage {
@@ -949,23 +881,23 @@ button {
 }
 
 .fixed-wild-emberfall {
-  background-image: url('../public/assets/battlegrounds/wild-emberfall.png');
+  background-image: url('/assets/battlegrounds/wild-emberfall.png');
 }
 
 .fixed-wild-mossgrove {
-  background-image: url('../public/assets/battlegrounds/wild-mossgrove.png');
+  background-image: url('/assets/battlegrounds/wild-mossgrove.png');
 }
 
 .fixed-gym-emberfall {
-  background-image: url('../public/assets/battlegrounds/gym-emberfall.png');
+  background-image: url('/assets/battlegrounds/gym-emberfall.png');
 }
 
 .fixed-gym-mossgrove {
-  background-image: url('../public/assets/battlegrounds/gym-mossgrove.png');
+  background-image: url('/assets/battlegrounds/gym-mossgrove.png');
 }
 
 .fixed-gang-dark {
-  background-image: url('../public/assets/battlegrounds/gang-dark.png');
+  background-image: url('/assets/battlegrounds/gang-dark.png');
 }
 
 
@@ -1220,6 +1152,12 @@ button {
   box-sizing: border-box;
 }
 
+.nickname-inline {
+  color: #747d76;
+  font-size: 0.82em;
+  font-weight: 700;
+}
+
 .battle-console {
   z-index: 10;
   display: grid;
@@ -1232,9 +1170,13 @@ button {
 }
 
 .battle-log {
-  min-height: 150px;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border-right: 2px solid #e6e1ce;
   padding: 8px 16px 8px 0;
+  scrollbar-gutter: stable;
 }
 
 .battle-log p {
@@ -1242,6 +1184,49 @@ button {
   color: #59655d;
   font-size: 14px;
   font-weight: 800;
+}
+
+.battle-log .log-entry {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.log-side-label {
+  border-radius: 999px;
+  padding: 2px 5px;
+  font-size: 8px;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.log-player {
+  color: #315f45;
+}
+
+.log-player .log-side-label {
+  background: #dfeedd;
+  color: #315f45;
+}
+
+.log-opponent {
+  color: #873f3f;
+}
+
+.log-opponent .log-side-label {
+  background: #f1dcda;
+  color: #873f3f;
+}
+
+.log-system {
+  color: #626b70;
+}
+
+.log-system .log-side-label {
+  background: #e6e8e5;
+  color: #626b70;
 }
 
 .battle-actions {
@@ -1319,6 +1304,290 @@ button {
   font-weight: 900;
 }
 
+.team-screen {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  background:
+    linear-gradient(rgba(255, 253, 244, 0.82), rgba(255, 253, 244, 0.92)),
+    url('/assets/maps/willowvale.png') center 62% / cover no-repeat;
+  padding: 18px clamp(14px, 3vw, 34px);
+  scrollbar-gutter: stable;
+}
+
+.team-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.team-heading h1 {
+  margin: 0;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1;
+}
+
+.team-heading > span {
+  color: var(--green-dark);
+  font-weight: 900;
+}
+
+.team-empty {
+  color: #969b92;
+  font-weight: 800;
+  text-align: center;
+}
+
+.team-three-layout {
+  height: calc(100% - 72px);
+  min-height: 330px;
+  display: grid;
+  grid-template-columns: minmax(150px, 0.75fr) minmax(280px, 1.7fr) minmax(220px, 1fr);
+  gap: 12px;
+}
+
+.party-panel,
+.owned-grid-panel,
+.selected-copy-panel {
+  min-height: 0;
+  overflow-y: auto;
+  border: 2px solid #dedaca;
+  border-radius: 18px;
+  padding: 12px;
+  scrollbar-gutter: stable;
+}
+
+.party-panel,
+.owned-grid-panel {
+  background: transparent;
+}
+
+.selected-copy-panel {
+  background: rgba(255, 253, 244, 0.94);
+}
+
+.party-panel h2,
+.owned-grid-heading h2,
+.selected-copy-panel h2 {
+  margin: 0;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 20px;
+}
+
+.party-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.party-list-copy {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 82px;
+  border: 2px solid #ebe7d7;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+  padding: 5px 8px 5px 4px;
+  text-align: left;
+}
+
+.party-list-copy.active {
+  border-color: var(--green);
+  background: #edf3df;
+  box-shadow: 0 5px 12px rgba(91, 124, 74, 0.12);
+}
+
+.party-list-copy strong,
+.party-list-copy span,
+.party-list-copy small {
+  display: block;
+}
+
+.party-list-copy strong {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 14px;
+}
+
+.party-list-copy span {
+  color: #747d76;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.party-list-copy small {
+  margin-top: 3px;
+  color: #969b92;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.owned-grid-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.owned-grid-heading span {
+  color: #747d76;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.owned-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(82px, 1fr));
+  gap: 8px;
+}
+
+.owned-copy-tile {
+  min-height: 150px;
+  border: 2px solid #dedaca;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+  padding: 5px;
+  text-align: center;
+}
+
+.owned-copy-tile.active {
+  border-color: var(--green);
+  box-shadow: 0 6px 14px rgba(91, 124, 74, 0.14);
+}
+
+.owned-copy-tile .dragon-icon {
+  display: block;
+  width: 100%;
+  height: 100px;
+  object-fit: contain;
+}
+
+.owned-copy-tile strong,
+.owned-copy-tile small,
+.owned-copy-tile > span:last-child {
+  display: block;
+}
+
+.owned-copy-tile strong {
+  margin-top: 2px;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.owned-copy-tile small {
+  color: #747d76;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.owned-location {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 3px;
+  border: 1px solid;
+  border-radius: 999px;
+  background: #f7f5ea;
+  padding: 2px 6px;
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.owned-location-spacer {
+  display: block;
+  height: 18px;
+}
+
+.selected-copy-heading {
+  text-align: center;
+}
+
+.selected-copy-heading h2 {
+  margin: 2px 0 0;
+}
+
+.selected-copy-heading p {
+  margin: 2px 0 8px;
+  color: #747d76;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.selected-copy-panel > .dragon-icon {
+  display: block;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.nickname-field {
+  display: block;
+  margin: 8px 0;
+  color: #969b92;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.nickname-field input {
+  width: 100%;
+  margin-top: 4px;
+  border: 2px solid #dedaca;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  padding: 7px 9px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: none;
+}
+
+.selected-copy-stats {
+  margin: 8px 0;
+}
+
+.selected-copy-stats div {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  border-bottom: 1px solid #ebe7d7;
+  padding: 5px 0;
+  font-size: 10px;
+}
+
+.selected-copy-stats dt {
+  color: #969b92;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.selected-copy-stats dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+.team-copy-action.full {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.team-copy-action {
+  min-height: 42px;
+  border: 2px solid #dedaca;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  padding: 6px 8px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
 .move-button,
 .capture-button,
 .run-button {
@@ -1369,7 +1638,7 @@ button {
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(20, 32, 82, 0.12), rgba(20, 32, 82, 0.28)),
-    url('../public/assets/maps/planet-map.png') center / cover no-repeat;
+    url('/assets/maps/planet-map.png') center / cover no-repeat;
   padding: 24px clamp(16px, 4vw, 48px);
 }
 
@@ -1449,15 +1718,15 @@ button {
 }
 
 .willow-preview {
-  background-image: url('../public/assets/maps/willowvale.png');
+  background-image: url('/assets/maps/willowvale.png');
 }
 
 .ember-preview {
-  background-image: url('../public/assets/maps/emberfall.png');
+  background-image: url('/assets/maps/emberfall.png');
 }
 
 .moss-preview {
-  background-image: url('../public/assets/maps/mossgrove.png');
+  background-image: url('/assets/maps/mossgrove.png');
 }
 
 .planet-node strong,
@@ -1516,7 +1785,7 @@ button {
   overflow: hidden;
   background:
     linear-gradient(rgba(255, 253, 244, 0.76), rgba(255, 253, 244, 0.88)),
-    url('../public/assets/maps/willowvale.png') center 62% / cover no-repeat;
+    url('/assets/maps/willowvale.png') center 62% / cover no-repeat;
   padding: 18px clamp(14px, 3vw, 34px);
 }
 
@@ -1670,6 +1939,10 @@ button {
   text-transform: uppercase;
 }
 
+.dex-status-seen {
+  color: #747d76;
+}
+
 .dex-number {
   position: absolute;
   z-index: 2;
@@ -1753,6 +2026,65 @@ button {
 .dex-detail dd {
   margin: 0;
   color: #536058;
+  font-weight: 800;
+}
+
+.evolution-chain,
+.owned-copies,
+.selected-individual {
+  margin-top: 10px;
+  border-top: 1px solid #ebe7d7;
+  padding-top: 8px;
+  text-align: left;
+}
+
+.evolution-chain h3,
+.owned-copies h3,
+.selected-individual h3 {
+  margin: 0 0 6px;
+  color: #657169;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.evolution-chain-row {
+  display: grid;
+  gap: 4px;
+}
+
+.chain-stage {
+  border: 1px solid #dedaca;
+  border-radius: 8px;
+  background: #f7f5ea;
+  padding: 5px 7px;
+  color: #969b92;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.chain-stage.registered {
+  border-color: #9eb091;
+  background: #edf3df;
+  color: #536058;
+}
+
+.owned-copy-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  border-bottom: 1px solid #ebe7d7;
+  padding: 5px 0;
+  font-size: 10px;
+}
+
+.owned-copy-row strong,
+.owned-copy-row small {
+  display: block;
+}
+
+.owned-copy-row small {
+  color: #969b92;
   font-weight: 800;
 }
 
@@ -1854,21 +2186,21 @@ button {
   background:
     radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.95) 0 14%, transparent 14.5%),
     linear-gradient(145deg, rgba(169, 222, 218, 0.58), rgba(247, 210, 141, 0.42)),
-    url('../public/assets/maps/willowvale.png') center / cover no-repeat;
+    url('/assets/maps/willowvale.png') center / cover no-repeat;
 }
 
 .badge-celebration {
   background:
     radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.95) 0 14%, transparent 14.5%),
     linear-gradient(145deg, rgba(158, 202, 196, 0.58), rgba(239, 208, 127, 0.42)),
-    url('../public/assets/maps/emberfall.png') center / cover no-repeat;
+    url('/assets/maps/emberfall.png') center / cover no-repeat;
 }
 
 .catch-celebration {
   background:
     radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.95) 0 15%, transparent 15.5%),
     linear-gradient(145deg, rgba(175, 224, 216, 0.58), rgba(185, 211, 160, 0.42)),
-    url('../public/assets/maps/mossgrove.png') center / cover no-repeat;
+    url('/assets/maps/mossgrove.png') center / cover no-repeat;
 }
 
 .celebration-rays {
@@ -2148,6 +2480,32 @@ button {
 }
 
 @media (max-width: 900px) {
+  .team-three-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .party-panel {
+    max-height: 190px;
+  }
+
+  .party-list {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .party-list-copy {
+    min-width: 180px;
+  }
+
+  .owned-grid {
+    grid-template-columns: repeat(4, minmax(82px, 1fr));
+  }
+
+  .selected-copy-panel {
+    min-height: 260px;
+  }
+
   .title-card {
     padding-inline: 18px;
   }
@@ -2196,6 +2554,14 @@ button {
 }
 
 @media (max-width: 680px), (pointer: coarse) and (orientation: portrait) {
+  .team-three-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .owned-grid {
+    grid-template-columns: repeat(3, minmax(82px, 1fr));
+  }
+
   .title-screen {
     align-items: start;
     padding: 12px;
@@ -2384,8 +2750,9 @@ button {
 
   .battle-log {
     min-height: 58px;
-    max-height: 58px;
-    overflow: hidden;
+    max-height: 88px;
+    height: 88px;
+    overflow-y: auto;
     border-right: 0;
     border-bottom: 1px solid #e6e1ce;
     padding: 4px 6px;

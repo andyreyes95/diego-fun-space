@@ -1,10 +1,6 @@
 import { speciesById, typeColors, typeNames } from '../../data'
 import { DragonIcon } from '../DragonIcon'
-
-export type Celebration =
-  | { kind: 'evolution'; beforeId: string; afterId: string }
-  | { kind: 'badge'; badge: 'Ember' | 'Bloom' }
-  | { kind: 'catch'; speciesId: string; joinedParty: boolean }
+import type { Celebration } from '../../types'
 
 interface CelebrationScreenProps {
   celebration: Celebration

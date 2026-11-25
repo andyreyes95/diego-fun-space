@@ -1,14 +1,13 @@
-import type { Dispatch, SetStateAction } from 'react'
 import type { GameSave, View } from '../../types'
+import { MapLocationCard } from '../MapLocationCard'
 
 interface PlanetMapProps {
   save: GameSave
-  setSave: Dispatch<SetStateAction<GameSave | null>>
-  setView: (view: View) => void
+  onNavigate: (view: View) => void
   onToast: (message: string) => void
 }
 
-export function PlanetMap({ save, setSave, setView, onToast }: PlanetMapProps) {
+export function PlanetMap({ save, onNavigate, onToast }: PlanetMapProps) {
   return (
     <section className="planet-map-view">
       <div className="map-heading">
@@ -19,48 +18,43 @@ export function PlanetMap({ save, setSave, setView, onToast }: PlanetMapProps) {
         <span>{save.currentPlanet === 1 ? 'Emberfall route' : 'Mossgrove route'}</span>
       </div>
       <div className="planet-route" aria-label="Planet route">
-        <button
-          type="button"
-          className={save.currentPlanet === 1 ? 'planet-node active' : 'planet-node'}
-          onClick={() => setView('town')}
-        >
-          <span className="planet-preview willow-preview" />
-          <strong>Willowvale</strong>
-          <small>Home planet · Town</small>
-          <i>Available</i>
-        </button>
+        <MapLocationCard
+          baseClassName="planet-node"
+          className={save.currentPlanet === 1 ? 'active' : ''}
+          onClick={() => onNavigate('town')}
+          previewClass="willow-preview"
+          title="Willowvale"
+          detail="Home planet · Town"
+          status="Available"
+        />
         <span className="route-line" aria-hidden="true" />
-        <button
-          type="button"
-          className={save.currentPlanet === 1 ? 'planet-node active' : 'planet-node'}
+        <MapLocationCard
+          baseClassName="planet-node"
+          className={save.currentPlanet === 1 ? 'active' : ''}
           onClick={() => {
-            setSave((current) => current ? { ...current, currentPlanet: 1 } : current)
-            setView('planet1')
+            onNavigate('planet1')
           }}
-        >
-          <span className="planet-preview ember-preview" />
-          <strong>Emberfall</strong>
-          <small>Planet 1 · Fire Gym</small>
-          <i>Available</i>
-        </button>
+          previewClass="ember-preview"
+          title="Emberfall"
+          detail="Planet 1 · Fire Gym"
+          status="Available"
+        />
         <span className={save.badges.includes('Ember') ? 'route-line unlocked' : 'route-line'} aria-hidden="true" />
-        <button
-          type="button"
-          className={save.currentPlanet === 2 ? 'planet-node active' : save.badges.includes('Ember') ? 'planet-node' : 'planet-node locked'}
+        <MapLocationCard
+          baseClassName="planet-node"
+          className={save.currentPlanet === 2 ? 'active' : save.badges.includes('Ember') ? '' : 'locked'}
           onClick={() => {
             if (!save.badges.includes('Ember')) {
               onToast('Beat Gym Leader Sol to unlock Mossgrove!')
               return
             }
-            setSave((current) => current ? { ...current, currentPlanet: 2 } : current)
-            setView('planet2')
+            onNavigate('planet2')
           }}
-        >
-          <span className="planet-preview moss-preview" />
-          <strong>Mossgrove</strong>
-          <small>Planet 2 · Grass Gym</small>
-          <i>{save.badges.includes('Ember') ? 'Available' : 'Locked: Ember Badge'}</i>
-        </button>
+          previewClass="moss-preview"
+          title="Mossgrove"
+          detail="Planet 2 · Grass Gym"
+          status={save.badges.includes('Ember') ? 'Available' : 'Locked: Ember Badge'}
+        />
       </div>
     </section>
   )

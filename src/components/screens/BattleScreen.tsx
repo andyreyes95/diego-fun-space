@@ -1,7 +1,9 @@
 import type { BattleState, DragonInstance, GameSave } from '../../types'
+import { useEffect, useRef } from 'react'
 import { speciesById, typeColors, typeNames } from '../../data'
 import type { Move } from '../../types'
 import { DragonIcon } from '../DragonIcon'
+import { DragonName } from '../DragonName'
 import { HealthBar, XpBar } from '../StatusBars'
 
 interface BattleScreenProps {
@@ -10,6 +12,7 @@ interface BattleScreenProps {
   active: DragonInstance
   activePartyIndex: number
   screenShake: boolean
+  busy: boolean
   onUseMove: (move: Move) => void
   onTryCapture: () => void
   onRun: () => void
@@ -22,11 +25,18 @@ export function BattleScreen({
   active,
   activePartyIndex,
   screenShake,
+  busy,
   onUseMove,
   onTryCapture,
   onRun,
   onSwitch,
 }: BattleScreenProps) {
+  const logRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const log = logRef.current
+    if (log) log.scrollTop = log.scrollHeight
+  }, [battle.log.length])
+
   const activeSpecies = speciesById[active.speciesId]
   const enemySpecies = speciesById[battle.enemy.speciesId]
   const fixedBattleVariant = battle.kind === 'gang'
@@ -65,7 +75,6 @@ export function BattleScreen({
             <div className="battle-status enemy-status">
               <strong>{enemySpecies.name}</strong>
               <span>Lv. {battle.enemy.level}</span>
-              <small className="battle-hp">{battle.enemy.hp} / {battle.enemy.maxHp} HP</small>
               <HealthBar current={battle.enemy.hp} max={battle.enemy.maxHp} />
             </div>
             <DragonIcon species={enemySpecies} size={210} battleMode />
@@ -73,9 +82,10 @@ export function BattleScreen({
           <div className="player-side">
             <DragonIcon species={activeSpecies} size={210} battleMode />
             <div className="battle-status player-status">
-              <strong>{activeSpecies.name}</strong>
+              <strong>
+                <DragonName species={activeSpecies} nickname={active.nickname} />
+              </strong>
               <span>Lv. {active.level}</span>
-              <small className="battle-hp">{active.hp} / {active.maxHp} HP</small>
               <HealthBar current={active.hp} max={active.maxHp} />
               <XpBar xp={active.xp} level={active.level} />
             </div>
@@ -83,8 +93,15 @@ export function BattleScreen({
         </div>
       </section>
       <section className="battle-console">
-        <div className="battle-log" aria-live="polite">
-          {battle.log.slice(-3).map((line, index) => <p key={`${line}-${index}`}>{line}</p>)}
+        <div ref={logRef} className="battle-log" aria-live="polite">
+          {battle.log.map((entry, index) => (
+            <p key={`${entry.text}-${index}`} className={`log-entry log-${entry.side}`}>
+              <span className="log-side-label">
+                {entry.side === 'player' ? 'You' : entry.side === 'opponent' ? 'Opponent' : 'Battle'}
+              </span>
+              {entry.text}
+            </p>
+          ))}
         </div>
         {battle.finished ? (
           <div className="battle-actions">
@@ -96,15 +113,15 @@ export function BattleScreen({
           <div className="battle-controls">
             <div className="battle-actions">
               {active.moves.map((move) => (
-                <button key={move.name} type="button" className="move-button" onClick={() => onUseMove(move)}>
+                <button key={move.name} type="button" className="move-button" onClick={() => onUseMove(move)} disabled={busy}>
                   <span>{move.name}</span>
                   <small style={{ color: typeColors[move.type] }}>{typeNames[move.type]} · {move.power} power</small>
                 </button>
               ))}
               {battle.kind === 'wild' && (
-                <button type="button" className="capture-button" onClick={onTryCapture}>Catch</button>
+                <button type="button" className="capture-button" onClick={onTryCapture} disabled={busy}>Catch</button>
               )}
-              <button type="button" className="run-button" onClick={onRun}>Run</button>
+              <button type="button" className="run-button" onClick={onRun} disabled={busy}>Run</button>
             </div>
             <div className="team-switcher" aria-label="Switch active dragon">
               {save.party.map((dragon, index) => {
@@ -115,10 +132,12 @@ export function BattleScreen({
                     type="button"
                     className={index === activePartyIndex ? 'team-slot active' : dragon.hp <= 0 ? 'team-slot fainted' : 'team-slot'}
                     onClick={() => onSwitch(index)}
-                    disabled={battle.finished || dragon.hp <= 0}
+                    disabled={battle.finished || dragon.hp <= 0 || busy}
                   >
                     <span className="team-slot-dot" style={{ background: typeColors[species.type] }} />
-                    <strong>{species.name}</strong>
+                    <strong>
+                      <DragonName species={species} nickname={dragon.nickname} />
+                    </strong>
                     <small>{dragon.hp}/{dragon.maxHp}</small>
                   </button>
                 )
