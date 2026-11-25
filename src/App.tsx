@@ -617,8 +617,27 @@ function App() {
         </main>
       )
     }
+    const battleBackgroundClass = battle.kind === 'gang'
+      ? 'battle-gang-dark'
+      : battle.kind === 'fireGym'
+        ? 'battle-gym-emberfall'
+        : battle.kind === 'grassGym'
+          ? 'battle-gym-mossgrove'
+          : save.currentPlanet === 2
+            ? 'battle-wild-mossgrove'
+            : 'battle-wild-emberfall'
+    const fixedBattleVariant = battle.kind === 'gang'
+      ? 'fixed-gang-dark'
+      : battle.kind === 'fireGym'
+        ? 'fixed-gym-emberfall'
+        : battle.kind === 'grassGym'
+          ? 'fixed-gym-mossgrove'
+          : save.currentPlanet === 2
+            ? 'fixed-wild-mossgrove'
+            : 'fixed-wild-emberfall'
+
     return (
-      <main className={`${screenShake ? 'battle-screen shake' : 'battle-screen'} ${save.currentPlanet === 2 ? 'battle-mossgrove' : 'battle-emberfall'}`}>
+      <main className={`${screenShake ? 'battle-screen shake' : 'battle-screen'} ${battleBackgroundClass} fixed-battle`}>
         <header className="battle-header">
           <button className="icon-button" type="button" onClick={() => battle.finished ? runFromBattle() : runFromBattle()} aria-label="Leave battle">×</button>
           <div>
@@ -626,25 +645,32 @@ function App() {
             {battle.kind !== 'wild' && <strong>{battle.kind === 'gang' ? 'Dark Gang' : 'Gym Leader'}</strong>}
           </div>
         </header>
-        <section className="battle-arena">
-          <div className="enemy-side">
-            <div className="battle-status enemy-status">
-              <strong>{enemySpecies.name}</strong>
-              <span>Lv. {battle.enemy.level}</span>
-              <HealthBar current={battle.enemy.hp} max={battle.enemy.maxHp} />
+        {
+          <section className="battle-arena fixed-battle-arena">
+            <div className={`battle-stage fixed-battle-stage ${fixedBattleVariant}`}>
+              <span className="battle-platform enemy-platform" aria-hidden="true" />
+              <span className="battle-platform player-platform" aria-hidden="true" />
+              <div className="enemy-side">
+                <div className="battle-status enemy-status">
+                  <strong>{enemySpecies.name}</strong>
+                  <span>Lv. {battle.enemy.level}</span>
+                  <small className="battle-hp">{battle.enemy.hp} / {battle.enemy.maxHp} HP</small>
+                  <HealthBar current={battle.enemy.hp} max={battle.enemy.maxHp} />
+                </div>
+                <DragonIcon species={enemySpecies} size={210} battleMode />
+              </div>
+              <div className="player-side">
+                <DragonIcon species={activeSpecies} size={210} battleMode />
+                <div className="battle-status player-status">
+                  <strong>{activeSpecies.name}</strong>
+                  <span>Lv. {active.level}</span>
+                  <small className="battle-hp">{active.hp} / {active.maxHp} HP</small>
+                  <HealthBar current={active.hp} max={active.maxHp} />
+                </div>
+              </div>
             </div>
-            <DragonIcon species={enemySpecies} size={210} battleMode />
-          </div>
-          <div className="player-side">
-            <DragonIcon species={activeSpecies} size={210} battleMode />
-            <div className="battle-status player-status">
-              <strong>{activeSpecies.name}</strong>
-              <span>Lv. {active.level}</span>
-              <HealthBar current={active.hp} max={active.maxHp} />
-              <small>{active.hp} / {active.maxHp} HP</small>
-            </div>
-          </div>
-        </section>
+          </section>
+        }
         <section className="battle-console">
           <div className="battle-log" aria-live="polite">
             {battle.log.slice(-3).map((line, index) => <p key={`${line}-${index}`}>{line}</p>)}

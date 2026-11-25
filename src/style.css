@@ -793,14 +793,36 @@ button {
   grid-template-rows: 64px 1fr 210px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(38, 50, 58, 0.12)),
-    url('../public/battle-emberfall.png') center 48% / cover no-repeat;
+    url('../public/battle-wild-emberfall.png') center 48% / cover no-repeat;
   overflow: hidden;
 }
 
-.battle-mossgrove {
+.battle-screen.fixed-ember-wild-battle {
+  background: #26323a;
+}
+
+.battle-wild-mossgrove {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(38, 50, 58, 0.10)),
-    url('../public/battle-mossgrove.png') center 48% / cover no-repeat;
+    url('../public/battle-wild-mossgrove.png') center 48% / cover no-repeat;
+}
+
+.battle-gym-emberfall {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(38, 50, 58, 0.10)),
+    url('../public/battle-gym-emberfall.png') center 48% / cover no-repeat;
+}
+
+.battle-gym-mossgrove {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(38, 50, 58, 0.10)),
+    url('../public/battle-gym-mossgrove.png') center 48% / cover no-repeat;
+}
+
+.battle-gang-dark {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(38, 50, 58, 0.18)),
+    url('../public/battle-gang-dark.png') center 48% / cover no-repeat;
 }
 
 .battle-screen.shake {
@@ -855,16 +877,140 @@ button {
   min-height: 300px;
 }
 
-.battle-arena::after {
+.fixed-battle-arena {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+  background: #26323a;
+  container-type: size;
+}
+
+.fixed-battle-arena::before {
   content: '';
   position: absolute;
-  width: 70%;
-  height: 110px;
-  left: 15%;
-  bottom: -35px;
+  z-index: 0;
+  inset: -18px;
+  background:
+    linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
+    url('../public/battle-wild-emberfall.png') center / cover no-repeat;
+  opacity: 0.65;
+  filter: saturate(0.85) blur(2px);
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+.battle-wild-mossgrove .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
+    url('../public/battle-wild-mossgrove.png') center / cover no-repeat;
+}
+
+.battle-gym-emberfall .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
+    url('../public/battle-gym-emberfall.png') center / cover no-repeat;
+}
+
+.battle-gym-mossgrove .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
+    url('../public/battle-gym-mossgrove.png') center / cover no-repeat;
+}
+
+.battle-gang-dark .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
+    url('../public/battle-gang-dark.png') center / cover no-repeat;
+}
+
+.fixed-battle-arena .battle-stage {
+  z-index: 1;
+}
+
+.battle-stage {
+  position: relative;
+  flex: 0 0 auto;
+  aspect-ratio: 3 / 2;
+  height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.fixed-battle-stage {
+  width: min(100cqw, 150cqh);
+  height: auto;
+  max-width: 100%;
+}
+
+.fixed-wild-emberfall {
+  background-image: url('../public/battle-wild-emberfall.png');
+}
+
+.fixed-wild-mossgrove {
+  background-image: url('../public/battle-wild-mossgrove.png');
+}
+
+.fixed-gym-emberfall {
+  background-image: url('../public/battle-gym-emberfall.png');
+}
+
+.fixed-gym-mossgrove {
+  background-image: url('../public/battle-gym-mossgrove.png');
+}
+
+.fixed-gang-dark {
+  background-image: url('../public/battle-gang-dark.png');
+}
+
+
+.battle-platform {
+  position: absolute;
+  z-index: 1;
+  border: 3px solid rgba(255, 255, 255, 0.38);
   border-radius: 50%;
-  background: rgba(87, 122, 65, 0.25);
-  box-shadow: 280px -110px 0 -20px rgba(87, 122, 65, 0.12);
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.24) 0 16%, rgba(255, 255, 255, 0.08) 17% 58%, rgba(38, 50, 58, 0.16) 59% 100%);
+  box-shadow:
+    0 12px 18px rgba(38, 50, 58, 0.18),
+    inset 0 4px 10px rgba(255, 255, 255, 0.22);
+  pointer-events: none;
+}
+
+.enemy-platform {
+  width: 220px;
+  height: 70px;
+  right: 17%;
+  top: 31%;
+}
+
+.player-platform {
+  width: 280px;
+  height: 90px;
+  left: 18%;
+  bottom: 12%;
+}
+
+.fixed-battle-stage .enemy-platform {
+  width: 18.2292%;
+  height: 8.7891%;
+  right: 18%;
+  bottom: 20.2%;
+  left: auto;
+  top: auto;
+}
+
+.fixed-battle-stage .player-platform {
+  width: 18.2292%;
+  height: 8.7891%;
+  left: 18%;
+  bottom: 20.2%;
+  right: auto;
+  top: auto;
 }
 
 .enemy-side,
@@ -873,6 +1019,11 @@ button {
   z-index: 2;
   display: flex;
   align-items: center;
+}
+
+.enemy-side > .dragon-icon,
+.enemy-side > .dragon-cutout {
+  transform: scaleX(-1);
 }
 
 .enemy-side > .dragon-icon,
@@ -891,14 +1042,75 @@ button {
 }
 
 .enemy-side {
-  top: 8%;
-  right: 6%;
+  top: 17%;
+  right: 10%;
 }
 
 .player-side {
-  left: 24px;
-  bottom: -2%;
+  left: 11%;
+  bottom: 2%;
   flex-direction: row;
+}
+
+.fixed-battle-stage .enemy-side {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.fixed-battle-stage .enemy-side .enemy-status {
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  top: 0;
+  left: auto;
+  margin: 0;
+  width: 38%;
+}
+
+.fixed-battle-stage .enemy-side > .dragon-icon {
+  position: absolute;
+  z-index: 2;
+  left: 64.260%;
+  right: auto;
+  bottom: 20.2%;
+  width: 17.25%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+.fixed-battle-stage .player-side {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.fixed-battle-stage .player-side > .dragon-icon {
+  position: absolute;
+  z-index: 2;
+  left: 18.49%;
+  right: auto;
+  bottom: 20.2%;
+  width: 17.25%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+.fixed-battle-stage .player-side .player-status {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  right: auto;
+  bottom: auto;
+  margin: 0;
+  width: 38%;
 }
 
 .battle-status {
@@ -961,6 +1173,20 @@ button {
   text-align: right;
   font-size: 10px;
   font-weight: 900;
+}
+
+.battle-status .battle-hp {
+  display: block;
+  margin: 4px 0 0;
+  color: #657169;
+  text-align: right;
+  line-height: 1;
+}
+
+.fixed-battle-stage .battle-status {
+  width: 38%;
+  min-height: 68px;
+  box-sizing: border-box;
 }
 
 .battle-console {
@@ -1916,11 +2142,13 @@ button {
   }
 
   .enemy-side {
-    right: 2%;
+    top: 17%;
+    right: 10%;
   }
 
   .player-side {
-    left: 12px;
+    left: 11%;
+    bottom: 2%;
   }
 
   .battle-status {
@@ -2072,14 +2300,28 @@ button {
     min-height: 290px;
   }
 
+  .enemy-platform {
+    width: 180px;
+    height: 58px;
+    right: 10%;
+  }
+
+  .player-platform {
+    width: 220px;
+    height: 72px;
+    left: 11%;
+  }
+
+
   .enemy-side {
-    top: 4%;
+    top: 17%;
+    right: 10%;
   }
 
   .player-side {
-    left: 8px;
+    left: 11%;
     right: auto;
-    bottom: 0;
+    bottom: 2%;
     flex-direction: row;
   }
 
