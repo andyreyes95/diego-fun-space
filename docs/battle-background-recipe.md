@@ -107,17 +107,17 @@ Only after a battleground passes desktop and iPad rotation checks should its bac
 
 ## Filenames
 
-- `public/battle-wild-emberfall.png`
-- `public/battle-wild-mossgrove.png`
-- `public/battle-gym-emberfall.png`
-- `public/battle-gym-mossgrove.png`
-- `public/battle-gang-dark.png`
+- `public/assets/battlegrounds/wild-emberfall.png`
+- `public/assets/battlegrounds/wild-mossgrove.png`
+- `public/assets/battlegrounds/gym-emberfall.png`
+- `public/assets/battlegrounds/gym-mossgrove.png`
+- `public/assets/battlegrounds/gang-dark.png`
 
 For future planets/types:
 
-- `public/battle-wild-<planet-or-type>.png`
-- `public/battle-gym-<planet-or-type>.png`
-- `public/battle-gang-<gang-name>.png`
+- `public/assets/battlegrounds/wild-<planet-or-type>.png`
+- `public/assets/battlegrounds/gym-<planet-or-type>.png`
+- `public/assets/battlegrounds/gang-<gang-name>.png`
 
 ## CSS integration
 

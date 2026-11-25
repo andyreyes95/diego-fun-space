@@ -5,11 +5,11 @@
 - Generate one image per species and evolution stage.
 - Output: `1024x1024` PNG.
 - Format: RGBA with transparency.
-- Filename: `public/dragon-cutouts/dragon-<three-digit-dex-number>.png`
+- Filename: `public/assets/dragons/dragon-<three-digit-dex-number>.png`
 - Examples:
-  - `public/dragon-cutouts/dragon-001.png`
-  - `public/dragon-cutouts/dragon-002.png`
-  - `public/dragon-cutouts/dragon-284.png`
+  - `public/assets/dragons/dragon-001.png`
+  - `public/assets/dragons/dragon-002.png`
+  - `public/assets/dragons/dragon-284.png`
 
 ## Generation requirements
 
@@ -49,7 +49,7 @@ Do not use another dragon's cutout or an automatic crop of the roster sheet as t
 `src/App.tsx` loads battle and Dex images from:
 
 ```text
-/dragon-cutouts/dragon-<three-digit-dex-number>.png
+/assets/dragons/dragon-<three-digit-dex-number>.png
 ```
 
 No species-specific rendering exception is needed for a completed dragon. The existing `DragonIcon` component automatically loads the matching direct PNG in Dex details, battles, captures, evolutions, and starter selections.
