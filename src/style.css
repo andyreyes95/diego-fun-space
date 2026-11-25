@@ -24,6 +24,8 @@
 .dragon-icon {
   display: inline-block;
   flex: 0 0 auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
   border-radius: 0;
   background-color: transparent;
   background-clip: content-box;
@@ -845,6 +847,9 @@ button {
 .player-side > .dragon-icon,
 .evolution-reveal .dragon-icon,
 .catch-reveal .dragon-icon {
+  width: 210px;
+  height: 210px;
+  object-fit: contain;
   border-radius: 0;
   background-color: transparent;
   clip-path: none;
@@ -1334,8 +1339,9 @@ button {
 
 .dex-card .dragon-icon {
   display: block;
-  width: calc(100% - 8px);
-  height: 100px;
+  width: min(calc(100% - 8px), 100px);
+  height: auto;
+  aspect-ratio: 1 / 1;
   margin: 0 auto;
   border-radius: 12px;
   background-size: 600% 400%;
@@ -1901,6 +1907,7 @@ button {
 
   .title-dragons .dragon-icon {
     width: 120px;
+    height: 120px;
   }
 
   .title-card h1 {
@@ -1912,6 +1919,7 @@ button {
   }
 
   .starter-card .dragon-icon {
+    width: 105px;
     height: 105px;
   }
 
