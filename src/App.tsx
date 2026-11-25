@@ -72,6 +72,19 @@ function HealthBar({ current, max }: { current: number; max: number }) {
   )
 }
 
+function XpBar({ xp, level }: { xp: number; level: number }) {
+  const xpNeeded = level * 10
+  const percent = Math.max(0, Math.min(100, (xp / xpNeeded) * 100))
+  return (
+    <div className="xp-meter">
+      <small className="battle-xp">XP · {xp} / {xpNeeded}</small>
+      <div className="xp-track" aria-label={`${xp} of ${xpNeeded} XP to level ${level + 1}`}>
+        <div className="xp-fill" style={{ width: `${percent}%` }} />
+      </div>
+    </div>
+  )
+}
+
 function App() {
   const [save, setSave] = useState<GameSave | null>(() => loadSave())
   const [view, setView] = useState<View>(() => (loadSave() ? 'town' : 'title'))
@@ -666,6 +679,7 @@ function App() {
                   <span>Lv. {active.level}</span>
                   <small className="battle-hp">{active.hp} / {active.maxHp} HP</small>
                   <HealthBar current={active.hp} max={active.maxHp} />
+                  <XpBar xp={active.xp} level={active.level} />
                 </div>
               </div>
             </div>

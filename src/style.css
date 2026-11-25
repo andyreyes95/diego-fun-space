@@ -1183,9 +1183,40 @@ button {
   line-height: 1;
 }
 
+.xp-meter {
+  margin-top: 3px;
+}
+
+.battle-status .battle-xp {
+  display: block;
+  margin: 0 0 2px;
+  color: #657169;
+  text-align: right;
+  font-size: 9px;
+  line-height: 1;
+  text-transform: none;
+}
+
+.xp-track {
+  height: 6px;
+  overflow: hidden;
+  border: 1px solid #d8d4c2;
+  border-radius: 999px;
+  background: #e9e5d5;
+}
+
+.xp-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #7d96c7;
+  transition: width 280ms ease;
+}
+
 .fixed-battle-stage .battle-status {
   width: 38%;
-  min-height: 68px;
+  height: 112px;
+  min-height: 112px;
+  padding: 8px 10px;
   box-sizing: border-box;
 }
 
