@@ -49,7 +49,35 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  overflow-x: hidden;
+  height: 100vh;
+  overflow: hidden;
+}
+
+html,
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #9eb091 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #9eb091;
+  background-clip: padding-box;
 }
 
 button,
@@ -281,11 +309,13 @@ button {
 }
 
 .game-shell {
+  height: 100svh;
   min-height: 100svh;
   display: grid;
   grid-template-rows: 72px 1fr 74px;
   background: #f7f1dc;
   padding-bottom: env(safe-area-inset-bottom);
+  overflow: hidden;
 }
 
 .game-header {
@@ -440,7 +470,8 @@ button {
 
 .world-view {
   position: relative;
-  min-height: calc(100svh - 146px);
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -715,6 +746,7 @@ button {
 
 .bottom-nav {
   z-index: 30;
+  position: relative;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   border-top: 2px solid rgba(38, 50, 58, 0.12);
@@ -1075,7 +1107,8 @@ button {
 }
 
 .planet-map-view {
-  min-height: calc(100svh - 146px);
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(20, 32, 82, 0.12), rgba(20, 32, 82, 0.28)),
@@ -1115,8 +1148,8 @@ button {
 }
 
 .planet-route {
-  height: calc(100svh - 280px);
-  min-height: 330px;
+  height: calc(100% - 98px);
+  min-height: 0;
   display: grid;
   grid-template-columns: 1fr 90px 1fr 90px 1fr;
   align-items: center;
@@ -1221,7 +1254,8 @@ button {
 }
 
 .dex-view {
-  min-height: calc(100svh - 146px);
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
   background:
     linear-gradient(rgba(255, 253, 244, 0.76), rgba(255, 253, 244, 0.88)),
@@ -1302,8 +1336,8 @@ button {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 280px;
   gap: 16px;
-  height: calc(100svh - 292px);
-  min-height: 280px;
+  height: calc(100% - 132px);
+  min-height: 0;
 }
 
 .dex-grid {
@@ -1313,6 +1347,8 @@ button {
   overflow-y: auto;
   align-content: start;
   padding: 3px 8px 12px 3px;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
 }
 
 .dex-card {
@@ -1337,6 +1373,10 @@ button {
   box-shadow: 0 7px 16px rgba(91, 124, 74, 0.14);
 }
 
+.dex-card.undiscovered {
+  background: #f7f5ea;
+}
+
 .dex-card .dragon-icon {
   display: block;
   width: min(calc(100% - 8px), 100px);
@@ -1344,11 +1384,17 @@ button {
   aspect-ratio: 1 / 1;
   margin: 0 auto;
   border-radius: 12px;
-  background-size: 600% 400%;
-  background-position-x: var(--sprite-x);
-  background-position-y: var(--sprite-y);
-  background-color: #edf3df;
+  object-fit: contain;
+  background-color: transparent;
   overflow: hidden;
+}
+
+.dex-card.undiscovered .dragon-icon {
+  width: min(calc(100% - 8px), 100px);
+  height: auto;
+  margin-top: 0;
+  border-radius: 12px;
+  background: transparent;
 }
 
 .dex-card strong {
@@ -1924,6 +1970,7 @@ button {
   }
 
   .game-shell {
+    height: 100svh;
     grid-template-rows: 62px 1fr 68px;
   }
 
@@ -1957,7 +2004,8 @@ button {
 
   .world-view,
   .dex-view {
-    min-height: calc(100svh - 130px);
+    height: 100%;
+    min-height: 0;
   }
 
   .world-copy {
@@ -2129,7 +2177,7 @@ button {
 
   .dex-layout {
     grid-template-columns: 1fr;
-    height: calc(100svh - 306px);
+    height: calc(100% - 132px);
   }
 
   .dex-detail {
@@ -2141,7 +2189,8 @@ button {
   }
 
   .planet-map-view {
-    min-height: calc(100svh - 130px);
+    height: 100%;
+    min-height: 0;
     padding: 12px 10px;
   }
 
@@ -2158,8 +2207,8 @@ button {
   }
 
   .planet-route {
-    height: calc(100svh - 218px);
-    min-height: 380px;
+    height: calc(100% - 92px);
+    min-height: 0;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 5px;
   }

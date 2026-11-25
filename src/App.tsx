@@ -910,8 +910,13 @@ function App() {
                   <button
                     type="button"
                     key={species.id}
-                    className={selectedDexId === species.id ? 'dex-card selected' : 'dex-card'}
+                    className={[
+                      'dex-card',
+                      selectedDexId === species.id ? 'selected' : '',
+                      seen ? '' : 'undiscovered',
+                    ].filter(Boolean).join(' ')}
                     onClick={() => setSelectedDexId(species.id)}
+                    aria-label={seen ? `${species.name}, Dex number ${species.dexNo}` : `Undiscovered dragon, Dex number ${species.dexNo}`}
                   >
                     <span className="dex-number">#{String(species.dexNo).padStart(3, '0')}</span>
                     {seen ? <DragonIcon species={species} size={100} /> : <DragonIcon species={species} size={100} silhouette />}
