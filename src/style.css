@@ -693,6 +693,11 @@
   box-shadow: 0 -8px 24px rgba(80, 91, 72, 0.06);
 }
 
+/* Temporary localhost debug button layout. */
+.bottom-nav.with-debug {
+  grid-template-columns: repeat(7, 1fr);
+}
+
 .nav-button {
   display: flex;
   min-height: 58px;

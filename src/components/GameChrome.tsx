@@ -44,9 +44,10 @@ interface BottomNavProps {
   currentPlanet: 1 | 2
   setView: (view: View) => void
   onReset: () => void
+  onCatchAll?: () => void
 }
 
-export function BottomNav({ view, currentPlanet, setView, onReset }: BottomNavProps) {
+export function BottomNav({ view, currentPlanet, setView, onReset, onCatchAll }: BottomNavProps) {
   const navButton = (target: View, label: string, icon: ReactNode) => (
     <button className={view === target ? 'nav-button active' : 'nav-button'} onClick={() => setView(target)} type="button">
       <span className="nav-icon" aria-hidden="true">{icon}</span>
@@ -55,7 +56,7 @@ export function BottomNav({ view, currentPlanet, setView, onReset }: BottomNavPr
   )
 
   return (
-    <nav className="bottom-nav" aria-label="Main navigation">
+    <nav className={onCatchAll ? 'bottom-nav with-debug' : 'bottom-nav'} aria-label="Main navigation">
       {navButton('town', 'Town', <City size={35} weight="fill" />)}
       <button
         className={view === 'planet1' || view === 'planet2' ? 'nav-button active' : 'nav-button'}
@@ -69,6 +70,8 @@ export function BottomNav({ view, currentPlanet, setView, onReset }: BottomNavPr
       {navButton('dex', 'Dragon Dex', <ScanSmiley size={35} weight="fill" />)}
       {navButton('team', 'Team', <Strategy size={35} weight="fill" />)}
       <button className="nav-button" type="button" onClick={onReset}>Reset</button>
+      {/* Temporary localhost debug cheat; the controller omits this action on other hosts. */}
+      {onCatchAll && <button className="nav-button" type="button" onClick={onCatchAll}>Catch all</button>}
     </nav>
   )
 }

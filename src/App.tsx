@@ -101,11 +101,13 @@ function App() {
         />
       )}
 
+      {/* Temporary localhost debug action is wired through onCatchAll. */}
       <BottomNav
         view={game.view}
         currentPlanet={game.save.currentPlanet}
         setView={game.setView}
         onReset={game.resetGame}
+        onCatchAll={game.debugCatchAll}
       />
 
       {game.toast && <div className="toast" role="status">{game.toast}</div>}

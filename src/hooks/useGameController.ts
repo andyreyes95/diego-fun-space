@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { createDragon, speciesById } from '../data'
+import { createDragon, dragonSpecies, speciesById } from '../data'
 import type { BattleLogEntry, BattleState, Celebration, DragonInstance, DragonType, GameSave, Move, View } from '../types'
 import { clearSave, loadSave, persistSave } from '../game/storage'
 import { addCapturedInstance, moveInstance, registerEvolution, registerSeen, renameInstance } from '../game/registration'
@@ -128,6 +128,26 @@ export function useGameController() {
     setCelebrationQueue((queue) => queue.slice(1))
   }
 
+  // Temporary localhost debug cheat: remove this block and the debugCatchAll UI wiring to disable.
+  const debugCatchAll = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)
+    ? () => {
+      setSave((current) => {
+        if (!current) return current
+        const owned = new Set([...current.party, ...current.reserve].map((dragon) => dragon.speciesId))
+        const next = dragonSpecies.reduce((progress, species) => owned.has(species.id)
+          ? progress
+          : addCapturedInstance(progress, createDragon(species.id, 5)), current)
+        const ids = dragonSpecies.map((species) => species.id)
+        return {
+          ...next,
+          seen: [...new Set([...next.seen, ...ids])],
+          caught: [...new Set([...next.caught, ...ids])],
+        }
+      })
+      setToast('All dragons caught! Find them in your Party and Reserve.')
+    }
+    : undefined
+
   const markSeen = (speciesId: string) => {
     setSave((current) => current ? registerSeen(current, speciesId) : current)
   }
@@ -152,8 +172,8 @@ export function useGameController() {
     }
     setActivePartyIndex(firstAbleDragon)
     const pool = planet === 1
-      ? ['embbite', 'puddlefin', 'spriglet', 'zappup', 'mistlet', 'shadee']
-      : ['frostle', 'lumopod', 'noxibear', 'shadee', 'spriglet', 'puddlefin']
+      ? ['embbite', 'puddlefin', 'spriglet', 'zappup', 'mistlet', 'shadee', 'cindrake', 'pyrocub', 'shellfin', 'marivolt', 'mossling', 'thornfer', 'chillka', 'frosthorn', 'voltick', 'volthorn', 'gleamlet', 'rayhorn', 'pufflet', 'cirruspaw', 'dusklit', 'nightfang']
+      : ['frostle', 'lumopod', 'noxibear', 'shadee', 'spriglet', 'puddlefin', 'ashrex', 'tidewyrm', 'groveclaw', 'cryowyrm', 'thundermaw', 'dawnflare', 'skycrest', 'voidscale', 'cindrake', 'shellfin', 'mossling', 'chillka', 'voltick', 'gleamlet', 'pufflet', 'dusklit']
     const speciesId = pool[Math.floor(Math.random() * pool.length)]
     const enemy = createDragon(speciesId, 5 + Math.floor(Math.random() * 4))
     markSeen(speciesId)
@@ -480,6 +500,7 @@ export function useGameController() {
     moveDragon,
     startGame,
     resetGame,
+    debugCatchAll,
     dismissCelebration,
     healParty,
     beginWildBattle,

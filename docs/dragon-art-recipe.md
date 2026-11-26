@@ -34,7 +34,7 @@
 
 ## Reference inputs
 
-For a batch, provide:
+For a batch, provide every image-generation call with:
 
 - This species' exact name and Dex number.
 - Its evolution chain and stage.
@@ -42,7 +42,37 @@ For a batch, provide:
 - The approved individual art as a style reference.
 - The roster sheet only as a consistency reference.
 
+For a new Stage 1, always provide the matching original Stage 1 for its type from Dex 1-24. That original is the direct authority for starter proportions, cute head-to-body ratio, facial treatment, compact silhouette, wing scale, linework, shading, and overall game-art style. Preserve that stage-level style while applying the new species' requested colors and unique identifying features.
+
+For evolved dragons, always provide two direct image references:
+
+1. **Original stage reference:** use the original Stage 2 or Stage 3 from the matching type in Dex 1-24. It is the authority for that stage's proportions, overall size, face and eye treatment, pose readability, wing geometry, linework, shading, and overall game-art style.
+2. **Pre-evolution reference:** use the newly approved preceding stage from the same evolution line. It is the authority for the species' inherited color tones, head language, horns, body motifs, tail, and recognizable facial identity.
+
+The new dragon must feel like a direct evolution of its pre-evolution while matching the maturity and visual treatment of the original reference for that stage. Do not redesign the creature into a separate visual family.
+
+The original stage image is a **reference for style, scale, polish, and stage maturity**, not something to duplicate. Every new species must remain immediately distinguishable through its own facial silhouette, horn or crest arrangement, body outline, wing geometry, tail motif, markings, and major species features. Keep the shared type and stage language, but do not copy the reference's exact head, pose, wings, body, or tail.
+
+Do the same with color. Stay inside the dragon's required type palette, but choose intentional species-specific tonal differences in the main scales, belly, wing membranes, markings, horns, and elemental accents. The result should preserve family/style continuity without looking like a simple recolor or near-copy of the original species.
+
+Carry a recognizable thread of the preceding stage's chosen tones into Stage 2 and Stage 3: the base hue, signature accent, or a few defining color placements should remain identifiable. This is an anchor, not a lock. Later stages have creative freedom to mature that palette through darker or lighter value shifts, richer saturation, new undertones, changed contrast, or additional secondary colors, as demonstrated by the original #001-003 and #022-024 evolution lines. Stage 3 may build from its Stage 2 predecessor while still echoing the chosen Stage 1 color family.
+
+| Type | Original Stage 1 | Original Stage 2 reference | Original Stage 3 reference |
+| --- | --- | --- | --- |
+| Fire | #001 | #002 | #003 |
+| Water | #004 | #005 | #006 |
+| Grass | #007 | #008 | #009 |
+| Ice | #010 | #011 | #012 |
+| Electric | #013 | #014 | #015 |
+| Light | #016 | #017 | #018 |
+| Cloud | #019 | #020 | #021 |
+| Dark | #022 | #023 | #024 |
+
+For a new Stage 1, pass its matching original Stage 1. For a new Stage 2, pass its matching original Stage 2 plus the newly approved Stage 1. For a new Stage 3, pass its matching original Stage 3 plus the newly approved Stage 2. Generate Stage 1 through Stage 3 in that order so every evolved stage can use the finalized preceding stage.
+
 Do not use another dragon's cutout or an automatic crop of the roster sheet as the final image. Roster cells are not individual generated artwork.
+
+Reference calls for evolved dragons must distinguish the two roles in the prompt: "original stage reference" for style, scale, and stage-level features; "pre-evolution reference" for inherited identity and continuity. Stage 1 calls should label the original image "original Stage 1 reference" and use it for starter-stage style and proportions.
 
 ## Integration
 
