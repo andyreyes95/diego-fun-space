@@ -32,7 +32,14 @@ export function migrateSave(parsed: Partial<GameSave> & { bench?: DragonInstance
     storyStep: parsed.storyStep ?? 0,
     darkGangDefeated: parsed.darkGangDefeated ?? false,
     currentPlanet: parsed.currentPlanet ?? 1,
+    mossgroveCaptureBaseline: parsed.mossgroveCaptureBaseline
+      ?? (parsed.currentPlanet === 2 ? getCapturedTotal(parsed.captureCounts, parsed.starterId) : 0),
   }
+}
+
+function getCapturedTotal(captureCounts: Partial<Record<string, number>> | undefined, starterId = 'embbite'): number {
+  const total = Object.values(captureCounts ?? {}).reduce<number>((sum, count) => sum + (count ?? 0), 0)
+  return Math.max(0, total - (captureCounts?.[starterId] ? 1 : 0))
 }
 
 export function loadSave(): GameSave | null {

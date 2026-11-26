@@ -714,6 +714,17 @@
   line-height: 1;
 }
 
+.nav-button .nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-button .nav-icon svg {
+  width: 35px;
+  height: 35px;
+}
+
 .nav-button.active {
   background: #edf3df;
   color: var(--green-dark);

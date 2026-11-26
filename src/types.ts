@@ -79,4 +79,5 @@ export interface GameSave {
   storyStep: number
   darkGangDefeated: boolean
   currentPlanet: 1 | 2
+  mossgroveCaptureBaseline: number
 }

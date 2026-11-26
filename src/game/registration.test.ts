@@ -29,6 +29,7 @@ function makeSave(overrides: Partial<GameSave> = {}): GameSave {
     storyStep: 0,
     darkGangDefeated: false,
     currentPlanet: 1,
+    mossgroveCaptureBaseline: 0,
     ...overrides,
   }
 }

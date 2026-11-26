@@ -5,6 +5,7 @@ import { clearSave, loadSave, persistSave } from '../game/storage'
 import { addCapturedInstance, moveInstance, registerEvolution, registerSeen, renameInstance } from '../game/registration'
 import { effectivenessText, evolveInstance, gainExperience, resolveAttack } from '../game/battle'
 import { filterDexSpecies } from '../game/dex'
+import { advanceStoryStep, getWildCaptureCount } from '../game/quests'
 
 const badgeNames = ['Ember', 'Bloom', 'Frost', 'Spark', 'Radiant', 'Breeze', 'Eclipse', 'Champion']
 
@@ -48,8 +49,19 @@ export function useGameController() {
 
   const setView = (nextView: View) => {
     if (nextView === 'planet1' || nextView === 'planet2') {
-      const currentPlanet = nextView === 'planet2' ? 2 : 1
-      setSave((current) => current ? { ...current, currentPlanet } : current)
+      const currentPlanet: 1 | 2 = nextView === 'planet2' ? 2 : 1
+      setSave((current) => {
+        if (!current) return current
+        const enteringMossgrove = currentPlanet === 2 && current.currentPlanet !== 2 && current.storyStep < 3
+        const navigated = {
+          ...current,
+          currentPlanet,
+          mossgroveCaptureBaseline: enteringMossgrove
+            ? getWildCaptureCount(current)
+            : current.mossgroveCaptureBaseline,
+        }
+        return currentPlanet === 2 ? advanceStoryStep(navigated, 3) : navigated
+      })
     }
     setViewState(nextView)
   }
@@ -90,6 +102,7 @@ export function useGameController() {
       storyStep: 0,
       darkGangDefeated: false,
       currentPlanet: 1,
+      mossgroveCaptureBaseline: 0,
     })
     setSelectedDexId(selectedStarter)
     setToast(`${starterSpecies.name} joined your team!`)
@@ -306,13 +319,14 @@ export function useGameController() {
         const registered = evolution
           ? registerEvolution(current, evolution.beforeId, evolution.afterId)
           : current
-        return {
+        const withProgress = {
           ...registered,
           party: updatedParty,
           badges: nextBadges,
           darkGangDefeated: battle.kind === 'gang' ? true : registered.darkGangDefeated,
-          storyStep: battle.kind === 'gang' ? 3 : battle.kind === 'grassGym' ? 2 : battle.kind === 'fireGym' ? 1 : registered.storyStep,
+          storyStep: battle.kind === 'grassGym' ? Math.max(5, registered.storyStep) : battle.kind === 'fireGym' ? Math.max(2, registered.storyStep) : registered.storyStep,
         }
+        return withProgress
       })
       setBattle({
         ...battle,
@@ -347,7 +361,16 @@ export function useGameController() {
     if (Math.random() < chance) {
       const caughtIndividual = { ...battle.enemy, hp: battle.enemy.maxHp }
       const joinedParty = save.party.length < 4
-      setSave((current) => current ? addCapturedInstance(current, caughtIndividual) : current)
+      setSave((current) => {
+        if (!current) return current
+        let next = addCapturedInstance(current, caughtIndividual)
+        const wildCaptures = getWildCaptureCount(next)
+        next = advanceStoryStep(next, 1)
+        if (next.currentPlanet === 2 && wildCaptures > next.mossgroveCaptureBaseline) {
+          next = advanceStoryStep(next, 4)
+        }
+        return next
+      })
       setBattle({
         ...battle,
         finished: true,

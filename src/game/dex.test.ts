@@ -16,6 +16,7 @@ function saveWithStates(): GameSave {
     storyStep: 0,
     darkGangDefeated: false,
     currentPlanet: 1,
+    mossgroveCaptureBaseline: 0,
   }
 }
 

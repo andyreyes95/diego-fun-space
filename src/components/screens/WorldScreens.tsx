@@ -1,5 +1,6 @@
 import type { GameSave, View } from '../../types'
 import { MapLocationCard } from '../MapLocationCard'
+import { QuestCard } from '../QuestCard'
 
 interface TownScreenProps {
   save: GameSave
@@ -32,11 +33,7 @@ export function TownScreen({ save, onTravel, onHeal }: TownScreenProps) {
           onClick={onHeal}
         />
       </div>
-      <aside className="quest-card">
-        <p>Next objective</p>
-        <strong>{save.badges.includes('Ember') ? 'Travel to Mossgrove' : 'Earn the Ember Gym Badge'}</strong>
-        <div className="quest-progress"><i style={{ width: save.badges.includes('Ember') ? '50%' : '25%' }} /></div>
-      </aside>
+      <QuestCard save={save} />
     </section>
   )
 }
@@ -83,6 +80,7 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
             }}
           />
         </div>
+        <QuestCard save={save} />
       </section>
     )
   }
@@ -106,6 +104,7 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
         />
         <MapLocationCard className="gang-location" eyebrow="Dark Gang" title="Break the ambush" onClick={() => onTrainerBattle('gang')} />
       </div>
+      <QuestCard save={save} />
     </section>
   )
 }

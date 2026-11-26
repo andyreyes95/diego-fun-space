@@ -1,4 +1,6 @@
 import type { View } from '../types'
+import type { ReactNode } from 'react'
+import { City, MapTrifold, Planet, ScanSmiley, Strategy } from '@phosphor-icons/react'
 
 interface GameHeaderProps {
   caughtCount: number
@@ -45,27 +47,27 @@ interface BottomNavProps {
 }
 
 export function BottomNav({ view, currentPlanet, setView, onReset }: BottomNavProps) {
-  const navButton = (target: View, label: string, icon: string) => (
+  const navButton = (target: View, label: string, icon: ReactNode) => (
     <button className={view === target ? 'nav-button active' : 'nav-button'} onClick={() => setView(target)} type="button">
-      <span aria-hidden="true">{icon}</span>
+      <span className="nav-icon" aria-hidden="true">{icon}</span>
       <span>{label}</span>
     </button>
   )
 
   return (
     <nav className="bottom-nav" aria-label="Main navigation">
-      {navButton('town', 'Town', '⌂')}
+      {navButton('town', 'Town', <City size={35} weight="fill" />)}
       <button
         className={view === 'planet1' || view === 'planet2' ? 'nav-button active' : 'nav-button'}
         type="button"
         onClick={() => setView(currentPlanet === 2 ? 'planet2' : 'planet1')}
       >
-        <span aria-hidden="true">✦</span>
+        <span className="nav-icon" aria-hidden="true"><Planet size={35} weight="fill" /></span>
         <span>{currentPlanet === 2 ? 'Mossgrove' : 'Emberfall'}</span>
       </button>
-      {navButton('map', 'Planet Map', '◎')}
-      {navButton('dex', 'Dragon Dex', '🕮')}
-      {navButton('team', 'Team', '※')}
+      {navButton('map', 'Planet Map', <MapTrifold size={35} weight="fill" />)}
+      {navButton('dex', 'Dragon Dex', <ScanSmiley size={35} weight="fill" />)}
+      {navButton('team', 'Team', <Strategy size={35} weight="fill" />)}
       <button className="nav-button" type="button" onClick={onReset}>Reset</button>
     </nav>
   )
