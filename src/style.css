@@ -1484,6 +1484,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
@@ -1491,6 +1492,29 @@
   color: #747d76;
   font-size: 11px;
   font-weight: 900;
+}
+
+.owned-grid-heading > div:first-child {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.team-tile-sort {
+  flex-shrink: 0;
+}
+
+.team-tile-sort select {
+  min-width: 112px;
+  max-width: 112px;
+  padding: 6px 24px 6px 8px;
+  font-size: 11px;
+}
+
+.team-tile-sort .tile-sort-button {
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
 }
 
 .owned-grid {
@@ -1873,6 +1897,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 10px;
   margin: 12px 0;
 }
@@ -1910,6 +1935,41 @@
   padding: 8px 10px;
   font-size: 12px;
   font-weight: 800;
+}
+
+.tile-sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tile-sort-controls label {
+  color: #747d76;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.tile-sort-controls select {
+  min-width: 118px;
+  border: 2px solid #dedaca;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  padding: 8px 28px 8px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tile-sort-button {
+  width: 34px;
+  height: 34px;
+  border: 2px solid #dedaca;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .dex-layout {
@@ -2610,6 +2670,19 @@
 @media (max-width: 680px), (pointer: coarse) and (orientation: portrait) {
   .team-three-layout {
     grid-template-columns: 1fr;
+  }
+
+  .owned-grid-heading {
+    flex-wrap: wrap;
+  }
+
+  .team-tile-sort {
+    width: 100%;
+  }
+
+  .team-tile-sort select {
+    flex: 1;
+    max-width: none;
   }
 
   .owned-grid {

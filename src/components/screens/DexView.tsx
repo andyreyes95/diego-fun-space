@@ -1,5 +1,7 @@
+import { useMemo, useState } from 'react'
 import type { DragonType, GameSave } from '../../types'
 import { dragonSpecies, speciesById, typeNames } from '../../data'
+import { sortDexSpecies, type DexSortKey, type SortDirection } from '../../game/sorting'
 import { DexTile } from '../dex/DexTile'
 import { DexDetailsPane } from '../dex/DexDetailsPane'
 
@@ -26,6 +28,12 @@ export function DexView({
 }: DexViewProps) {
   const caughtCount = save.caught.length
   const selectedSpecies = speciesById[selectedDexId]
+  const [dexSort, setDexSort] = useState<DexSortKey>('dexNo')
+  const [dexSortDirection, setDexSortDirection] = useState<SortDirection>('asc')
+  const sortedDex = useMemo(
+    () => sortDexSpecies(filteredDex, dexSort, dexSortDirection),
+    [filteredDex, dexSort, dexSortDirection],
+  )
 
   return (
     <section className="dex-view">
@@ -35,7 +43,7 @@ export function DexView({
           <h1>Dragon Collection</h1>
         </div>
         <div className="dex-progress">
-          <strong>{caughtCount} / 48</strong>
+          <strong>{caughtCount} / 120</strong>
           <span>Caught</span>
         </div>
       </div>
@@ -57,10 +65,36 @@ export function DexView({
           <option value="seen">Seen only</option>
           <option value="caught">Caught / registered</option>
         </select>
+        <div className="tile-sort-controls">
+          <label htmlFor="dex-sort">Sort</label>
+          <select
+            id="dex-sort"
+            value={dexSort}
+            onChange={(event) => setDexSort(event.target.value as DexSortKey)}
+            aria-label="Sort Dex tiles"
+          >
+            <option value="dexNo">Dex number</option>
+            <option value="name">Name</option>
+            <option value="type">Type</option>
+            <option value="stage">Stage</option>
+            <option value="habitat">Habitat</option>
+            <option value="height">Height</option>
+            <option value="weight">Weight</option>
+          </select>
+          <button
+            type="button"
+            className="tile-sort-button"
+            onClick={() => setDexSortDirection((current) => current === 'asc' ? 'desc' : 'asc')}
+            aria-label={`Sort ${dexSortDirection === 'asc' ? 'descending' : 'ascending'}`}
+            title={dexSortDirection === 'asc' ? 'Ascending' : 'Descending'}
+          >
+            {dexSortDirection === 'asc' ? '↑' : '↓'}
+          </button>
+        </div>
       </div>
       <div className="dex-layout">
         <div className="dex-grid">
-          {filteredDex.map((species) => {
+          {sortedDex.map((species) => {
             const seen = save.seen.includes(species.id)
             const caught = save.caught.includes(species.id)
             if (!seen) return null

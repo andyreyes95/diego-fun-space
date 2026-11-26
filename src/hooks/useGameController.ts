@@ -171,10 +171,8 @@ export function useGameController() {
       return
     }
     setActivePartyIndex(firstAbleDragon)
-    const pool = planet === 1
-      ? ['embbite', 'puddlefin', 'spriglet', 'zappup', 'mistlet', 'shadee', 'cindrake', 'pyrocub', 'shellfin', 'marivolt', 'mossling', 'thornfer', 'chillka', 'frosthorn', 'voltick', 'volthorn', 'gleamlet', 'rayhorn', 'pufflet', 'cirruspaw', 'dusklit', 'nightfang']
-      : ['frostle', 'lumopod', 'noxibear', 'shadee', 'spriglet', 'puddlefin', 'ashrex', 'tidewyrm', 'groveclaw', 'cryowyrm', 'thundermaw', 'dawnflare', 'skycrest', 'voidscale', 'cindrake', 'shellfin', 'mossling', 'chillka', 'voltick', 'gleamlet', 'pufflet', 'dusklit']
-    const speciesId = pool[Math.floor(Math.random() * pool.length)]
+    const pool = dragonSpecies.filter((species) => planet === 2 || species.stage < 3)
+    const speciesId = pool[Math.floor(Math.random() * pool.length)].id
     const enemy = createDragon(speciesId, 5 + Math.floor(Math.random() * 4))
     markSeen(speciesId)
     setBattle({
