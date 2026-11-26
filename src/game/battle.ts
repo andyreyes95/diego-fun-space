@@ -86,3 +86,30 @@ export function effectivenessText(effectiveness: number): string {
   if (effectiveness < 1) return ' It was not very effective.'
   return ''
 }
+
+export type TrainerBattleKind = 'fireGym' | 'grassGym' | 'gang'
+
+export function getOpponentTeam(kind: TrainerBattleKind): DragonInstance[] {
+  if (kind === 'fireGym') {
+    return [
+      createDragon('embbite', 5),
+      createDragon('flamico', 8),
+      createDragon('pyravolt', 12),
+      createDragon('pyravolt', 14),
+    ]
+  }
+  if (kind === 'grassGym') {
+    return [
+      createDragon('spriglet', 7),
+      createDragon('vinearo', 10),
+      createDragon('thornow', 12),
+      createDragon('thornow', 14),
+    ]
+  }
+  return [
+    createDragon('shadee', 8),
+    createDragon('noxibear', 12),
+    createDragon('umbrawyrm', 16),
+    createDragon('umbrawyrm', 18),
+  ]
+}

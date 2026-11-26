@@ -6,6 +6,18 @@ import { DragonIcon } from '../DragonIcon'
 import { DragonName } from '../DragonName'
 import { HealthBar, XpBar } from '../StatusBars'
 
+function GenericDragonIcon() {
+  return (
+    <img
+      className="generic-dragon-icon"
+      src={`${import.meta.env.BASE_URL}assets/dragons/dragon-001.png`}
+      width={28}
+      height={28}
+      alt=""
+    />
+  )
+}
+
 interface BattleScreenProps {
   save: GameSave
   battle: BattleState
@@ -76,6 +88,23 @@ export function BattleScreen({
               <strong>{enemySpecies.name}</strong>
               <span>Lv. {battle.enemy.level}</span>
               <HealthBar current={battle.enemy.hp} max={battle.enemy.maxHp} />
+              {battle.kind !== 'wild' && battle.enemyTeam.length > 1 ? (
+                <div className="enemy-team-strip" aria-label="Opponent team">
+                  {battle.enemyTeam
+                    .map((dragon, index) => ({ dragon, index }))
+                    .filter(({ dragon }) => dragon.hp > 0)
+                    .map(({ dragon, index }) => {
+                      return (
+                        <span
+                          key={`${dragon.instanceId}-${index}`}
+                          className={index === battle.enemyActiveIndex ? 'enemy-team-slot active' : 'enemy-team-slot'}
+                        >
+                          <GenericDragonIcon />
+                        </span>
+                      )
+                    })}
+                </div>
+              ) : null}
             </div>
             <DragonIcon species={enemySpecies} size={210} battleMode />
           </div>

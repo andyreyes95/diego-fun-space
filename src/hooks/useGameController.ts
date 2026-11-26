@@ -3,7 +3,7 @@ import { createDragon, speciesById } from '../data'
 import type { BattleLogEntry, BattleState, Celebration, DragonInstance, DragonType, GameSave, Move, View } from '../types'
 import { clearSave, loadSave, persistSave } from '../game/storage'
 import { addCapturedInstance, moveInstance, registerEvolution, registerSeen, renameInstance } from '../game/registration'
-import { effectivenessText, evolveInstance, gainExperience, resolveAttack } from '../game/battle'
+import { effectivenessText, evolveInstance, gainExperience, getOpponentTeam, resolveAttack } from '../game/battle'
 import { filterDexSpecies } from '../game/dex'
 import { advanceStoryStep, getWildCaptureCount } from '../game/quests'
 
@@ -160,6 +160,8 @@ export function useGameController() {
     setBattle({
       kind: 'wild',
       enemy,
+      enemyTeam: [enemy],
+      enemyActiveIndex: 0,
       enemyName: 'Wild',
       log: [{ side: 'system', text: `A wild ${speciesById[speciesId].name} appeared!` }],
       finished: false,
@@ -180,18 +182,21 @@ export function useGameController() {
       return
     }
     setActivePartyIndex(firstAbleDragon)
-    const encounter = kind === 'fireGym'
-      ? { speciesId: 'flamico', level: 8, name: 'Gym Leader Sol' }
+    const encounterName = kind === 'fireGym'
+      ? 'Gym Leader Sol'
       : kind === 'grassGym'
-        ? { speciesId: 'thornow', level: 12, name: 'Gym Leader Moss' }
-        : { speciesId: 'umbrawyrm', level: 16, name: 'Dark Gang Captain' }
-    const enemy = createDragon(encounter.speciesId, encounter.level)
-    markSeen(enemy.speciesId)
+        ? 'Gym Leader Moss'
+        : 'Dark Gang Captain'
+    const enemyTeam = getOpponentTeam(kind)
+    const enemy = enemyTeam[0]
+    enemyTeam.forEach((dragon) => markSeen(dragon.speciesId))
     setBattle({
       kind,
       enemy,
-      enemyName: encounter.name,
-      log: [{ side: 'system', text: `${encounter.name} sent out ${speciesById[enemy.speciesId].name}!` }],
+      enemyTeam,
+      enemyActiveIndex: 0,
+      enemyName: encounterName,
+      log: [{ side: 'system', text: `${encounterName} sent out ${speciesById[enemy.speciesId].name}!` }],
       finished: false,
       won: false,
       caught: false,
@@ -204,10 +209,11 @@ export function useGameController() {
     if (!save || !battle) return
     const active = save.party[attackingIndex]
     if (!active) return
-    const enemyMove = battle.enemy.moves[Math.floor(Math.random() * battle.enemy.moves.length)]
-    const enemySpecies = speciesById[battle.enemy.speciesId]
+    const currentEnemy = battle.enemyTeam[battle.enemyActiveIndex] ?? battle.enemy
+    const enemyMove = currentEnemy.moves[Math.floor(Math.random() * currentEnemy.moves.length)]
+    const enemySpecies = speciesById[currentEnemy.speciesId]
     const playerName = displayName(active)
-    const result = resolveAttack(battle.enemy, active, enemyMove, Math.random, {
+    const result = resolveAttack(currentEnemy, active, enemyMove, Math.random, {
       accuracyCheck: false,
       attackScale: 0.28,
       defenseScale: 0.16,
@@ -286,10 +292,33 @@ export function useGameController() {
 
     const enemyHp = Math.max(0, battle.enemy.hp - result.damage)
     const effect = effectivenessText(result.effectiveness)
+    const enemyTeamAfterHit = battle.enemyTeam.map((enemy, index) =>
+      index === battle.enemyActiveIndex ? { ...enemy, hp: enemyHp } : enemy,
+    )
     setScreenShake(true)
     window.setTimeout(() => setScreenShake(false), 180)
 
     if (enemyHp <= 0) {
+      if (battle.kind !== 'wild' && battle.enemyTeam.length > battle.enemyActiveIndex + 1) {
+        const nextEnemyIndex = battle.enemyActiveIndex + 1
+        const nextEnemy = battle.enemyTeam[nextEnemyIndex]
+        setBattle({
+          ...battle,
+          enemy: nextEnemy,
+          enemyActiveIndex: nextEnemyIndex,
+          enemyTeam: enemyTeamAfterHit.map((enemy, index) =>
+            index === battle.enemyActiveIndex ? { ...enemy, hp: 0 } : enemy,
+          ),
+          log: [
+            ...battle.log,
+            { side: 'player', text: `${playerName} used ${move.name}!${effect}` },
+            { side: 'system', text: `${enemySpecies.name} fainted!` },
+            { side: 'opponent', text: `${battle.enemyName} sent out ${speciesById[nextEnemy.speciesId].name}!` },
+          ],
+        })
+        setBattleBusy(false)
+        return
+      }
       const xpGain = battle.enemy.level * 7
       const gained = gainExperience(active, xpGain)
       const evolution = evolveInstance(gained)
@@ -331,6 +360,9 @@ export function useGameController() {
       setBattle({
         ...battle,
         enemy: { ...battle.enemy, hp: 0 },
+        enemyTeam: enemyTeamAfterHit.map((enemy, index) =>
+          index === battle.enemyActiveIndex ? { ...enemy, hp: 0 } : enemy,
+        ),
         log: [
           ...battle.log,
           { side: 'player', text: `${playerName} used ${move.name}!${effect}` },
@@ -347,6 +379,7 @@ export function useGameController() {
     setBattle((current) => current ? {
       ...current,
       enemy: { ...current.enemy, hp: enemyHp },
+      enemyTeam: enemyTeamAfterHit,
       log: [...current.log, { side: 'player', text: `${playerName} used ${move.name}!${effect}` }],
     } : current)
     enemyTurn(activeIndex)

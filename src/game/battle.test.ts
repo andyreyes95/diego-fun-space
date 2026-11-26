@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createDragon } from '../data'
-import { evolveInstance, gainExperience, resolveAttack } from './battle'
+import { evolveInstance, gainExperience, getOpponentTeam, resolveAttack } from './battle'
+import { speciesById } from '../data'
 
 describe('battle rules', () => {
   it('resolves missed attacks without damage', () => {
@@ -33,5 +34,18 @@ describe('battle rules', () => {
     expect(evolution?.instance.speciesId).toBe('flamico')
     expect(evolution?.instance.instanceId).toBe(dragon.instanceId)
     expect(evolution?.instance.nickname).toBe('Spark')
+  })
+
+  it('builds four-dragon same-type opponent teams', () => {
+    const cases = [
+      { kind: 'fireGym' as const, type: 'fire' },
+      { kind: 'grassGym' as const, type: 'grass' },
+      { kind: 'gang' as const, type: 'dark' },
+    ]
+    for (const testCase of cases) {
+      const team = getOpponentTeam(testCase.kind)
+      expect(team).toHaveLength(4)
+      expect(team.every((dragon) => speciesById[dragon.speciesId].type === testCase.type)).toBe(true)
+    }
   })
 })

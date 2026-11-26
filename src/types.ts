@@ -49,6 +49,8 @@ export interface DragonInstance {
 export interface BattleState {
   kind: 'wild' | 'fireGym' | 'grassGym' | 'gang'
   enemy: DragonInstance
+  enemyTeam: DragonInstance[]
+  enemyActiveIndex: number
   enemyName: string
   log: BattleLogEntry[]
   finished: boolean
