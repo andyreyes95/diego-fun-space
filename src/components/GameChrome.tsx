@@ -47,7 +47,7 @@ export function GameHeader({ caughtCount, seenCount, badgeNames, badges, onHome 
 
 interface BottomNavProps {
   view: View
-  currentPlanet: 0 | 1 | 2 | 3 | 4 | 5 | 6
+  currentPlanet: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
   setView: (view: View) => void
   onReset: () => void
   onUnlockAll?: () => void
@@ -64,12 +64,12 @@ export function BottomNav({ view, currentPlanet, setView, onReset, onUnlockAll }
   return (
     <nav className={onUnlockAll ? 'bottom-nav with-debug' : 'bottom-nav'} aria-label="Main navigation">
       <button
-        className={view === 'town' || view === 'planet1' || view === 'planet2' || view === 'planet3' || view === 'planet4' || view === 'planet5' || view === 'planet6' ? 'nav-button active' : 'nav-button'}
+        className={view === 'town' || view === 'planet1' || view === 'planet2' || view === 'planet3' || view === 'planet4' || view === 'planet5' || view === 'planet6' || view === 'planet7' ? 'nav-button active' : 'nav-button'}
         type="button"
-        onClick={() => setView(currentPlanet === 0 ? 'town' : currentPlanet === 1 ? 'planet1' : currentPlanet === 2 ? 'planet2' : currentPlanet === 3 ? 'planet3' : currentPlanet === 4 ? 'planet4' : currentPlanet === 5 ? 'planet5' : 'planet6')}
+        onClick={() => setView(currentPlanet === 0 ? 'town' : currentPlanet === 1 ? 'planet1' : currentPlanet === 2 ? 'planet2' : currentPlanet === 3 ? 'planet3' : currentPlanet === 4 ? 'planet4' : currentPlanet === 5 ? 'planet5' : currentPlanet === 6 ? 'planet6' : 'planet7')}
       >
         <span className="nav-icon" aria-hidden="true"><Planet size={35} weight="fill" /></span>
-        <span>{currentPlanet === 0 ? 'Willowvale' : currentPlanet === 1 ? 'Emberfall' : currentPlanet === 2 ? 'Mossgrove' : currentPlanet === 3 ? 'Voltspire' : currentPlanet === 4 ? 'Cloudrest' : currentPlanet === 5 ? 'Tidehaven' : 'Frostveil'}</span>
+        <span>{currentPlanet === 0 ? 'Willowvale' : currentPlanet === 1 ? 'Emberfall' : currentPlanet === 2 ? 'Mossgrove' : currentPlanet === 3 ? 'Voltspire' : currentPlanet === 4 ? 'Cloudrest' : currentPlanet === 5 ? 'Tidehaven' : currentPlanet === 6 ? 'Frostveil' : 'Umbralis'}</span>
       </button>
       {navButton('dex', 'Dragon Dex', <ScanSmiley size={35} weight="fill" />)}
       {navButton('team', 'Team', <Strategy size={35} weight="fill" />)}

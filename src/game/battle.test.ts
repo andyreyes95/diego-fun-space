@@ -44,6 +44,7 @@ describe('battle rules', () => {
       { kind: 'cloudGym' as const, type: 'cloud' },
       { kind: 'waterGym' as const, type: 'water' },
       { kind: 'iceGym' as const, type: 'ice' },
+      { kind: 'darkGym' as const, type: 'dark' },
       { kind: 'gang' as const, type: 'dark' },
     ]
     for (const testCase of cases) {
@@ -54,7 +55,7 @@ describe('battle rules', () => {
   })
 
   it('uses two stage 1/2 trainer battles before an all-stage-3 leader battle', () => {
-    for (const [kind, type] of [['fireGym', 'fire'], ['grassGym', 'grass'], ['electricGym', 'electric'], ['cloudGym', 'cloud'], ['waterGym', 'water'], ['iceGym', 'ice']] as const) {
+    for (const [kind, type] of [['fireGym', 'fire'], ['grassGym', 'grass'], ['electricGym', 'electric'], ['cloudGym', 'cloud'], ['waterGym', 'water'], ['iceGym', 'ice'], ['darkGym', 'dark']] as const) {
       expect(getOpponentTeam(kind, 0).every((dragon) => speciesById[dragon.speciesId].stage < 3 && speciesById[dragon.speciesId].type === type)).toBe(true)
       expect(getOpponentTeam(kind, 1).every((dragon) => speciesById[dragon.speciesId].stage < 3 && speciesById[dragon.speciesId].type === type)).toBe(true)
       expect(getOpponentTeam(kind, 2).every((dragon) => speciesById[dragon.speciesId].stage === 3 && speciesById[dragon.speciesId].type === type)).toBe(true)

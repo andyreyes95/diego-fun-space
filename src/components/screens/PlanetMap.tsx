@@ -13,6 +13,7 @@ export function PlanetMap({ save, onNavigate, onToast }: PlanetMapProps) {
   const cloudrestUnlocked = save.badges.includes('Spark')
   const tidehavenUnlocked = save.badges.includes('Breeze')
   const frostveilUnlocked = save.badges.includes('Tide')
+  const umbralisUnlocked = save.badges.includes('Frost')
 
   return (
     <section className="planet-map-view">
@@ -21,7 +22,7 @@ export function PlanetMap({ save, onNavigate, onToast }: PlanetMapProps) {
           <p className="eyebrow">Starlane Map</p>
           <h1>Choose a planet</h1>
         </div>
-        <span>{save.currentPlanet === 0 ? 'Willowvale route' : save.currentPlanet === 1 ? 'Emberfall route' : save.currentPlanet === 2 ? 'Mossgrove route' : save.currentPlanet === 3 ? 'Voltspire route' : save.currentPlanet === 4 ? 'Cloudrest route' : save.currentPlanet === 5 ? 'Tidehaven route' : 'Frostveil route'}</span>
+        <span>{save.currentPlanet === 0 ? 'Willowvale route' : save.currentPlanet === 1 ? 'Emberfall route' : save.currentPlanet === 2 ? 'Mossgrove route' : save.currentPlanet === 3 ? 'Voltspire route' : save.currentPlanet === 4 ? 'Cloudrest route' : save.currentPlanet === 5 ? 'Tidehaven route' : save.currentPlanet === 6 ? 'Frostveil route' : 'Umbralis route'}</span>
       </div>
       <div className="planet-route" aria-label="Planet route">
         <MapLocationCard
@@ -124,6 +125,22 @@ export function PlanetMap({ save, onNavigate, onToast }: PlanetMapProps) {
           title={frostveilUnlocked ? 'Frostveil' : 'Unknown planet'}
           detail={frostveilUnlocked ? 'Planet 6 · Ice Gym' : 'Frozen destination'}
           status={frostveilUnlocked ? 'Available' : 'Locked · Tide Badge'}
+        />
+        <span className={umbralisUnlocked ? 'route-line unlocked' : 'route-line'} aria-hidden="true" />
+        <MapLocationCard
+          baseClassName="planet-node"
+          className={save.currentPlanet === 7 ? 'active' : umbralisUnlocked ? '' : 'locked'}
+          onClick={() => {
+            if (!umbralisUnlocked) {
+              onToast('Umbralis unlocks after you earn the Frost Badge.')
+              return
+            }
+            onNavigate('planet7')
+          }}
+          previewClass={umbralisUnlocked ? 'umbra-preview' : 'mystery-preview'}
+          title={umbralisUnlocked ? 'Umbralis' : 'Unknown planet'}
+          detail={umbralisUnlocked ? 'Planet 7 · Dark Gym' : 'Moonlit destination'}
+          status={umbralisUnlocked ? 'Available' : 'Locked · Frost Badge'}
         />
       </div>
     </section>

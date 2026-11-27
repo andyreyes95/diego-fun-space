@@ -18,6 +18,9 @@ export const questSteps = [
   'Travel to Frostveil',
   'Explore Frostveil and prepare your team',
   'Challenge Glacia for the Frost Badge',
+  'Travel to Umbralis',
+  'Explore Umbralis and prepare your team',
+  'Challenge Nyx for the Eclipse Badge',
 ] as const
 
 export interface QuestObjective {
@@ -56,6 +59,9 @@ export function getQuestObjective(save: GameSave): QuestObjective {
   if (completed >= 14 && (save.storyStep >= 15 || save.currentPlanet === 6)) completed = 15
   if (completed >= 15 && save.gymProgress.ice >= 2) completed = 16
   if (completed >= 16 && save.badges.includes('Frost')) completed = 17
+  if (completed >= 17 && (save.storyStep >= 18 || save.currentPlanet === 7)) completed = 18
+  if (completed >= 18 && save.gymProgress.dark >= 2) completed = 19
+  if (completed >= 19 && save.badges.includes('Eclipse')) completed = 20
 
   return {
     title: questSteps[Math.min(completed, questSteps.length - 1)],

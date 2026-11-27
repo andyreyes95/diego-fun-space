@@ -33,10 +33,10 @@ export function TownScreen({ save, onTravel }: TownScreenProps) {
 
 interface PlanetScreenProps {
   save: GameSave
-  planet: 1 | 2 | 3 | 4 | 5 | 6
+  planet: 1 | 2 | 3 | 4 | 5 | 6 | 7
   onViewChange: (view: View) => void
-  onWildBattle: (planet: 1 | 2 | 3 | 4 | 5 | 6) => void
-  onTrainerBattle: (kind: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'gang') => void
+  onWildBattle: (planet: 1 | 2 | 3 | 4 | 5 | 6 | 7) => void
+  onTrainerBattle: (kind: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'gang') => void
   onHeal: () => void
   onToast: (message: string) => void
 }
@@ -282,7 +282,8 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
     )
   }
 
-  return (
+  if (planet === 6) {
+    return (
     <section className="world-view planet-view frostveil layered-planet">
       <div className="world-copy">
         <p className="eyebrow">Planet 06 · Frostveil</p>
@@ -295,6 +296,25 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
         <MapLocationCard className="planet-location-card healing-location" artSrc="/assets/map-locations/frostveil/healing.png" artAlt="Frostveil healing center" eyebrow="Healing Center" title="Rest your team" onClick={onHeal} />
         <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/frostveil/market.png" artAlt="Frostveil market" eyebrow="Market" title="Coming soon" onClick={() => onToast('The Frostveil market is not open yet.')} />
         <MapLocationCard className="planet-location-card portal-location" artSrc="/assets/map-locations/frostveil/portal.png" artAlt="Portal to other planets" eyebrow="Travel" title="Planet Map" onClick={() => onViewChange('map')} />
+      </div>
+      <QuestCard save={save} />
+    </section>
+    )
+  }
+
+  return (
+    <section className="world-view planet-view umbralis layered-planet">
+      <div className="world-copy">
+        <p className="eyebrow">Planet 07 · Umbralis</p>
+        <h1>The Eclipsed Ruins</h1>
+        <p>Follow moonlit violet paths toward Nyx's Dark Gym beneath the eclipsed moon.</p>
+      </div>
+      <div className="planet-map layered-planet-map" aria-label="Umbralis locations">
+        <MapLocationCard className="planet-location-card wild-location" artSrc="/assets/map-locations/umbralis/wild.png" artAlt="Umbralis moonlit wild trail" eyebrow="Explore" title="Wild dragons" onClick={() => onWildBattle(7)} />
+        <MapLocationCard className="planet-location-card gym-location" artSrc="/assets/map-locations/umbralis/gym.png" artAlt="Umbralis Dark Gym" eyebrow={save.badges.includes('Eclipse') ? 'Badge earned' : `Dark Gym · ${save.gymProgress.dark + 1} / 3`} title={save.gymProgress.dark === 2 ? 'Challenge Nyx' : `Battle Trainer ${save.gymProgress.dark + 1}`} onClick={() => onTrainerBattle('darkGym')} />
+        <MapLocationCard className="planet-location-card healing-location" artSrc="/assets/map-locations/umbralis/healing.png" artAlt="Umbralis healing center" eyebrow="Healing Center" title="Rest your team" onClick={onHeal} />
+        <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/umbralis/market.png" artAlt="Umbralis market" eyebrow="Market" title="Coming soon" onClick={() => onToast('The Umbralis market is not open yet.')} />
+        <MapLocationCard className="planet-location-card portal-location" artSrc="/assets/map-locations/umbralis/portal.png" artAlt="Portal to other planets" eyebrow="Travel" title="Planet Map" onClick={() => onViewChange('map')} />
       </div>
       <QuestCard save={save} />
     </section>

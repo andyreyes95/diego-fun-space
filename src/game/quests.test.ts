@@ -13,7 +13,7 @@ function save(overrides: Partial<GameSave> = {}): GameSave {
     caught: ['embbite'],
     captureCounts: { embbite: 1 },
     badges: [],
-    gymProgress: { fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0 },
+    gymProgress: { fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0, dark: 0 },
     storyStep: 0,
     darkGangDefeated: false,
     currentPlanet: 1,
@@ -52,7 +52,7 @@ describe('quest progression', () => {
 
     const readyForVolt = {
       ...inVoltspire,
-      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 0 as const, water: 0 as const, ice: 0 as const },
+      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 0 as const, water: 0 as const, ice: 0 as const, dark: 0 as const },
     }
     expect(getQuestObjective(readyForVolt)).toMatchObject({ completed: 7, title: 'Challenge Volt for the Spark Badge' })
 
@@ -64,7 +64,7 @@ describe('quest progression', () => {
 
     const readyForCirrus = {
       ...inCloudrest,
-      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 2 as const, water: 0 as const, ice: 0 as const },
+      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 2 as const, water: 0 as const, ice: 0 as const, dark: 0 as const },
     }
     expect(getQuestObjective(readyForCirrus)).toMatchObject({ completed: 10, title: 'Challenge Cirrus for the Breeze Badge' })
 
@@ -76,7 +76,7 @@ describe('quest progression', () => {
 
     const readyForMarina = {
       ...inTidehaven,
-      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 2 as const, water: 2 as const, ice: 0 as const },
+      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 2 as const, water: 2 as const, ice: 0 as const, dark: 0 as const },
     }
     expect(getQuestObjective(readyForMarina)).toMatchObject({ completed: 13, title: 'Challenge Marina for the Tide Badge' })
 
@@ -88,12 +88,24 @@ describe('quest progression', () => {
 
     const readyForGlacia = {
       ...inFrostveil,
-      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 2 as const, water: 2 as const, ice: 2 as const },
+      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 2 as const, water: 2 as const, ice: 2 as const, dark: 0 as const },
     }
     expect(getQuestObjective(readyForGlacia)).toMatchObject({ completed: 16, title: 'Challenge Glacia for the Frost Badge' })
 
-    const objective = getQuestObjective({ ...readyForGlacia, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost'], storyStep: 17 })
+    const frostComplete = getQuestObjective({ ...readyForGlacia, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost'], storyStep: 17 })
+    expect(frostComplete).toMatchObject({ completed: 17, title: 'Travel to Umbralis', finished: false })
+
+    const inUmbralis = { ...readyForGlacia, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost'], storyStep: 18, currentPlanet: 7 as const }
+    expect(getQuestObjective(inUmbralis)).toMatchObject({ completed: 18, title: 'Explore Umbralis and prepare your team' })
+
+    const readyForNyx = {
+      ...inUmbralis,
+      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 2 as const, water: 2 as const, ice: 2 as const, dark: 2 as const },
+    }
+    expect(getQuestObjective(readyForNyx)).toMatchObject({ completed: 19, title: 'Challenge Nyx for the Eclipse Badge' })
+
+    const objective = getQuestObjective({ ...readyForNyx, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse'], storyStep: 20 })
     expect(objective.finished).toBe(true)
-    expect(objective.completed).toBe(17)
+    expect(objective.completed).toBe(20)
   })
 })

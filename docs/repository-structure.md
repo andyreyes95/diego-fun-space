@@ -64,6 +64,7 @@ public/
       cloudrest-layered.png
       tidehaven-layered.png
       frostveil-layered.png
+      umbralis-layered.png
       planet-map.png
        map-locations/           # transparent layered planet destinations
       emberfall/
@@ -97,6 +98,12 @@ public/
         market.png
         portal.png
          frostveil/
+        wild.png
+        gym.png
+        healing.png
+        market.png
+        portal.png
+         umbralis/
         wild.png
         gym.png
         healing.png

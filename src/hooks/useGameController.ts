@@ -31,13 +31,15 @@ export function useGameController() {
                 ? 'planet4'
                 : initialSave.currentPlanet === 5
                   ? 'planet5'
-                  : 'planet6'
+                  : initialSave.currentPlanet === 6
+                    ? 'planet6'
+                    : 'planet7'
       : 'title',
   )
   const [selectedStarter, setSelectedStarter] = useState('embbite')
   const [playerName, setPlayerName] = useState('Nova')
   const [battle, setBattle] = useState<BattleState | null>(null)
-  const [battlePlanet, setBattlePlanet] = useState<1 | 2 | 3 | 4 | 5 | 6>(1)
+  const [battlePlanet, setBattlePlanet] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1)
   const [activePartyIndex, setActivePartyIndex] = useState(0)
   const [battleBusy, setBattleBusy] = useState(false)
   const [dexFilter, setDexFilter] = useState<'all' | DragonType>('all')
@@ -67,8 +69,8 @@ export function useGameController() {
     if (nextView === 'town') {
       setSave((current) => current ? { ...current, currentPlanet: 0 } : current)
     }
-    if (nextView === 'planet1' || nextView === 'planet2' || nextView === 'planet3' || nextView === 'planet4' || nextView === 'planet5' || nextView === 'planet6') {
-      const currentPlanet: 1 | 2 | 3 | 4 | 5 | 6 = nextView === 'planet1' ? 1 : nextView === 'planet2' ? 2 : nextView === 'planet3' ? 3 : nextView === 'planet4' ? 4 : nextView === 'planet5' ? 5 : 6
+    if (nextView === 'planet1' || nextView === 'planet2' || nextView === 'planet3' || nextView === 'planet4' || nextView === 'planet5' || nextView === 'planet6' || nextView === 'planet7') {
+      const currentPlanet: 1 | 2 | 3 | 4 | 5 | 6 | 7 = nextView === 'planet1' ? 1 : nextView === 'planet2' ? 2 : nextView === 'planet3' ? 3 : nextView === 'planet4' ? 4 : nextView === 'planet5' ? 5 : nextView === 'planet6' ? 6 : 7
       setSave((current) => {
         if (!current) return current
         const enteringMossgrove = currentPlanet === 2 && current.currentPlanet !== 2 && current.storyStep < 3
@@ -79,10 +81,12 @@ export function useGameController() {
             ? getWildCaptureCount(current)
             : current.mossgroveCaptureBaseline,
         }
-        return currentPlanet === 6
-          ? advanceStoryStep(navigated, 15)
-          : currentPlanet === 5
-            ? advanceStoryStep(navigated, 12)
+        return currentPlanet === 7
+          ? advanceStoryStep(navigated, 18)
+          : currentPlanet === 6
+            ? advanceStoryStep(navigated, 15)
+            : currentPlanet === 5
+              ? advanceStoryStep(navigated, 12)
             : currentPlanet === 4
               ? advanceStoryStep(navigated, 9)
               : currentPlanet === 3
@@ -128,7 +132,7 @@ export function useGameController() {
       caught: [selectedStarter],
       captureCounts: { [selectedStarter]: 1 },
       badges: [],
-      gymProgress: { fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0 },
+      gymProgress: { fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0, dark: 0 },
       storyStep: 0,
       darkGangDefeated: false,
       currentPlanet: 0,
@@ -160,7 +164,7 @@ export function useGameController() {
     if (dismissedEvent?.kind === 'escape') {
       setBattle(null)
       setSave((current) => current ? { ...current, currentPlanet: battlePlanet } : current)
-      setViewState(battlePlanet === 1 ? 'planet1' : battlePlanet === 2 ? 'planet2' : battlePlanet === 3 ? 'planet3' : battlePlanet === 4 ? 'planet4' : battlePlanet === 5 ? 'planet5' : 'planet6')
+      setViewState(battlePlanet === 1 ? 'planet1' : battlePlanet === 2 ? 'planet2' : battlePlanet === 3 ? 'planet3' : battlePlanet === 4 ? 'planet4' : battlePlanet === 5 ? 'planet5' : battlePlanet === 6 ? 'planet6' : 'planet7')
     }
   }
 
@@ -179,9 +183,9 @@ export function useGameController() {
           seen: [...new Set([...next.seen, ...ids])],
           caught: [...new Set([...next.caught, ...ids])],
           badges: [...badgeNames],
-          gymProgress: { fire: 2, grass: 2, electric: 2, cloud: 2, water: 2, ice: 2 },
+          gymProgress: { fire: 2, grass: 2, electric: 2, cloud: 2, water: 2, ice: 2, dark: 2 },
           darkGangDefeated: true,
-          storyStep: Math.max(17, next.storyStep),
+          storyStep: Math.max(20, next.storyStep),
         }
       })
       setToast('Everything unlocked! All dragons, badges, and planets are ready.')
@@ -201,13 +205,13 @@ export function useGameController() {
     setToast('Your dragons are fully rested!')
   }
 
-  const beginWildBattle = (planet: 1 | 2 | 3 | 4 | 5 | 6) => {
+  const beginWildBattle = (planet: 1 | 2 | 3 | 4 | 5 | 6 | 7) => {
     if (!save) return
     setBattlePlanet(planet)
     const firstAbleDragon = save.party.findIndex((dragon) => dragon.hp > 0)
     if (firstAbleDragon < 0) {
       setToast('No dragons can battle. Visit the Healing Center.')
-      setView(planet === 1 ? 'planet1' : planet === 2 ? 'planet2' : planet === 3 ? 'planet3' : planet === 4 ? 'planet4' : planet === 5 ? 'planet5' : 'planet6')
+      setView(planet === 1 ? 'planet1' : planet === 2 ? 'planet2' : planet === 3 ? 'planet3' : planet === 4 ? 'planet4' : planet === 5 ? 'planet5' : planet === 6 ? 'planet6' : 'planet7')
       return
     }
     setActivePartyIndex(firstAbleDragon)
@@ -234,9 +238,9 @@ export function useGameController() {
     setViewState('battle')
   }
 
-  const beginTrainerBattle = (kind: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'gang', originPlanet?: 1 | 2 | 3 | 4 | 5 | 6) => {
+  const beginTrainerBattle = (kind: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'gang', originPlanet?: 1 | 2 | 3 | 4 | 5 | 6 | 7) => {
     if (!save) return
-    const currentBattlePlanet: 1 | 2 | 3 | 4 | 5 | 6 = save.currentPlanet === 0 ? 1 : save.currentPlanet
+    const currentBattlePlanet: 1 | 2 | 3 | 4 | 5 | 6 | 7 = save.currentPlanet === 0 ? 1 : save.currentPlanet
     const trainerPlanet = originPlanet ?? (
       kind === 'grassGym'
         ? 2
@@ -248,6 +252,8 @@ export function useGameController() {
           ? 5
         : kind === 'iceGym'
           ? 6
+        : kind === 'darkGym'
+          ? 7
         : kind === 'gang'
           ? currentBattlePlanet
           : 1
@@ -256,7 +262,7 @@ export function useGameController() {
     const firstAbleDragon = save.party.findIndex((dragon) => dragon.hp > 0)
     if (firstAbleDragon < 0) {
       setToast('No dragons can battle. Visit the Healing Center.')
-      setView(trainerPlanet === 1 ? 'planet1' : trainerPlanet === 2 ? 'planet2' : trainerPlanet === 3 ? 'planet3' : trainerPlanet === 4 ? 'planet4' : trainerPlanet === 5 ? 'planet5' : 'planet6')
+      setView(trainerPlanet === 1 ? 'planet1' : trainerPlanet === 2 ? 'planet2' : trainerPlanet === 3 ? 'planet3' : trainerPlanet === 4 ? 'planet4' : trainerPlanet === 5 ? 'planet5' : trainerPlanet === 6 ? 'planet6' : 'planet7')
       return
     }
     setActivePartyIndex(firstAbleDragon)
@@ -272,7 +278,9 @@ export function useGameController() {
               ? save.gymProgress.water
               : kind === 'iceGym'
                 ? save.gymProgress.ice
-                : 2
+                : kind === 'darkGym'
+                  ? save.gymProgress.dark
+                  : 2
     const encounterName = kind === 'fireGym'
       ? trainerPhase === 2 ? 'Gym Leader Sol' : `Fire Gym Trainer ${trainerPhase + 1}`
       : kind === 'grassGym'
@@ -285,7 +293,9 @@ export function useGameController() {
               ? trainerPhase === 2 ? 'Gym Leader Marina' : `Water Gym Trainer ${trainerPhase + 1}`
               : kind === 'iceGym'
                 ? trainerPhase === 2 ? 'Gym Leader Glacia' : `Ice Gym Trainer ${trainerPhase + 1}`
-                : 'Dark Gang Captain'
+                : kind === 'darkGym'
+                  ? trainerPhase === 2 ? 'Gym Leader Nyx' : `Dark Gym Trainer ${trainerPhase + 1}`
+                  : 'Dark Gang Captain'
     const enemyTeam = getOpponentTeam(kind, trainerPhase)
     const enemy = enemyTeam[0]
     enemyTeam.forEach((dragon) => markSeen(dragon.speciesId))
@@ -467,6 +477,9 @@ export function useGameController() {
       if (battle.kind === 'iceGym' && leaderBattle && !save.badges.includes('Frost')) {
         setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Frost' }])
       }
+      if (battle.kind === 'darkGym' && leaderBattle && !save.badges.includes('Eclipse')) {
+        setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Eclipse' }])
+      }
 
       setSave((current) => {
         if (!current) return current
@@ -482,7 +495,9 @@ export function useGameController() {
                   ? current.badges.includes('Tide') ? current.badges : [...current.badges, 'Tide']
                 : battle.kind === 'iceGym' && leaderBattle
                   ? current.badges.includes('Frost') ? current.badges : [...current.badges, 'Frost']
-                  : current.badges
+                  : battle.kind === 'darkGym' && leaderBattle
+                    ? current.badges.includes('Eclipse') ? current.badges : [...current.badges, 'Eclipse']
+                    : current.badges
         const registered = evolution
           ? registerEvolution(current, evolution.beforeId, evolution.afterId)
           : current
@@ -497,12 +512,15 @@ export function useGameController() {
             cloud: battle.kind === 'cloudGym' ? Math.min(2, current.gymProgress.cloud + (leaderBattle ? 0 : 1)) as 0 | 1 | 2 : current.gymProgress.cloud,
             water: battle.kind === 'waterGym' ? Math.min(2, current.gymProgress.water + (leaderBattle ? 0 : 1)) as 0 | 1 | 2 : current.gymProgress.water,
             ice: battle.kind === 'iceGym' ? Math.min(2, current.gymProgress.ice + (leaderBattle ? 0 : 1)) as 0 | 1 | 2 : current.gymProgress.ice,
+            dark: battle.kind === 'darkGym' ? Math.min(2, current.gymProgress.dark + (leaderBattle ? 0 : 1)) as 0 | 1 | 2 : current.gymProgress.dark,
           },
           darkGangDefeated: battle.kind === 'gang' ? true : registered.darkGangDefeated,
-          storyStep: leaderBattle && battle.kind === 'iceGym'
-            ? Math.max(17, registered.storyStep)
-            : leaderBattle && battle.kind === 'waterGym'
-              ? Math.max(14, registered.storyStep)
+          storyStep: leaderBattle && battle.kind === 'darkGym'
+            ? Math.max(20, registered.storyStep)
+            : leaderBattle && battle.kind === 'iceGym'
+              ? Math.max(17, registered.storyStep)
+              : leaderBattle && battle.kind === 'waterGym'
+                ? Math.max(14, registered.storyStep)
               : leaderBattle && battle.kind === 'cloudGym'
                 ? Math.max(11, registered.storyStep)
                 : leaderBattle && battle.kind === 'electricGym'
@@ -626,7 +644,7 @@ export function useGameController() {
     if (battleBusy) return
     setBattle(null)
     setSave((current) => current ? { ...current, currentPlanet: battlePlanet } : current)
-    setView(battlePlanet === 1 ? 'planet1' : battlePlanet === 2 ? 'planet2' : battlePlanet === 3 ? 'planet3' : battlePlanet === 4 ? 'planet4' : battlePlanet === 5 ? 'planet5' : 'planet6')
+    setView(battlePlanet === 1 ? 'planet1' : battlePlanet === 2 ? 'planet2' : battlePlanet === 3 ? 'planet3' : battlePlanet === 4 ? 'planet4' : battlePlanet === 5 ? 'planet5' : battlePlanet === 6 ? 'planet6' : 'planet7')
   }
 
   const filteredDex = useMemo(

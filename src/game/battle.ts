@@ -108,7 +108,7 @@ export function doesWildDragonRunAway(attempt: number, roll: () => number = Math
   return roll() < runChance
 }
 
-export type TrainerBattleKind = 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'gang'
+export type TrainerBattleKind = 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'gang'
 
 export function applyKnockoutExperience(dragon: DragonInstance, defeatedLevel: number): {
   instance: DragonInstance
@@ -167,6 +167,14 @@ export function getOpponentTeam(kind: TrainerBattleKind, phase: 0 | 1 | 2 = 2): 
       [['frostle', 21], ['chillka', 22], ['frostpip', 23], ['snowmite', 23]],
       [['glacibun', 24], ['frosthorn', 25], ['glacielf', 26], ['blizzkit', 26]],
       [['boreastra', 29], ['cryowyrm', 31], ['icewarden', 31], ['frostdrake', 33]],
+    ] as const
+    return teams[phase].map(([speciesId, level]) => createDragon(speciesId, level))
+  }
+  if (kind === 'darkGym') {
+    const teams = [
+      [['shadee', 25], ['dusklit', 26], ['glimspeck', 27], ['veilcat', 27]],
+      [['noxibear', 28], ['nightfang', 29], ['shadowmind', 30], ['shadowstalk', 30]],
+      [['umbrawyrm', 33], ['voidscale', 35], ['noctilith', 35], ['phantomcrest', 37]],
     ] as const
     return teams[phase].map(([speciesId, level]) => createDragon(speciesId, level))
   }

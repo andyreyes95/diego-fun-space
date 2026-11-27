@@ -58,6 +58,19 @@
     url('/assets/battlegrounds/gym-frostveil.png') center 48% / cover no-repeat;
 }
 
+.battle-wild-umbralis,
+.battle-gym-umbralis {
+  background:
+    linear-gradient(180deg, rgba(103, 75, 150, 0.14), rgba(28, 22, 44, 0.2)),
+    url('/assets/battlegrounds/wild-umbralis.png') center 48% / cover no-repeat;
+}
+
+.battle-gym-umbralis {
+  background:
+    linear-gradient(180deg, rgba(103, 75, 150, 0.14), rgba(28, 22, 44, 0.2)),
+    url('/assets/battlegrounds/gym-umbralis.png') center 48% / cover no-repeat;
+}
+
 .landscape-gate {
   position: fixed;
   inset: 0;
@@ -882,6 +895,13 @@
     var(--planet-map-image) center / cover no-repeat;
 }
 
+.world-view.umbralis.layered-planet {
+  --planet-map-image: url('/assets/maps/umbralis-layered.png');
+  background:
+    linear-gradient(180deg, rgba(58, 42, 82, 0.18), rgba(25, 18, 39, 0.35)),
+    var(--planet-map-image) center / cover no-repeat;
+}
+
 .bottom-nav {
   z-index: 30;
   position: relative;
@@ -1117,6 +1137,19 @@
     url('/assets/battlegrounds/gym-frostveil.png') center / cover no-repeat;
 }
 
+.battle-wild-umbralis .fixed-battle-arena::before,
+.battle-gym-umbralis .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(65, 42, 96, 0.22), rgba(24, 20, 38, 0.4)),
+    url('/assets/battlegrounds/wild-umbralis.png') center / cover no-repeat;
+}
+
+.battle-gym-umbralis .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(65, 42, 96, 0.22), rgba(24, 20, 38, 0.4)),
+    url('/assets/battlegrounds/gym-umbralis.png') center / cover no-repeat;
+}
+
 .battle-gang-dark .fixed-battle-arena::before {
   background:
     linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
@@ -1191,6 +1224,14 @@
 
 .fixed-gym-frostveil {
   background-image: url('/assets/battlegrounds/gym-frostveil.png');
+}
+
+.fixed-wild-umbralis {
+  background-image: url('/assets/battlegrounds/wild-umbralis.png');
+}
+
+.fixed-gym-umbralis {
+  background-image: url('/assets/battlegrounds/gym-umbralis.png');
 }
 
 .fixed-gang-dark {
@@ -2139,8 +2180,12 @@
   background-image: url('/assets/maps/frostveil-layered.png');
 }
 
+.umbra-preview {
+  background-image: url('/assets/maps/umbralis-layered.png');
+}
+
 .planet-route {
-  grid-template-columns: 1fr 12px 1fr 12px 1fr 12px 1fr 12px 1fr 12px 1fr 12px 1fr;
+  grid-template-columns: 1fr 10px 1fr 10px 1fr 10px 1fr 10px 1fr 10px 1fr 10px 1fr 10px 1fr;
 }
 
 .mystery-preview {
@@ -2778,6 +2823,10 @@
   --event-map-image: url('/assets/maps/frostveil-layered.png');
 }
 
+.event-planet-7 {
+  --event-map-image: url('/assets/maps/umbralis-layered.png');
+}
+
 .celebration-rays {
   position: absolute;
   width: min(780px, 110vw);
@@ -3013,6 +3062,28 @@
   font-size: 54px;
   line-height: 1;
   text-shadow: 0 0 14px #fff;
+}
+
+.earned-badge.dark {
+  background:
+    radial-gradient(circle at 50% 44%, #e8dcff 0 18%, transparent 19%),
+    conic-gradient(from 20deg, #e8dcff, #8f6eb2, #332541, #aa8dc9, #e8dcff);
+}
+
+.badge-eclipse {
+  z-index: 2;
+  display: grid;
+  width: 88px;
+  height: 88px;
+  place-items: center;
+  border: 5px solid rgba(255, 255, 255, 0.62);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #a98bc9, #372746);
+  box-shadow: 0 7px 0 rgba(39, 26, 53, 0.28);
+  color: #f1e8ff;
+  font-size: 54px;
+  line-height: 1;
+  text-shadow: 0 0 14px #bd9be4;
 }
 
 .badge-gem {
@@ -3565,7 +3636,7 @@
   .planet-route {
     height: calc(100% - 92px);
     min-height: 0;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: 5px;
   }
 
