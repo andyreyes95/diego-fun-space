@@ -16,7 +16,13 @@ export function GameHeader({ caughtCount, seenCount, badgeNames, badges, onHome 
   return (
     <header className="game-header">
       <button className="brand-button" type="button" onClick={onHome}>
-        <span className="brand-mark">✦</span>
+        <img
+          className="brand-mark"
+          src={`${import.meta.env.BASE_URL}favicon.svg`}
+          width={42}
+          height={42}
+          alt=""
+        />
         <span><strong>STARCREST</strong><small>DRAGONS</small></span>
       </button>
       <div className="header-progress">

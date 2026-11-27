@@ -88,6 +88,7 @@ public/
 - `src/components/`: reusable interface components.
 - `src/components/LandscapeGate.tsx`: blocks interaction in portrait or square viewports with rotate/resize guidance, retaining mounted game state when the viewport changes. `src/main.tsx` wraps every screen with this gate; the web app manifest also requests landscape where supported.
 - `src/game/`: persistence, registration, Dex filtering, battle math, and focused tests.
+- `src/game/battle.ts`: shared wild encounters on every planet use Stage 1/2 species, excluding Light-type dragons reserved for special encounters. Existing captures and Dex entries are unaffected.
 - `src/hooks/useGameController.ts`: UI orchestration, save mutations, encounters, battle actions, and navigation.
 - `src/styles/`: shared reset and design-token styles; screen/component rules stay in `src/style.css`.
 - `src/data.ts`: species, moves, type chart, and game content.

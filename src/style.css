@@ -295,15 +295,12 @@
 }
 
 .brand-mark {
-  display: grid;
+  display: block;
   width: 42px;
   height: 42px;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--gold);
-  color: #fff;
-  font-size: 22px;
-  box-shadow: 0 4px 0 #c79a39;
+  border-radius: 11px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(38, 50, 58, 0.22);
 }
 
 .brand-button strong,

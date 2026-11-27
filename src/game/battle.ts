@@ -94,7 +94,7 @@ export function getWildEncounterLevel(stage: 1 | 2, roll: () => number = Math.ra
 
 export function getWildEncounter(roll: () => number = Math.random): { speciesId: string; level: number } {
   const stage: 1 | 2 = roll() < 0.6 ? 1 : 2
-  const pool = dragonSpecies.filter((species) => species.stage === stage)
+  const pool = dragonSpecies.filter((species) => species.stage === stage && species.type !== 'light')
   const speciesId = pool[Math.floor(roll() * pool.length)].id
   return { speciesId, level: getWildEncounterLevel(stage, roll) }
 }

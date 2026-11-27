@@ -23,10 +23,14 @@ export function MapLocationCard({
   artAlt = '',
   baseClassName = 'map-location',
 }: MapLocationCardProps) {
+  const resolvedArtSrc = artSrc?.startsWith('/')
+    ? `${import.meta.env.BASE_URL}${artSrc.slice(1)}`
+    : artSrc
+
   return (
     <button className={`${baseClassName} ${className}`} type="button" onClick={onClick}>
       {previewClass ? <span className={`planet-preview ${previewClass}`} /> : null}
-      {artSrc ? <img className="map-location-art" src={artSrc} alt={artAlt} /> : null}
+      {resolvedArtSrc ? <img className="map-location-art" src={resolvedArtSrc} alt={artAlt} /> : null}
       <span className="map-location-copy">
         {eyebrow ? <span className="map-location-eyebrow">{eyebrow}</span> : null}
         <strong>{title}</strong>

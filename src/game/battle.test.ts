@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createDragon } from '../data'
+import { createDragon, dragonSpecies } from '../data'
 import { applyKnockoutExperience, doesWildDragonRunAway, evolveInstance, gainExperience, getOpponentTeam, getWildEncounter, getWildEncounterLevel, isDarkGangAmbush, resolveAttack } from './battle'
 import { speciesById } from '../data'
 
@@ -77,6 +77,25 @@ describe('battle rules', () => {
     const encounter = getWildEncounter(() => rolls.shift() ?? 0)
     expect(speciesById[encounter.speciesId].stage).toBe(2)
     expect(encounter.level).toBe(8)
+  })
+
+  it('excludes Light dragons from both wild stages while keeping all other eligible species', () => {
+    for (const stage of [1, 2] as const) {
+      const encountered = new Set<string>()
+      for (let index = 0; index < dragonSpecies.length; index += 1) {
+        const rolls = [stage === 1 ? 0 : 0.99, index / dragonSpecies.length, 0]
+        const encounter = getWildEncounter(() => rolls.shift() ?? 0)
+        const species = speciesById[encounter.speciesId]
+        expect(species.type).not.toBe('light')
+        expect(species.stage).toBe(stage)
+        encountered.add(species.id)
+      }
+      expect(encountered).toEqual(new Set(
+        dragonSpecies
+          .filter((species) => species.stage === stage && species.type !== 'light')
+          .map((species) => species.id),
+      ))
+    }
   })
 
   it('triggers a Dark Gang ambush for 15 percent of wild explorations', () => {
