@@ -26,7 +26,7 @@ function makeSave(overrides: Partial<GameSave> = {}): GameSave {
     caught: ['embbite'],
     captureCounts: { embbite: 1 },
     badges: [],
-    gymProgress: { fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0, dark: 0 },
+    gymProgress: { fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0, dark: 0, light: 0 },
     storyStep: 0,
     darkGangDefeated: false,
     currentPlanet: 1,
@@ -101,7 +101,7 @@ describe('save migration', () => {
     expect(migrated.saveVersion).toBe(3)
     expect(migrated.reserve).toEqual([legacyReserveDragon])
     expect(migrated.captureCounts.embbite).toBe(1)
-    expect(migrated.gymProgress).toEqual({ fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0, dark: 0 })
+    expect(migrated.gymProgress).toEqual({ fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0, dark: 0, light: 0 })
     expect(migrated.party[0].instanceId).toBeTruthy()
   })
 })

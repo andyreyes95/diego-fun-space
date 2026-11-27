@@ -64,7 +64,7 @@ function App() {
         seenCount={game.save.seen.length}
         badgeNames={game.badgeNames}
         badges={game.save.badges}
-        onHome={() => game.setView(currentPlanet === 0 ? 'town' : currentPlanet === 1 ? 'planet1' : currentPlanet === 2 ? 'planet2' : currentPlanet === 3 ? 'planet3' : currentPlanet === 4 ? 'planet4' : currentPlanet === 5 ? 'planet5' : currentPlanet === 6 ? 'planet6' : 'planet7')}
+        onHome={() => game.setView(currentPlanet === 0 ? 'town' : currentPlanet === 1 ? 'planet1' : currentPlanet === 2 ? 'planet2' : currentPlanet === 3 ? 'planet3' : currentPlanet === 4 ? 'planet4' : currentPlanet === 5 ? 'planet5' : currentPlanet === 6 ? 'planet6' : currentPlanet === 7 ? 'planet7' : 'planet8')}
       />
 
       {game.view === 'town' && (
@@ -97,6 +97,10 @@ function App() {
 
       {game.view === 'planet7' && (
         <PlanetScreen save={game.save} planet={7} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+      )}
+
+      {game.view === 'planet8' && (
+        <PlanetScreen save={game.save} planet={8} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
       )}
 
       {game.view === 'map' && (

@@ -14,6 +14,7 @@ export function PlanetMap({ save, onNavigate, onToast }: PlanetMapProps) {
   const tidehavenUnlocked = save.badges.includes('Breeze')
   const frostveilUnlocked = save.badges.includes('Tide')
   const umbralisUnlocked = save.badges.includes('Frost')
+  const luminaraUnlocked = save.badges.includes('Eclipse')
 
   return (
     <section className="planet-map-view">
@@ -22,7 +23,7 @@ export function PlanetMap({ save, onNavigate, onToast }: PlanetMapProps) {
           <p className="eyebrow">Starlane Map</p>
           <h1>Choose a planet</h1>
         </div>
-        <span>{save.currentPlanet === 0 ? 'Willowvale route' : save.currentPlanet === 1 ? 'Emberfall route' : save.currentPlanet === 2 ? 'Mossgrove route' : save.currentPlanet === 3 ? 'Voltspire route' : save.currentPlanet === 4 ? 'Cloudrest route' : save.currentPlanet === 5 ? 'Tidehaven route' : save.currentPlanet === 6 ? 'Frostveil route' : 'Umbralis route'}</span>
+        <span>{save.currentPlanet === 0 ? 'Willowvale route' : save.currentPlanet === 1 ? 'Emberfall route' : save.currentPlanet === 2 ? 'Mossgrove route' : save.currentPlanet === 3 ? 'Voltspire route' : save.currentPlanet === 4 ? 'Cloudrest route' : save.currentPlanet === 5 ? 'Tidehaven route' : save.currentPlanet === 6 ? 'Frostveil route' : save.currentPlanet === 7 ? 'Umbralis route' : 'Luminara route'}</span>
       </div>
       <div className="planet-route" aria-label="Planet route">
         <MapLocationCard
@@ -141,6 +142,22 @@ export function PlanetMap({ save, onNavigate, onToast }: PlanetMapProps) {
           title={umbralisUnlocked ? 'Umbralis' : 'Unknown planet'}
           detail={umbralisUnlocked ? 'Planet 7 · Dark Gym' : 'Moonlit destination'}
           status={umbralisUnlocked ? 'Available' : 'Locked · Frost Badge'}
+        />
+        <span className={luminaraUnlocked ? 'route-line unlocked' : 'route-line'} aria-hidden="true" />
+        <MapLocationCard
+          baseClassName="planet-node"
+          className={save.currentPlanet === 8 ? 'active' : luminaraUnlocked ? '' : 'locked'}
+          onClick={() => {
+            if (!luminaraUnlocked) {
+              onToast('Luminara unlocks after you earn the Eclipse Badge.')
+              return
+            }
+            onNavigate('planet8')
+          }}
+          previewClass={luminaraUnlocked ? 'lumina-preview' : 'mystery-preview'}
+          title={luminaraUnlocked ? 'Luminara' : 'Unknown planet'}
+          detail={luminaraUnlocked ? 'Planet 8 · Light Gym' : 'Radiant destination'}
+          status={luminaraUnlocked ? 'Available' : 'Locked · Eclipse Badge'}
         />
       </div>
     </section>

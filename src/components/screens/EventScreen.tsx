@@ -4,7 +4,7 @@ import type { BattleEvent } from '../../types'
 
 interface EventScreenProps {
   event: BattleEvent
-  currentPlanet: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+  currentPlanet: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
   onDismiss: () => void
 }
 
@@ -108,14 +108,14 @@ export function EventScreen({ event, currentPlanet, onDismiss }: EventScreenProp
     )
   }
 
-  const badgeName = event.badge === 'Ember' ? 'Ember Badge' : event.badge === 'Bloom' ? 'Bloom Badge' : event.badge === 'Spark' ? 'Spark Badge' : event.badge === 'Breeze' ? 'Breeze Badge' : event.badge === 'Tide' ? 'Tide Badge' : event.badge === 'Frost' ? 'Frost Badge' : 'Eclipse Badge'
-  const badgeType = event.badge === 'Ember' ? 'fire' : event.badge === 'Bloom' ? 'grass' : event.badge === 'Spark' ? 'electric' : event.badge === 'Breeze' ? 'cloud' : event.badge === 'Tide' ? 'water' : event.badge === 'Frost' ? 'ice' : 'dark'
+  const badgeName = event.badge === 'Ember' ? 'Ember Badge' : event.badge === 'Bloom' ? 'Bloom Badge' : event.badge === 'Spark' ? 'Spark Badge' : event.badge === 'Breeze' ? 'Breeze Badge' : event.badge === 'Tide' ? 'Tide Badge' : event.badge === 'Frost' ? 'Frost Badge' : event.badge === 'Eclipse' ? 'Eclipse Badge' : 'Radiant Badge'
+  const badgeType = event.badge === 'Ember' ? 'fire' : event.badge === 'Bloom' ? 'grass' : event.badge === 'Spark' ? 'electric' : event.badge === 'Breeze' ? 'cloud' : event.badge === 'Tide' ? 'water' : event.badge === 'Frost' ? 'ice' : event.badge === 'Eclipse' ? 'dark' : 'light'
   return (
     <main className={`celebration-screen badge-celebration ${planetClass}`}>
       <div className="celebration-rays" aria-hidden="true" />
       <section className="celebration-card badge-card" role="dialog" aria-modal="true" aria-labelledby="badge-title">
         <p className="eyebrow">Gym Victory</p>
-        <h1 id="badge-title">You defeated {event.badge === 'Ember' ? 'Sol' : event.badge === 'Bloom' ? 'Moss' : event.badge === 'Spark' ? 'Volt' : event.badge === 'Breeze' ? 'Cirrus' : event.badge === 'Tide' ? 'Marina' : event.badge === 'Frost' ? 'Glacia' : 'Nyx'}!</h1>
+        <h1 id="badge-title">You defeated {event.badge === 'Ember' ? 'Sol' : event.badge === 'Bloom' ? 'Moss' : event.badge === 'Spark' ? 'Volt' : event.badge === 'Breeze' ? 'Cirrus' : event.badge === 'Tide' ? 'Marina' : event.badge === 'Frost' ? 'Glacia' : event.badge === 'Eclipse' ? 'Nyx' : 'Auriel'}!</h1>
         <div className={`earned-badge ${badgeType}`} aria-label={badgeName}>
           {badgeType === 'fire' ? (
             <>
@@ -137,8 +137,10 @@ export function EventScreen({ event, currentPlanet, onDismiss }: EventScreenProp
             <span className="badge-wave">≈</span>
           ) : badgeType === 'ice' ? (
             <span className="badge-snowflake">❄</span>
-          ) : (
+          ) : badgeType === 'dark' ? (
             <span className="badge-eclipse">◐</span>
+          ) : (
+            <span className="badge-radiant">✦</span>
           )}
         </div>
         <h2>{badgeName}</h2>
@@ -154,7 +156,9 @@ export function EventScreen({ event, currentPlanet, onDismiss }: EventScreenProp
                   ? 'Tidehaven recognizes your resolve. Frostveil now glows beneath the aurora.'
                   : badgeType === 'ice'
                     ? 'Frostveil recognizes your calm under pressure. Umbralis now appears beyond the moonlit route.'
-                    : 'Umbralis recognizes your courage in the dark. The final gym star shines closer.'}</p>
+                    : badgeType === 'dark'
+                      ? 'Umbralis recognizes your courage in the dark. Luminara now shines on the starlane.'
+                      : 'Luminara recognizes your compassion. The path to the champion can finally begin.'}</p>
         <button className="primary-button" type="button" onClick={onDismiss}>Add to my badges</button>
       </section>
     </main>

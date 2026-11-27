@@ -65,6 +65,19 @@
     url('/assets/battlegrounds/wild-umbralis.png') center 48% / cover no-repeat;
 }
 
+.battle-wild-luminara,
+.battle-gym-luminara {
+  background:
+    linear-gradient(180deg, rgba(255, 245, 166, 0.12), rgba(133, 113, 54, 0.12)),
+    url('/assets/battlegrounds/wild-luminara.png') center 48% / cover no-repeat;
+}
+
+.battle-gym-luminara {
+  background:
+    linear-gradient(180deg, rgba(255, 245, 166, 0.12), rgba(133, 113, 54, 0.12)),
+    url('/assets/battlegrounds/gym-luminara.png') center 48% / cover no-repeat;
+}
+
 .battle-gym-umbralis {
   background:
     linear-gradient(180deg, rgba(103, 75, 150, 0.14), rgba(28, 22, 44, 0.2)),
@@ -902,6 +915,13 @@
     var(--planet-map-image) center / cover no-repeat;
 }
 
+.world-view.luminara.layered-planet {
+  --planet-map-image: url('/assets/maps/luminara-layered.png');
+  background:
+    linear-gradient(180deg, rgba(153, 132, 72, 0.12), rgba(107, 89, 48, 0.22)),
+    var(--planet-map-image) center / cover no-repeat;
+}
+
 .bottom-nav {
   z-index: 30;
   position: relative;
@@ -1144,6 +1164,19 @@
     url('/assets/battlegrounds/wild-umbralis.png') center / cover no-repeat;
 }
 
+.battle-wild-luminara .fixed-battle-arena::before,
+.battle-gym-luminara .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(153, 132, 72, 0.18), rgba(62, 59, 43, 0.24)),
+    url('/assets/battlegrounds/wild-luminara.png') center / cover no-repeat;
+}
+
+.battle-gym-luminara .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(153, 132, 72, 0.18), rgba(62, 59, 43, 0.24)),
+    url('/assets/battlegrounds/gym-luminara.png') center / cover no-repeat;
+}
+
 .battle-gym-umbralis .fixed-battle-arena::before {
   background:
     linear-gradient(180deg, rgba(65, 42, 96, 0.22), rgba(24, 20, 38, 0.4)),
@@ -1233,6 +1266,9 @@
 .fixed-gym-umbralis {
   background-image: url('/assets/battlegrounds/gym-umbralis.png');
 }
+
+.fixed-wild-luminara { background-image: url('/assets/battlegrounds/wild-luminara.png'); }
+.fixed-gym-luminara { background-image: url('/assets/battlegrounds/gym-luminara.png'); }
 
 .fixed-gang-dark {
   background-image: url('/assets/battlegrounds/gang-dark.png');
@@ -2071,8 +2107,8 @@
   min-height: 0;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(20, 32, 82, 0.12), rgba(20, 32, 82, 0.28)),
-    url('/assets/maps/planet-map.png') center / cover no-repeat;
+    linear-gradient(180deg, rgba(8, 20, 38, 0.18), rgba(8, 20, 38, 0.34)),
+    url('/assets/maps/solar-system-space.png') center / cover no-repeat;
   padding: 24px clamp(16px, 4vw, 48px);
 }
 
@@ -2184,8 +2220,12 @@
   background-image: url('/assets/maps/umbralis-layered.png');
 }
 
+.lumina-preview {
+  background-image: url('/assets/maps/luminara-layered.png');
+}
+
 .planet-route {
-  grid-template-columns: 1fr 10px 1fr 10px 1fr 10px 1fr 10px 1fr 10px 1fr 10px 1fr 10px 1fr;
+  grid-template-columns: 1fr 8px 1fr 8px 1fr 8px 1fr 8px 1fr 8px 1fr 8px 1fr 8px 1fr 8px 1fr;
 }
 
 .mystery-preview {
@@ -2827,6 +2867,10 @@
   --event-map-image: url('/assets/maps/umbralis-layered.png');
 }
 
+.event-planet-8 {
+  --event-map-image: url('/assets/maps/luminara-layered.png');
+}
+
 .celebration-rays {
   position: absolute;
   width: min(780px, 110vw);
@@ -3084,6 +3128,28 @@
   font-size: 54px;
   line-height: 1;
   text-shadow: 0 0 14px #bd9be4;
+}
+
+.earned-badge.light {
+  background:
+    radial-gradient(circle at 50% 44%, #fffdf2 0 18%, transparent 19%),
+    conic-gradient(from 20deg, #fffbd1, #efd66d, #b28e32, #fff1a4, #fffbd1);
+}
+
+.badge-radiant {
+  z-index: 2;
+  display: grid;
+  width: 88px;
+  height: 88px;
+  place-items: center;
+  border: 5px solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #fffdf2, #efd46b);
+  box-shadow: 0 7px 0 rgba(111, 84, 30, 0.22);
+  color: #9c7621;
+  font-size: 54px;
+  line-height: 1;
+  text-shadow: 0 0 14px #fff6ae;
 }
 
 .badge-gem {
@@ -3636,7 +3702,7 @@
   .planet-route {
     height: calc(100% - 92px);
     min-height: 0;
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-columns: repeat(9, minmax(0, 1fr));
     gap: 5px;
   }
 

@@ -65,6 +65,7 @@ public/
       tidehaven-layered.png
       frostveil-layered.png
       umbralis-layered.png
+      luminara-layered.png
       planet-map.png
        map-locations/           # transparent layered planet destinations
       emberfall/
@@ -104,6 +105,12 @@ public/
         market.png
         portal.png
          umbralis/
+        wild.png
+        gym.png
+        healing.png
+        market.png
+        portal.png
+         luminara/
         wild.png
         gym.png
         healing.png

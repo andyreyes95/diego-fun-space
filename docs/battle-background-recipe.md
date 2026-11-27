@@ -121,6 +121,8 @@ Only after a battleground passes desktop and iPad rotation checks should its bac
 - `public/assets/battlegrounds/gym-frostveil.png`
 - `public/assets/battlegrounds/wild-umbralis.png`
 - `public/assets/battlegrounds/gym-umbralis.png`
+- `public/assets/battlegrounds/wild-luminara.png`
+- `public/assets/battlegrounds/gym-luminara.png`
 - `public/assets/battlegrounds/gang-dark.png`
 
 For future planets/types:

@@ -67,6 +67,8 @@ export function BattleScreen({
                   ? 'fixed-gym-frostveil'
                   : battle.kind === 'darkGym'
                     ? 'fixed-gym-umbralis'
+                    : battle.kind === 'lightGym'
+                      ? 'fixed-gym-luminara'
               : save.currentPlanet === 1
                 ? 'fixed-wild-emberfall'
                 : save.currentPlanet === 2
@@ -79,7 +81,9 @@ export function BattleScreen({
                         ? 'fixed-wild-tidehaven'
                         : save.currentPlanet === 6
                           ? 'fixed-wild-frostveil'
-                          : 'fixed-wild-umbralis'
+                          : save.currentPlanet === 7
+                            ? 'fixed-wild-umbralis'
+                            : 'fixed-wild-luminara'
   const battleBackgroundClass = battle.kind === 'gang'
     ? 'battle-gang-dark'
     : battle.kind === 'fireGym'
@@ -96,6 +100,8 @@ export function BattleScreen({
                   ? 'battle-gym-frostveil'
                   : battle.kind === 'darkGym'
                     ? 'battle-gym-umbralis'
+                    : battle.kind === 'lightGym'
+                      ? 'battle-gym-luminara'
               : save.currentPlanet === 1
                 ? 'battle-wild-emberfall'
                 : save.currentPlanet === 2
@@ -108,7 +114,9 @@ export function BattleScreen({
                         ? 'battle-wild-tidehaven'
                         : save.currentPlanet === 6
                           ? 'battle-wild-frostveil'
-                          : 'battle-wild-umbralis'
+                          : save.currentPlanet === 7
+                            ? 'battle-wild-umbralis'
+                            : 'battle-wild-luminara'
 
   return (
     <main className={`${screenShake ? 'battle-screen shake' : 'battle-screen'} ${battleBackgroundClass} fixed-battle`}>

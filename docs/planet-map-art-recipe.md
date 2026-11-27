@@ -42,6 +42,12 @@ The first implementation is Emberfall. Mossgrove proves the recipe with a second
 - `public/assets/map-locations/umbralis/healing.png`
 - `public/assets/map-locations/umbralis/market.png`
 - `public/assets/map-locations/umbralis/portal.png`
+- `public/assets/maps/luminara-layered.png`
+- `public/assets/map-locations/luminara/wild.png`
+- `public/assets/map-locations/luminara/gym.png`
+- `public/assets/map-locations/luminara/healing.png`
+- `public/assets/map-locations/luminara/market.png`
+- `public/assets/map-locations/luminara/portal.png`
 
 Use `public/assets/maps/emberfall-layered.png` as the required blueprint image for every later planet. Include it in every base-map generation request alongside a simple one-color overlay showing the six area boundaries. The blueprint carries the actual path rhythm, partition balance, horizon height, camera angle, usable footprint, and visual spacing; the prompt provides the new elemental theme. The next planet must preserve that composition rather than independently reinterpret the layout.
 
