@@ -1,16 +1,19 @@
 import { speciesById, typeColors, typeNames } from '../../data'
 import { DragonIcon } from '../DragonIcon'
-import type { Celebration } from '../../types'
+import type { BattleEvent } from '../../types'
 
-interface CelebrationScreenProps {
-  celebration: Celebration
+interface EventScreenProps {
+  event: BattleEvent
+  currentPlanet: 0 | 1 | 2
   onDismiss: () => void
 }
 
-export function CelebrationScreen({ celebration, onDismiss }: CelebrationScreenProps) {
-  if (celebration.kind === 'evolution') {
-    const before = speciesById[celebration.beforeId]
-    const after = speciesById[celebration.afterId]
+export function EventScreen({ event, currentPlanet, onDismiss }: EventScreenProps) {
+  const planetClass = `event-planet-${currentPlanet}`
+
+  if (event.kind === 'evolution') {
+    const before = speciesById[event.beforeId]
+    const after = speciesById[event.afterId]
     return (
       <main className="celebration-screen evolution-celebration">
         <div className="celebration-rays" aria-hidden="true" />
@@ -36,10 +39,10 @@ export function CelebrationScreen({ celebration, onDismiss }: CelebrationScreenP
     )
   }
 
-  if (celebration.kind === 'catch') {
-    const caughtSpecies = speciesById[celebration.speciesId]
+  if (event.kind === 'catch') {
+    const caughtSpecies = speciesById[event.speciesId]
     return (
-      <main className="celebration-screen catch-celebration">
+      <main className={`celebration-screen catch-celebration ${planetClass}`}>
         <div className="celebration-rays" aria-hidden="true" />
         <section className="celebration-card catch-card" role="dialog" aria-modal="true" aria-labelledby="catch-title">
           <p className="eyebrow">Gotcha!</p>
@@ -53,25 +56,66 @@ export function CelebrationScreen({ celebration, onDismiss }: CelebrationScreenP
           </div>
           <div className="detail-pills">
             <span style={{ background: typeColors[caughtSpecies.type] }}>{typeNames[caughtSpecies.type]}</span>
-            <span>{celebration.joinedParty ? 'Added to party' : 'Saved to the Dragon Dex'}</span>
+            <span>{event.joinedParty ? 'Added to party' : 'Saved to the Dragon Dex'}</span>
           </div>
           <p>{caughtSpecies.description}</p>
           <button className="primary-button" type="button" onClick={onDismiss}>
-            {celebration.joinedParty ? 'Welcome aboard!' : 'See my team'}
+            {event.joinedParty ? 'Welcome aboard!' : 'See my team'}
           </button>
         </section>
       </main>
     )
   }
 
-  const badgeName = celebration.badge === 'Ember' ? 'Ember Badge' : 'Bloom Badge'
-  const badgeType = celebration.badge === 'Ember' ? 'fire' : 'grass'
+  if (event.kind === 'escape') {
+    const escapedSpecies = speciesById[event.speciesId]
+    return (
+      <main className={`celebration-screen escape-event ${planetClass}`}>
+        <section className="celebration-card escape-card" role="dialog" aria-modal="true" aria-labelledby="escape-title">
+          <p className="eyebrow">It got away!</p>
+          <h1 id="escape-title">{escapedSpecies.name} escaped</h1>
+          <div className="catch-reveal escape-reveal">
+            <span className="escape-motion" aria-hidden="true">···</span>
+            <DragonIcon species={escapedSpecies} size={230} battleMode />
+          </div>
+          <div className="detail-pills">
+            <span style={{ background: typeColors[escapedSpecies.type] }}>{typeNames[escapedSpecies.type]}</span>
+            <span>{event.attempts} {event.attempts === 1 ? 'catch try' : 'catch tries'}</span>
+          </div>
+          <p>{escapedSpecies.name} found an opening and darted out of sight. A fresh encounter could give you another chance.</p>
+          <button className="primary-button" type="button" onClick={onDismiss}>Back to exploring</button>
+        </section>
+      </main>
+    )
+  }
+
+  if (event.kind === 'ambush') {
+    return (
+      <main className="celebration-screen ambush-event event-planet-dark">
+        <div className="ambush-warning" aria-hidden="true">!</div>
+        <section className="celebration-card ambush-card" role="dialog" aria-modal="true" aria-labelledby="ambush-title">
+          <p className="eyebrow">Dark Gang Ambush</p>
+          <h1 id="ambush-title">You've been ambushed!</h1>
+          <div className="ambush-emblem" aria-hidden="true">
+            <span />
+            <strong>✦</strong>
+            <span />
+          </div>
+          <p>{event.captainName} has cornered you during your wild exploration. Defeat the Gang's team to escape safely.</p>
+          <button className="primary-button" type="button" onClick={onDismiss}>Face the Dark Gang</button>
+        </section>
+      </main>
+    )
+  }
+
+  const badgeName = event.badge === 'Ember' ? 'Ember Badge' : 'Bloom Badge'
+  const badgeType = event.badge === 'Ember' ? 'fire' : 'grass'
   return (
-    <main className="celebration-screen badge-celebration">
+    <main className={`celebration-screen badge-celebration ${planetClass}`}>
       <div className="celebration-rays" aria-hidden="true" />
       <section className="celebration-card badge-card" role="dialog" aria-modal="true" aria-labelledby="badge-title">
         <p className="eyebrow">Gym Victory</p>
-        <h1 id="badge-title">You defeated {celebration.badge === 'Ember' ? 'Sol' : 'Moss'}!</h1>
+        <h1 id="badge-title">You defeated {event.badge === 'Ember' ? 'Sol' : 'Moss'}!</h1>
         <div className={`earned-badge ${badgeType}`} aria-label={badgeName}>
           {badgeType === 'fire' ? (
             <>

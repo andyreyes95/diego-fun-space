@@ -1,21 +1,21 @@
 import type { View } from '../types'
 import type { ReactNode } from 'react'
-import { City, MapTrifold, Planet, ScanSmiley, Strategy } from '@phosphor-icons/react'
+import { Planet, ScanSmiley, Strategy } from '@phosphor-icons/react'
 
 interface GameHeaderProps {
   caughtCount: number
   seenCount: number
   badgeNames: string[]
   badges: string[]
-  onTown: () => void
+  onHome: () => void
 }
 
-export function GameHeader({ caughtCount, seenCount, badgeNames, badges, onTown }: GameHeaderProps) {
+export function GameHeader({ caughtCount, seenCount, badgeNames, badges, onHome }: GameHeaderProps) {
   const badgeSymbols = ['◆', '♧', '❉', 'Ϟ', '☀', '☁', '◐', '✦']
 
   return (
     <header className="game-header">
-      <button className="brand-button" type="button" onClick={onTown}>
+      <button className="brand-button" type="button" onClick={onHome}>
         <span className="brand-mark">✦</span>
         <span><strong>STARCREST</strong><small>DRAGONS</small></span>
       </button>
@@ -41,7 +41,7 @@ export function GameHeader({ caughtCount, seenCount, badgeNames, badges, onTown 
 
 interface BottomNavProps {
   view: View
-  currentPlanet: 1 | 2
+  currentPlanet: 0 | 1 | 2
   setView: (view: View) => void
   onReset: () => void
   onCatchAll?: () => void
@@ -57,16 +57,14 @@ export function BottomNav({ view, currentPlanet, setView, onReset, onCatchAll }:
 
   return (
     <nav className={onCatchAll ? 'bottom-nav with-debug' : 'bottom-nav'} aria-label="Main navigation">
-      {navButton('town', 'Town', <City size={35} weight="fill" />)}
       <button
-        className={view === 'planet1' || view === 'planet2' ? 'nav-button active' : 'nav-button'}
+        className={view === 'town' || view === 'planet1' || view === 'planet2' ? 'nav-button active' : 'nav-button'}
         type="button"
-        onClick={() => setView(currentPlanet === 2 ? 'planet2' : 'planet1')}
+        onClick={() => setView(currentPlanet === 0 ? 'town' : currentPlanet === 2 ? 'planet2' : 'planet1')}
       >
         <span className="nav-icon" aria-hidden="true"><Planet size={35} weight="fill" /></span>
-        <span>{currentPlanet === 2 ? 'Mossgrove' : 'Emberfall'}</span>
+        <span>{currentPlanet === 0 ? 'Willowvale' : currentPlanet === 2 ? 'Mossgrove' : 'Emberfall'}</span>
       </button>
-      {navButton('map', 'Planet Map', <MapTrifold size={35} weight="fill" />)}
       {navButton('dex', 'Dragon Dex', <ScanSmiley size={35} weight="fill" />)}
       {navButton('team', 'Team', <Strategy size={35} weight="fill" />)}
       <button className="nav-button" type="button" onClick={onReset}>Reset</button>

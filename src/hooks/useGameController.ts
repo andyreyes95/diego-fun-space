@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createDragon, dragonSpecies, speciesById } from '../data'
-import type { BattleLogEntry, BattleState, Celebration, DragonInstance, DragonType, GameSave, Move, View } from '../types'
+import type { BattleEvent, BattleLogEntry, BattleState, DragonInstance, DragonType, GameSave, Move, View } from '../types'
 import { clearSave, loadSave, persistSave } from '../game/storage'
 import { addCapturedInstance, moveInstance, registerEvolution, registerSeen, renameInstance } from '../game/registration'
-import { applyKnockoutExperience, effectivenessText, getOpponentTeam, resolveAttack } from '../game/battle'
+import { applyKnockoutExperience, doesWildDragonRunAway, effectivenessText, getWildEncounter, getOpponentTeam, isDarkGangAmbush, resolveAttack } from '../game/battle'
 import { filterDexSpecies } from '../game/dex'
 import { advanceStoryStep, getWildCaptureCount } from '../game/quests'
 
@@ -17,7 +17,15 @@ function displayName(dragon: DragonInstance): string {
 export function useGameController() {
   const [initialSave] = useState(() => loadSave())
   const [save, setSave] = useState<GameSave | null>(initialSave)
-  const [view, setViewState] = useState<View>(() => (initialSave ? 'town' : 'title'))
+  const [view, setViewState] = useState<View>(() =>
+    initialSave
+      ? initialSave.currentPlanet === 0
+        ? 'town'
+        : initialSave.currentPlanet === 2
+          ? 'planet2'
+          : 'planet1'
+      : 'title',
+  )
   const [selectedStarter, setSelectedStarter] = useState('embbite')
   const [playerName, setPlayerName] = useState('Nova')
   const [battle, setBattle] = useState<BattleState | null>(null)
@@ -29,7 +37,7 @@ export function useGameController() {
   const [selectedDexId, setSelectedDexId] = useState('embbite')
   const [toast, setToast] = useState('')
   const [screenShake, setScreenShake] = useState(false)
-  const [celebrationQueue, setCelebrationQueue] = useState<Celebration[]>([])
+  const [eventQueue, setEventQueue] = useState<BattleEvent[]>([])
 
   useEffect(() => {
     if (!save) return
@@ -48,6 +56,9 @@ export function useGameController() {
   }, [toast])
 
   const setView = (nextView: View) => {
+    if (nextView === 'town') {
+      setSave((current) => current ? { ...current, currentPlanet: 0 } : current)
+    }
     if (nextView === 'planet1' || nextView === 'planet2') {
       const currentPlanet: 1 | 2 = nextView === 'planet2' ? 2 : 1
       setSave((current) => {
@@ -102,7 +113,7 @@ export function useGameController() {
       gymProgress: { fire: 0, grass: 0 },
       storyStep: 0,
       darkGangDefeated: false,
-      currentPlanet: 1,
+      currentPlanet: 0,
       mossgroveCaptureBaseline: 0,
     })
     setSelectedDexId(selectedStarter)
@@ -121,12 +132,18 @@ export function useGameController() {
     }
     setSave(null)
     setBattle(null)
-    setCelebrationQueue([])
+    setEventQueue([])
     setViewState('title')
   }
 
-  const dismissCelebration = () => {
-    setCelebrationQueue((queue) => queue.slice(1))
+  const dismissEvent = () => {
+    const dismissedEvent = eventQueue[0]
+    setEventQueue((queue) => queue.slice(1))
+    if (dismissedEvent?.kind === 'escape') {
+      setBattle(null)
+      setSave((current) => current ? { ...current, currentPlanet: battlePlanet } : current)
+      setViewState(battlePlanet === 2 ? 'planet2' : 'planet1')
+    }
   }
 
   // Temporary localhost debug cheat: remove this block and the debugCatchAll UI wiring to disable.
@@ -168,13 +185,16 @@ export function useGameController() {
     const firstAbleDragon = save.party.findIndex((dragon) => dragon.hp > 0)
     if (firstAbleDragon < 0) {
       setToast('No dragons can battle. Visit the Healing Center.')
-      setView('town')
+      setView(planet === 2 ? 'planet2' : 'planet1')
       return
     }
     setActivePartyIndex(firstAbleDragon)
-    const pool = dragonSpecies.filter((species) => planet === 2 || species.stage < 3)
-    const speciesId = pool[Math.floor(Math.random() * pool.length)].id
-    const enemy = createDragon(speciesId, 5 + Math.floor(Math.random() * 4))
+    if (isDarkGangAmbush()) {
+      beginTrainerBattle('gang', planet)
+      return
+    }
+    const { speciesId, level } = getWildEncounter()
+    const enemy = createDragon(speciesId, level)
     markSeen(speciesId)
     setBattle({
       kind: 'wild',
@@ -186,18 +206,27 @@ export function useGameController() {
       finished: false,
       won: false,
       caught: false,
+      catchAttempts: 0,
     })
     setBattleBusy(false)
     setViewState('battle')
   }
 
-  const beginTrainerBattle = (kind: 'fireGym' | 'grassGym' | 'gang') => {
+  const beginTrainerBattle = (kind: 'fireGym' | 'grassGym' | 'gang', originPlanet?: 1 | 2) => {
     if (!save) return
-    setBattlePlanet(kind === 'grassGym' || kind === 'gang' ? 2 : 1)
+    const currentBattlePlanet = save.currentPlanet === 2 ? 2 : 1
+    const trainerPlanet = originPlanet ?? (
+      kind === 'grassGym'
+        ? 2
+        : kind === 'gang'
+          ? currentBattlePlanet
+          : 1
+    )
+    setBattlePlanet(trainerPlanet)
     const firstAbleDragon = save.party.findIndex((dragon) => dragon.hp > 0)
     if (firstAbleDragon < 0) {
       setToast('No dragons can battle. Visit the Healing Center.')
-      setView('town')
+      setView(trainerPlanet === 2 ? 'planet2' : 'planet1')
       return
     }
     setActivePartyIndex(firstAbleDragon)
@@ -221,11 +250,20 @@ export function useGameController() {
       enemyTeam,
       enemyActiveIndex: 0,
       enemyName: encounterName,
-      log: [{ side: 'system', text: `${encounterName} sent out ${speciesById[enemy.speciesId].name}!` }],
+      log: [{
+        side: 'system',
+        text: kind === 'gang' && originPlanet
+          ? `The Dark Gang ambushed you! ${encounterName} sent out ${speciesById[enemy.speciesId].name}!`
+          : `${encounterName} sent out ${speciesById[enemy.speciesId].name}!`,
+      }],
       finished: false,
       won: false,
       caught: false,
+      catchAttempts: 0,
     })
+    if (kind === 'gang' && originPlanet) {
+      setEventQueue([{ kind: 'ambush', captainName: encounterName }])
+    }
     setBattleBusy(false)
     setViewState('battle')
   }
@@ -330,7 +368,7 @@ export function useGameController() {
       const { evolution } = knockoutReward
 
       if (evolution) {
-        setCelebrationQueue((queue) => [
+        setEventQueue((queue) => [
           ...queue,
           { kind: 'evolution', beforeId: evolution.beforeId, afterId: evolution.afterId },
         ])
@@ -366,10 +404,10 @@ export function useGameController() {
       }
       const leaderBattle = battle.trainerPhase === 2
       if (battle.kind === 'fireGym' && leaderBattle && !save.badges.includes('Ember')) {
-        setCelebrationQueue((queue) => [...queue, { kind: 'badge', badge: 'Ember' }])
+        setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Ember' }])
       }
       if (battle.kind === 'grassGym' && leaderBattle && !save.badges.includes('Bloom')) {
-        setCelebrationQueue((queue) => [...queue, { kind: 'badge', badge: 'Bloom' }])
+        setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Bloom' }])
       }
 
       setSave((current) => {
@@ -425,8 +463,9 @@ export function useGameController() {
   }
 
   const tryCapture = () => {
-    if (!save || !battle || battle.kind !== 'wild' || battle.finished || battleBusy) return
+    if (!save || !battle || battle.kind !== 'wild' || battle.finished || battleBusy || battle.catchAttempts >= 3) return
     setBattleBusy(true)
+    const catchAttempts = battle.catchAttempts + 1
     const hpRatio = battle.enemy.hp / battle.enemy.maxHp
     const chance = 0.35 + (1 - hpRatio) * 0.55
     const species = speciesById[battle.enemy.speciesId]
@@ -448,18 +487,39 @@ export function useGameController() {
         finished: true,
         won: true,
         caught: true,
+        catchAttempts,
         log: [...battle.log, { side: 'player', text: `Gotcha! ${species.name} joined your ${joinedParty ? 'Party' : 'Reserve'}!` }],
       })
-      setCelebrationQueue((queue) => [
+      setEventQueue((queue) => [
         ...queue,
         { kind: 'catch', speciesId: species.id, joinedParty },
       ])
       setBattleBusy(false)
       return
     }
+    const ranAway = doesWildDragonRunAway(catchAttempts)
+    if (ranAway) {
+      setBattle((current) => current ? {
+        ...current,
+        catchAttempts,
+        finished: true,
+        won: false,
+        log: [
+          ...current.log,
+          { side: 'system', text: `${species.name} broke free and ran away!` },
+        ],
+      } : current)
+      setEventQueue((queue) => [
+        ...queue,
+        { kind: 'escape', speciesId: species.id, attempts: catchAttempts },
+      ])
+      setBattleBusy(false)
+      return
+    }
     setBattle((current) => current ? {
       ...current,
-      log: [...current.log, { side: 'system', text: `${species.name} broke free!` }],
+      catchAttempts,
+      log: [...current.log, { side: 'system', text: `${species.name} broke free! ${3 - catchAttempts} ${catchAttempts === 2 ? 'try' : 'tries'} left.` }],
     } : current)
     enemyTurn(activePartyIndex)
   }
@@ -512,7 +572,7 @@ export function useGameController() {
     toast,
     showToast: setToast,
     screenShake,
-    celebrationQueue,
+    eventQueue,
     badgeNames,
     filteredDex,
     setDragonNickname,
@@ -520,7 +580,7 @@ export function useGameController() {
     startGame,
     resetGame,
     debugCatchAll,
-    dismissCelebration,
+    dismissEvent,
     healParty,
     beginWildBattle,
     beginTrainerBattle,

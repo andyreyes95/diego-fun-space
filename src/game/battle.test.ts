@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createDragon } from '../data'
-import { applyKnockoutExperience, evolveInstance, gainExperience, getOpponentTeam, resolveAttack } from './battle'
+import { applyKnockoutExperience, doesWildDragonRunAway, evolveInstance, gainExperience, getOpponentTeam, getWildEncounter, getWildEncounterLevel, isDarkGangAmbush, resolveAttack } from './battle'
 import { speciesById } from '../data'
 
 describe('battle rules', () => {
@@ -63,5 +63,33 @@ describe('battle rules', () => {
     dragon = applyKnockoutExperience(dragon, 8).instance
     expect(dragon.xp).toBe(41)
     expect(dragon.level).toBe(6)
+  })
+
+  it('keeps low-level Emberfall wild dragons within stage-appropriate levels', () => {
+    expect(getWildEncounterLevel(1, () => 0)).toBe(5)
+    expect(getWildEncounterLevel(1, () => 0.99)).toBe(7)
+    expect(getWildEncounterLevel(2, () => 0)).toBe(9)
+    expect(getWildEncounterLevel(2, () => 0.99)).toBe(8)
+  })
+
+  it('limits wild pools on every planet to Stage 1 and Stage 2', () => {
+    const rolls = [0.99, 0.5, 0.99]
+    const encounter = getWildEncounter(() => rolls.shift() ?? 0)
+    expect(speciesById[encounter.speciesId].stage).toBe(2)
+    expect(encounter.level).toBe(8)
+  })
+
+  it('triggers a Dark Gang ambush for 15 percent of wild explorations', () => {
+    expect(isDarkGangAmbush(() => 0.1499)).toBe(true)
+    expect(isDarkGangAmbush(() => 0.15)).toBe(false)
+    expect(isDarkGangAmbush(() => 0.99)).toBe(false)
+  })
+
+  it('increases wild escape chances after failed capture attempts', () => {
+    expect(doesWildDragonRunAway(1, () => 0.19)).toBe(true)
+    expect(doesWildDragonRunAway(1, () => 0.2)).toBe(false)
+    expect(doesWildDragonRunAway(2, () => 0.59)).toBe(true)
+    expect(doesWildDragonRunAway(2, () => 0.6)).toBe(false)
+    expect(doesWildDragonRunAway(3, () => 0.99)).toBe(true)
   })
 })

@@ -73,7 +73,9 @@ export function BattleScreen({
   return (
     <main className={`${screenShake ? 'battle-screen shake' : 'battle-screen'} ${battleBackgroundClass} fixed-battle`}>
       <header className="battle-header">
-        <button className="icon-button" type="button" onClick={onRun} aria-label="Leave battle">×</button>
+        {battle.kind !== 'gang' && (
+          <button className="icon-button" type="button" onClick={onRun} aria-label="Leave battle">×</button>
+        )}
         <div>
           <span>{battle.enemyName} Battle</span>
           {battle.kind !== 'wild' && <strong>{battle.kind === 'gang' ? 'Dark Gang' : battle.trainerPhase === 2 ? 'Gym Leader' : `Gym Trainer ${(battle.trainerPhase ?? 0) + 1}`}</strong>}
@@ -148,9 +150,13 @@ export function BattleScreen({
                 </button>
               ))}
               {battle.kind === 'wild' && (
-                <button type="button" className="capture-button" onClick={onTryCapture} disabled={busy}>Catch</button>
+                <button type="button" className="capture-button" onClick={onTryCapture} disabled={busy || battle.catchAttempts >= 3}>
+                  Catch · {3 - battle.catchAttempts} left
+                </button>
               )}
-              <button type="button" className="run-button" onClick={onRun} disabled={busy}>Run</button>
+              {battle.kind !== 'gang' && (
+                <button type="button" className="run-button" onClick={onRun} disabled={busy}>Run</button>
+              )}
             </div>
             <div className="team-switcher" aria-label="Switch active dragon">
               {save.party.map((dragon, index) => {

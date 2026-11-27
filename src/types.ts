@@ -57,6 +57,7 @@ export interface BattleState {
   finished: boolean
   won: boolean
   caught: boolean
+  catchAttempts: number
 }
 
 export interface BattleLogEntry {
@@ -64,10 +65,12 @@ export interface BattleLogEntry {
   text: string
 }
 
-export type Celebration =
+export type BattleEvent =
   | { kind: 'evolution'; beforeId: string; afterId: string }
   | { kind: 'badge'; badge: 'Ember' | 'Bloom' }
   | { kind: 'catch'; speciesId: string; joinedParty: boolean }
+  | { kind: 'escape'; speciesId: string; attempts: number }
+  | { kind: 'ambush'; captainName: string }
 
 export interface GameSave {
   saveVersion: number
@@ -85,6 +88,6 @@ export interface GameSave {
   }
   storyStep: number
   darkGangDefeated: boolean
-  currentPlanet: 1 | 2
+  currentPlanet: 0 | 1 | 2
   mossgroveCaptureBaseline: number
 }

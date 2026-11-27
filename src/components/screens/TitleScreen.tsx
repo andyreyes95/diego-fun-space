@@ -14,18 +14,14 @@ export function TitleScreen({ playerName, selectedStarter, onNameChange, onStart
 
   return (
     <main className="title-screen">
-      <div className="title-sky" aria-hidden="true">
-        <span className="cloud cloud-one" />
-        <span className="cloud cloud-two" />
-        <span className="star star-one">✦</span>
-        <span className="star star-two">✦</span>
-        <span className="star star-three">✦</span>
-      </div>
       <section className="title-card">
-        <div className="title-dragons" aria-hidden="true">
-          {starterIds.map((id) => (
-            <DragonIcon key={id} species={speciesById[id]} size={150} />
-          ))}
+        <div className="title-app-icon">
+          <img
+            src={`${import.meta.env.BASE_URL}favicon.svg`}
+            alt="Starcrest Dragons app icon"
+            width={150}
+            height={150}
+          />
         </div>
         <p className="eyebrow">A journey beyond the stars</p>
         <h1>Starcrest<br /><span>Dragons</span></h1>

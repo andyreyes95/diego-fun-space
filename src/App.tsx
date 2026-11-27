@@ -1,6 +1,6 @@
 import { BottomNav, GameHeader } from './components/GameChrome'
 import { BattleScreen } from './components/screens/BattleScreen'
-import { CelebrationScreen } from './components/screens/CelebrationScreen'
+import { EventScreen } from './components/screens/EventScreen'
 import { DexView } from './components/screens/DexView'
 import { PlanetMap } from './components/screens/PlanetMap'
 import { TeamScreen } from './components/screens/TeamScreen'
@@ -23,17 +23,20 @@ function App() {
     )
   }
 
+  const currentPlanet = game.save.currentPlanet
+
   if (game.view === 'battle' && game.battle) {
     const activeIndex = game.save.party[game.activePartyIndex]?.hp > 0
       ? game.activePartyIndex
       : game.save.party.findIndex((dragon) => dragon.hp > 0)
     const active = activeIndex < 0 ? game.save.party[0] : game.save.party[activeIndex]
 
-    if (game.celebrationQueue[0]) {
+    if (game.eventQueue[0]) {
       return (
-        <CelebrationScreen
-          celebration={game.celebrationQueue[0]}
-          onDismiss={game.dismissCelebration}
+        <EventScreen
+          event={game.eventQueue[0]}
+          currentPlanet={currentPlanet}
+          onDismiss={game.dismissEvent}
         />
       )
     }
@@ -61,19 +64,19 @@ function App() {
         seenCount={game.save.seen.length}
         badgeNames={game.badgeNames}
         badges={game.save.badges}
-        onTown={() => game.setView('town')}
+        onHome={() => game.setView(currentPlanet === 0 ? 'town' : currentPlanet === 2 ? 'planet2' : 'planet1')}
       />
 
       {game.view === 'town' && (
-        <TownScreen save={game.save} onTravel={() => game.setView('planet1')} onHeal={game.healParty} />
+        <TownScreen save={game.save} onTravel={() => game.setView('planet1')} />
       )}
 
       {game.view === 'planet1' && (
-        <PlanetScreen save={game.save} planet={1} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onToast={game.showToast} />
+        <PlanetScreen save={game.save} planet={1} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
       )}
 
       {game.view === 'planet2' && (
-        <PlanetScreen save={game.save} planet={2} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onToast={game.showToast} />
+        <PlanetScreen save={game.save} planet={2} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
       )}
 
       {game.view === 'map' && (
@@ -104,7 +107,7 @@ function App() {
       {/* Temporary localhost debug action is wired through onCatchAll. */}
       <BottomNav
         view={game.view}
-        currentPlanet={game.save.currentPlanet}
+        currentPlanet={currentPlanet}
         setView={game.setView}
         onReset={game.resetGame}
         onCatchAll={game.debugCatchAll}

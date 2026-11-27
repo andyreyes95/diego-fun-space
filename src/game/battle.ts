@@ -1,4 +1,4 @@
-import { createDragon, getEffectiveness, speciesById } from '../data'
+import { createDragon, dragonSpecies, getEffectiveness, speciesById } from '../data'
 import type { DragonInstance, Move } from '../types'
 
 export interface AttackResult {
@@ -85,6 +85,27 @@ export function effectivenessText(effectiveness: number): string {
   if (effectiveness > 1) return ' It was super effective!'
   if (effectiveness < 1) return ' It was not very effective.'
   return ''
+}
+
+export function getWildEncounterLevel(stage: 1 | 2, roll: () => number = Math.random): number {
+  if (stage === 1) return 5 + Math.floor(roll() * 3)
+  return roll() < 0.10 ? 9 : 8
+}
+
+export function getWildEncounter(roll: () => number = Math.random): { speciesId: string; level: number } {
+  const stage: 1 | 2 = roll() < 0.6 ? 1 : 2
+  const pool = dragonSpecies.filter((species) => species.stage === stage)
+  const speciesId = pool[Math.floor(roll() * pool.length)].id
+  return { speciesId, level: getWildEncounterLevel(stage, roll) }
+}
+
+export function isDarkGangAmbush(roll: () => number = Math.random): boolean {
+  return roll() < 0.15
+}
+
+export function doesWildDragonRunAway(attempt: number, roll: () => number = Math.random): boolean {
+  const runChance = attempt >= 3 ? 1 : attempt === 2 ? 0.6 : 0.2
+  return roll() < runChance
 }
 
 export type TrainerBattleKind = 'fireGym' | 'grassGym' | 'gang'
