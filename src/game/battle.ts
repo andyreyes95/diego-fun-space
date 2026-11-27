@@ -89,22 +89,33 @@ export function effectivenessText(effectiveness: number): string {
 
 export type TrainerBattleKind = 'fireGym' | 'grassGym' | 'gang'
 
-export function getOpponentTeam(kind: TrainerBattleKind): DragonInstance[] {
+export function applyKnockoutExperience(dragon: DragonInstance, defeatedLevel: number): {
+  instance: DragonInstance
+  evolution: ReturnType<typeof evolveInstance>
+  xpGain: number
+} {
+  const xpGain = defeatedLevel * 7
+  const instance = gainExperience(dragon, xpGain)
+  const evolution = evolveInstance(instance)
+  return { instance: evolution?.instance ?? instance, evolution, xpGain }
+}
+
+export function getOpponentTeam(kind: TrainerBattleKind, phase: 0 | 1 | 2 = 2): DragonInstance[] {
   if (kind === 'fireGym') {
-    return [
-      createDragon('embbite', 5),
-      createDragon('flamico', 8),
-      createDragon('pyravolt', 12),
-      createDragon('pyravolt', 14),
-    ]
+    const teams = [
+      [['sparkfox', 5], ['cindrake', 6], ['glowmoth', 7]],
+      [['flamewhisk', 8], ['fluxite', 9], ['pyrocub', 10]],
+      [['infernotail', 12], ['infernastra', 14], ['rubyblaze', 14], ['ashrex', 16]],
+    ] as const
+    return teams[phase].map(([speciesId, level]) => createDragon(speciesId, level))
   }
   if (kind === 'grassGym') {
-    return [
-      createDragon('spriglet', 7),
-      createDragon('vinearo', 10),
-      createDragon('thornow', 12),
-      createDragon('thornow', 14),
-    ]
+    const teams = [
+      [['budlet', 7], ['sproutkin', 8], ['seedpip', 9]],
+      [['florwick', 10], ['leafling', 11], ['thornling', 12]],
+      [['bloomstrider', 14], ['canopyshade', 16], ['bramblewhip', 16], ['groveclaw', 18]],
+    ] as const
+    return teams[phase].map(([speciesId, level]) => createDragon(speciesId, level))
   }
   return [
     createDragon('shadee', 8),

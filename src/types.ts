@@ -48,6 +48,7 @@ export interface DragonInstance {
 
 export interface BattleState {
   kind: 'wild' | 'fireGym' | 'grassGym' | 'gang'
+  trainerPhase?: 0 | 1 | 2
   enemy: DragonInstance
   enemyTeam: DragonInstance[]
   enemyActiveIndex: number
@@ -78,6 +79,10 @@ export interface GameSave {
   caught: string[]
   captureCounts: Partial<Record<string, number>>
   badges: string[]
+  gymProgress: {
+    fire: 0 | 1 | 2
+    grass: 0 | 1 | 2
+  }
   storyStep: number
   darkGangDefeated: boolean
   currentPlanet: 1 | 2

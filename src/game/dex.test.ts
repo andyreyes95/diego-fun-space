@@ -15,6 +15,7 @@ function saveWithStates(): GameSave {
     caught: ['embbite'],
     captureCounts: { embbite: 1 },
     badges: [],
+    gymProgress: { fire: 0, grass: 0 },
     storyStep: 0,
     darkGangDefeated: false,
     currentPlanet: 1,

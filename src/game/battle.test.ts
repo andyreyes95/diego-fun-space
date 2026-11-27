@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createDragon } from '../data'
-import { evolveInstance, gainExperience, getOpponentTeam, resolveAttack } from './battle'
+import { applyKnockoutExperience, evolveInstance, gainExperience, getOpponentTeam, resolveAttack } from './battle'
 import { speciesById } from '../data'
 
 describe('battle rules', () => {
@@ -47,5 +47,21 @@ describe('battle rules', () => {
       expect(team).toHaveLength(4)
       expect(team.every((dragon) => speciesById[dragon.speciesId].type === testCase.type)).toBe(true)
     }
+  })
+
+  it('uses two stage 1/2 trainer battles before an all-stage-3 leader battle', () => {
+    for (const [kind, type] of [['fireGym', 'fire'], ['grassGym', 'grass']] as const) {
+      expect(getOpponentTeam(kind, 0).every((dragon) => speciesById[dragon.speciesId].stage < 3 && speciesById[dragon.speciesId].type === type)).toBe(true)
+      expect(getOpponentTeam(kind, 1).every((dragon) => speciesById[dragon.speciesId].stage < 3 && speciesById[dragon.speciesId].type === type)).toBe(true)
+      expect(getOpponentTeam(kind, 2).every((dragon) => speciesById[dragon.speciesId].stage === 3 && speciesById[dragon.speciesId].type === type)).toBe(true)
+    }
+  })
+
+  it('awards XP after every knockout in a multi-dragon battle', () => {
+    let dragon = createDragon('embbite', 5)
+    dragon = applyKnockoutExperience(dragon, 5).instance
+    dragon = applyKnockoutExperience(dragon, 8).instance
+    expect(dragon.xp).toBe(41)
+    expect(dragon.level).toBe(6)
   })
 })

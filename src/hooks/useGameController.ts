@@ -3,7 +3,7 @@ import { createDragon, dragonSpecies, speciesById } from '../data'
 import type { BattleLogEntry, BattleState, Celebration, DragonInstance, DragonType, GameSave, Move, View } from '../types'
 import { clearSave, loadSave, persistSave } from '../game/storage'
 import { addCapturedInstance, moveInstance, registerEvolution, registerSeen, renameInstance } from '../game/registration'
-import { effectivenessText, evolveInstance, gainExperience, getOpponentTeam, resolveAttack } from '../game/battle'
+import { applyKnockoutExperience, effectivenessText, getOpponentTeam, resolveAttack } from '../game/battle'
 import { filterDexSpecies } from '../game/dex'
 import { advanceStoryStep, getWildCaptureCount } from '../game/quests'
 
@@ -99,6 +99,7 @@ export function useGameController() {
       caught: [selectedStarter],
       captureCounts: { [selectedStarter]: 1 },
       badges: [],
+      gymProgress: { fire: 0, grass: 0 },
       storyStep: 0,
       darkGangDefeated: false,
       currentPlanet: 1,
@@ -200,16 +201,22 @@ export function useGameController() {
       return
     }
     setActivePartyIndex(firstAbleDragon)
-    const encounterName = kind === 'fireGym'
-      ? 'Gym Leader Sol'
+    const trainerPhase = kind === 'fireGym'
+      ? save.gymProgress.fire
       : kind === 'grassGym'
-        ? 'Gym Leader Moss'
+        ? save.gymProgress.grass
+        : 2
+    const encounterName = kind === 'fireGym'
+      ? trainerPhase === 2 ? 'Gym Leader Sol' : `Fire Gym Trainer ${trainerPhase + 1}`
+      : kind === 'grassGym'
+        ? trainerPhase === 2 ? 'Gym Leader Moss' : `Grass Gym Trainer ${trainerPhase + 1}`
         : 'Dark Gang Captain'
-    const enemyTeam = getOpponentTeam(kind)
+    const enemyTeam = getOpponentTeam(kind, trainerPhase)
     const enemy = enemyTeam[0]
     enemyTeam.forEach((dragon) => markSeen(dragon.speciesId))
     setBattle({
       kind,
+      trainerPhase,
       enemy,
       enemyTeam,
       enemyActiveIndex: 0,
@@ -317,6 +324,25 @@ export function useGameController() {
     window.setTimeout(() => setScreenShake(false), 180)
 
     if (enemyHp <= 0) {
+      const knockoutReward = applyKnockoutExperience(active, battle.enemy.level)
+      const victoriousDragon = knockoutReward.instance
+      const updatedParty = save.party.map((dragon, index) => index === activeIndex ? victoriousDragon : dragon)
+      const { evolution } = knockoutReward
+
+      if (evolution) {
+        setCelebrationQueue((queue) => [
+          ...queue,
+          { kind: 'evolution', beforeId: evolution.beforeId, afterId: evolution.afterId },
+        ])
+      }
+
+      setSave((current) => current ? {
+        ...(evolution
+          ? registerEvolution(current, evolution.beforeId, evolution.afterId)
+          : current),
+        party: updatedParty,
+      } : current)
+
       if (battle.kind !== 'wild' && battle.enemyTeam.length > battle.enemyActiveIndex + 1) {
         const nextEnemyIndex = battle.enemyActiveIndex + 1
         const nextEnemy = battle.enemyTeam[nextEnemyIndex]
@@ -331,36 +357,26 @@ export function useGameController() {
             ...battle.log,
             { side: 'player', text: `${playerName} used ${move.name}!${effect}` },
             { side: 'system', text: `${enemySpecies.name} fainted!` },
+            { side: 'system', text: `${playerName} gained ${knockoutReward.xpGain} XP.` },
             { side: 'opponent', text: `${battle.enemyName} sent out ${speciesById[nextEnemy.speciesId].name}!` },
           ],
         })
         setBattleBusy(false)
         return
       }
-      const xpGain = battle.enemy.level * 7
-      const gained = gainExperience(active, xpGain)
-      const evolution = evolveInstance(gained)
-      const victoriousDragon = evolution?.instance ?? gained
-      const updatedParty = save.party.map((dragon, index) => index === activeIndex ? victoriousDragon : dragon)
-
-      if (evolution) {
-        setCelebrationQueue((queue) => [
-          ...queue,
-          { kind: 'evolution', beforeId: evolution.beforeId, afterId: evolution.afterId },
-        ])
-      }
-      if (battle.kind === 'fireGym' && !save.badges.includes('Ember')) {
+      const leaderBattle = battle.trainerPhase === 2
+      if (battle.kind === 'fireGym' && leaderBattle && !save.badges.includes('Ember')) {
         setCelebrationQueue((queue) => [...queue, { kind: 'badge', badge: 'Ember' }])
       }
-      if (battle.kind === 'grassGym' && !save.badges.includes('Bloom')) {
+      if (battle.kind === 'grassGym' && leaderBattle && !save.badges.includes('Bloom')) {
         setCelebrationQueue((queue) => [...queue, { kind: 'badge', badge: 'Bloom' }])
       }
 
       setSave((current) => {
         if (!current) return current
-        const nextBadges = battle.kind === 'fireGym'
+        const nextBadges = battle.kind === 'fireGym' && leaderBattle
           ? current.badges.includes('Ember') ? current.badges : [...current.badges, 'Ember']
-          : battle.kind === 'grassGym'
+          : battle.kind === 'grassGym' && leaderBattle
             ? current.badges.includes('Bloom') ? current.badges : [...current.badges, 'Bloom']
             : current.badges
         const registered = evolution
@@ -370,8 +386,12 @@ export function useGameController() {
           ...registered,
           party: updatedParty,
           badges: nextBadges,
+          gymProgress: {
+            fire: battle.kind === 'fireGym' ? Math.min(2, current.gymProgress.fire + (leaderBattle ? 0 : 1)) as 0 | 1 | 2 : current.gymProgress.fire,
+            grass: battle.kind === 'grassGym' ? Math.min(2, current.gymProgress.grass + (leaderBattle ? 0 : 1)) as 0 | 1 | 2 : current.gymProgress.grass,
+          },
           darkGangDefeated: battle.kind === 'gang' ? true : registered.darkGangDefeated,
-          storyStep: battle.kind === 'grassGym' ? Math.max(5, registered.storyStep) : battle.kind === 'fireGym' ? Math.max(2, registered.storyStep) : registered.storyStep,
+          storyStep: leaderBattle && battle.kind === 'grassGym' ? Math.max(5, registered.storyStep) : leaderBattle && battle.kind === 'fireGym' ? Math.max(2, registered.storyStep) : registered.storyStep,
         }
         return withProgress
       })
@@ -385,6 +405,7 @@ export function useGameController() {
           ...battle.log,
           { side: 'player', text: `${playerName} used ${move.name}!${effect}` },
           { side: 'system', text: `${enemySpecies.name} fainted!` },
+          { side: 'system', text: `${playerName} gained ${knockoutReward.xpGain} XP.` },
         ],
         finished: true,
         won: true,

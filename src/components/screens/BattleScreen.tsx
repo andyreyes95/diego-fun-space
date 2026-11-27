@@ -76,7 +76,7 @@ export function BattleScreen({
         <button className="icon-button" type="button" onClick={onRun} aria-label="Leave battle">×</button>
         <div>
           <span>{battle.enemyName} Battle</span>
-          {battle.kind !== 'wild' && <strong>{battle.kind === 'gang' ? 'Dark Gang' : 'Gym Leader'}</strong>}
+          {battle.kind !== 'wild' && <strong>{battle.kind === 'gang' ? 'Dark Gang' : battle.trainerPhase === 2 ? 'Gym Leader' : `Gym Trainer ${(battle.trainerPhase ?? 0) + 1}`}</strong>}
         </div>
       </header>
       <section className="battle-arena fixed-battle-arena">

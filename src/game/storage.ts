@@ -29,6 +29,10 @@ export function migrateSave(parsed: Partial<GameSave> & { bench?: DragonInstance
     caught,
     captureCounts,
     badges: parsed.badges ?? [],
+    gymProgress: {
+      fire: parsed.gymProgress?.fire ?? (parsed.badges?.includes('Ember') ? 2 : 0),
+      grass: parsed.gymProgress?.grass ?? (parsed.badges?.includes('Bloom') ? 2 : 0),
+    },
     storyStep: parsed.storyStep ?? 0,
     darkGangDefeated: parsed.darkGangDefeated ?? false,
     currentPlanet: parsed.currentPlanet ?? 1,

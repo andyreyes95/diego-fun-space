@@ -63,8 +63,8 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
           <MapLocationCard className="wild-location" eyebrow="Explore" title="Wild dragons" onClick={() => onWildBattle(1)} />
           <MapLocationCard
             className="gym-location"
-            eyebrow={save.badges.includes('Ember') ? 'Badge earned' : 'Fire Gym'}
-            title="Challenge Sol"
+            eyebrow={save.badges.includes('Ember') ? 'Badge earned' : `Fire Gym · ${save.gymProgress.fire + 1} / 3`}
+            title={save.gymProgress.fire === 2 ? 'Challenge Sol' : `Battle Trainer ${save.gymProgress.fire + 1}`}
             onClick={() => onTrainerBattle('fireGym')}
           />
           <MapLocationCard
@@ -98,8 +98,8 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
         <MapLocationCard className="wild-location" eyebrow="Explore" title="Wild dragons" onClick={() => onWildBattle(2)} />
         <MapLocationCard
           className="gym-location"
-          eyebrow={save.badges.includes('Bloom') ? 'Badge earned' : 'Grass Gym'}
-          title="Challenge Moss"
+          eyebrow={save.badges.includes('Bloom') ? 'Badge earned' : `Grass Gym · ${save.gymProgress.grass + 1} / 3`}
+          title={save.gymProgress.grass === 2 ? 'Challenge Moss' : `Battle Trainer ${save.gymProgress.grass + 1}`}
           onClick={() => onTrainerBattle('grassGym')}
         />
         <MapLocationCard className="gang-location" eyebrow="Dark Gang" title="Break the ambush" onClick={() => onTrainerBattle('gang')} />
