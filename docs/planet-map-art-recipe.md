@@ -4,7 +4,7 @@
 
 Every planet uses the same interaction layout while retaining its own elemental theme. A planet map is assembled from one terrain-only base image and location assets layered over six permanent map areas. Five areas contain the core destinations; the sixth is reserved at the center for planet-specific story or event content. Location positions never depend on what happens to be in a planet's background.
 
-The first implementation is the Emberfall trial. Mossgrove is the first repeat using the same recipe:
+The first implementation is Emberfall. Mossgrove proves the recipe with a second natural theme, and Voltspire proves it with an electric-tech theme. Use the approved base, five location assets, and planet battle backgrounds as one visual family; do not approve the terrain alone and assume the locations will inherit its palette.
 
 - `public/assets/maps/emberfall-layered.png`
 - `public/assets/map-locations/emberfall/wild.png`
@@ -18,8 +18,40 @@ The first implementation is the Emberfall trial. Mossgrove is the first repeat u
 - `public/assets/map-locations/mossgrove/healing.png`
 - `public/assets/map-locations/mossgrove/market.png`
 - `public/assets/map-locations/mossgrove/portal.png`
+- `public/assets/maps/voltspire-layered.png`
+- `public/assets/map-locations/voltspire/wild.png`
+- `public/assets/map-locations/voltspire/gym.png`
+- `public/assets/map-locations/voltspire/healing.png`
+- `public/assets/map-locations/voltspire/market.png`
+- `public/assets/map-locations/voltspire/portal.png`
+- `public/assets/maps/tidehaven-layered.png`
+- `public/assets/map-locations/tidehaven/wild.png`
+- `public/assets/map-locations/tidehaven/gym.png`
+- `public/assets/map-locations/tidehaven/healing.png`
+- `public/assets/map-locations/tidehaven/market.png`
+- `public/assets/map-locations/tidehaven/portal.png`
+- `public/assets/maps/frostveil-layered.png`
+- `public/assets/map-locations/frostveil/wild.png`
+- `public/assets/map-locations/frostveil/gym.png`
+- `public/assets/map-locations/frostveil/healing.png`
+- `public/assets/map-locations/frostveil/market.png`
+- `public/assets/map-locations/frostveil/portal.png`
 
 Use `public/assets/maps/emberfall-layered.png` as the required blueprint image for every later planet. Include it in every base-map generation request alongside a simple one-color overlay showing the six area boundaries. The blueprint carries the actual path rhythm, partition balance, horizon height, camera angle, usable footprint, and visual spacing; the prompt provides the new elemental theme. The next planet must preserve that composition rather than independently reinterpret the layout.
+
+## Planet palette brief
+
+Before generating images, write a short palette brief with three explicit groups:
+
+1. **Replace:** colors and materials from the reference that must change for the new element.
+2. **Keep:** shared structural materials, lighting behavior, accents, and metal finishes that still belong to the planet.
+3. **Exclude:** colors that should not become dominant, even if they appear in the reference.
+
+Do not rely on a broad direction such as “make it electric,” “more icy,” or “forest themed.” Name concrete families for terrain, structures, energy/accents, vegetation, sky, and shadows. Include the same brief in every image request for the terrain, all five locations, and both battle backgrounds.
+
+If an earlier planet asset is used as a geometry or material reference, explicitly distinguish preserved properties—composition, silhouette, scale, lighting direction, and selected shared materials—from colors and motifs that must change.
+
+For example, Voltspire's brief used yellow-gold as its dominant surface family, retained metallic structure and cyan/blue energy accents, and excluded orange-red as a dominant color. Treat this as an example of the method, not a reusable planetary palette.
 
 ## Shared map canvas
 
@@ -27,6 +59,7 @@ Use `public/assets/maps/emberfall-layered.png` as the required blueprint image f
 - Logical aspect ratio: `3:2`.
 - View: elevated three-quarter aerial/isometric map view.
 - Camera, horizon height, light direction, contrast, scale, and path width must match across planets.
+- The terrain base, all location overlays, route preview, and battle backgrounds must use one approved palette brief.
 - The complete base must remain visible. Do not position a `cover` image independently of the location layer.
 - Letterbox space outside the 3:2 map may reuse the same base image, darkened and blurred.
 - Every location card, image, and label belongs to the same 3:2 stage. They scale and move as one unit.
@@ -81,7 +114,7 @@ Use the approved Emberfall base as the geometric reference for subsequent planet
 Reference input for a new planet:
 
 1. `public/assets/maps/emberfall-layered.png` as the strict composition authority.
-2. The planet's existing approved scenic art as the palette/theme authority.
+2. Existing approved scenic or concept art for the planet, when available, as the palette/theme authority.
 3. A six-area coordinate guide matching the anchor table above.
 
 Do not ask the model to invent the map partitions from the text alone. Explicitly require it to preserve the blueprint's camera, path rhythm, horizon, foreground, and destination clearings. Approve the base before generating any overlays.
@@ -108,7 +141,7 @@ No structures, destinations, characters, creatures, text, labels, signs, logos, 
 
 ## Transparent location assets
 
-Generate one separate asset for each destination:
+Generate the complete destination set, rather than revising one location at a time from an already orange or otherwise mismatched set:
 
 - Output: `1024x1024` RGBA PNG.
 - Background: true alpha transparency.
@@ -117,10 +150,12 @@ Generate one separate asset for each destination:
 - Keep the meaningful footprint centered within roughly 80% of the canvas.
 - Preserve equal transparent padding on all assets of the same type.
 - Export a soft contact shadow into the alpha where necessary.
+- Keep attached local details that define a destination—entrance steps, a few planters, merchandise, or a short path—while excluding broad terrain, distant scenery, and rectangular environment patches.
 - Do not bake labels, buttons, letters, signs, borders, or UI into the image.
 - Supply both the approved new planet base and the matching approved Emberfall destination asset as generation references.
 - Preserve the reference asset's overall footprint, vertical mass, silhouette, transparent padding, and map-scale readability; change materials and elemental motifs, not the anchor geometry.
 - Approve all five core assets as a set before integrating them. Check them at map size, not only at full resolution.
+- Regenerate every overlay in the set when a palette direction changes materially. Do not recolor only the base or only the gym and leave inherited reference colors on the remaining destinations.
 
 The destination family should remain recognizable across planets:
 
@@ -143,6 +178,28 @@ Keep the destination centered with consistent transparent padding and a subtle c
 <shared destination identity and planet-specific visual details>
 No text, sign, letters, label, border, UI, characters, dragons, creatures, or watermark.
 ```
+
+When generating the location set, repeat the planet's complete palette brief in every request and include:
+
+- The approved new base.
+- The matching approved Emberfall location asset for footprint and family identity.
+- The approved prior location from the same planet only when refining that same planet and preserving its exact geometry.
+
+## Battle background family
+
+Every planet also needs a matching pair of battle backgrounds:
+
+```text
+public/assets/battlegrounds/wild-<planet>.png
+public/assets/battlegrounds/gym-<planet>.png
+```
+
+- Both are `1536x1024`, `3:2`, and contain no painted rings or platforms.
+- Wild is an open natural clearing with the planet's terrain palette.
+- Gym is an indoor arena with the planet's gym architecture and elemental symbols.
+- Generate both from approved existing battle references for stage geometry, not for color.
+- The planet palette brief applies to the walls, terrain, lighting, trim, vegetation/crystals, and UI-adjacent accents.
+- The exact same image selected for the fixed battle stage must also be selected for the outer background/letterbox layer. Never allow the missing variant to fall through to Emberfall or Mossgrove.
 
 ## Integration
 
@@ -173,7 +230,16 @@ public/assets/map-locations/<planet>/portal.png
 
 The React component selects the planet's asset paths. It must not hard-code different anchor coordinates for each planet. Responsive rules may scale the shared 3:2 stage, but must never move individual location anchors.
 
-The planet's base path is selected through the shared `--planet-map-image` CSS variable. Do not replace the stage geometry with a planet-specific selector.
+The planet's base path is selected through a shared CSS custom property. Keep the shared stage geometry identical, set the property on the planet's root selector, and ensure the computed value resolves correctly regardless of stylesheet order. Do not replace shared geometry with a planet-specific layout.
+
+Battle integration needs all four selections for each planet:
+
+1. Outer `.battle-*` screen background.
+2. Fixed `1536x1024` battle-stage class.
+3. `.fixed-battle-arena::before` blurred letterbox image.
+4. Event-screen backdrop, when an event uses the planet map.
+
+Check all four explicitly. Matching the center stage while leaving one outer or letterbox selector on a prior planet is a common integration failure.
 
 ## Label treatment
 
@@ -193,14 +259,18 @@ This treatment matches the smaller `world-copy` banner, whose dark glass, soft b
 ## Repeatable production order
 
 1. Copy the current fixed anchor table without modification.
-2. Generate the `1536x1024` terrain base from the Emberfall blueprint plus the destination planet's approved old scenic art.
-3. Inspect the six clearings and connecting paths before generating location overlays.
-4. Generate `wild`, `gym`, `healing`, `market`, and `portal` one at a time from the new base plus the matching Emberfall asset.
-5. Leave the reserved center area empty until a story or encounter mechanic explicitly requires an asset there.
-6. Confirm every overlay PNG is truly RGBA and every base has no alpha.
-7. Integrate paths without changing shared anchor coordinates.
-8. Check desktop, landscape tablet, and portrait tablet; reject crops or independently moving layers.
-9. Once approved, use the completed planet as a comparison reference, but keep Emberfall as the composition blueprint for future maps.
+2. Write the planet palette brief: replace, keep, and exclude.
+3. Generate the `1536x1024` terrain base from the Emberfall blueprint plus the destination planet's approved existing scenic art, if one exists.
+4. Inspect the six clearings and connecting paths before generating location overlays.
+5. Generate `wild`, `gym`, `healing`, `market`, and `portal` as a coordinated set from the new base plus the matching Emberfall assets.
+6. Generate the Wild and Gym battle backgrounds from the same palette brief.
+7. If the palette direction changes, regenerate all affected terrain, location, preview, and battle assets together.
+8. Leave the reserved center area empty until a story or encounter mechanic explicitly requires an asset there.
+9. Confirm every overlay PNG is truly RGBA and every base/battle background has no alpha.
+10. Integrate paths without changing shared anchor coordinates.
+11. Check every rendered use of the planet artwork: route preview, 3:2 stage, outer stage fill, blurred battle letterbox, and applicable event backdrop. None may retain a previous planet's image.
+12. Check desktop, landscape tablet, and portrait tablet; reject crops or independently moving layers.
+13. Once approved, use the completed planet as a visual-family comparison reference, but keep Emberfall as the composition blueprint for future maps.
 
 ## Approval checklist
 
@@ -221,3 +291,8 @@ This treatment matches the smaller `world-copy` banner, whose dark glass, soft b
 - Base and overlays were approved separately, in that order.
 - The complete map scales as one unit on desktop, landscape tablet, and portrait tablet.
 - The planet's theme is distinct without changing the shared layout.
+- A written replace/keep/exclude palette brief was applied consistently to all planet artwork.
+- A palette revision regenerated the entire affected family rather than only the base image.
+- Wild and Gym battle stages, their outer backgrounds, and their blurred letterbox layers all use the same planet assets.
+- Route previews and event backdrops use the correct new planet.
+- CSS cascade was checked so every planet-specific map and battle value resolves to the intended asset.

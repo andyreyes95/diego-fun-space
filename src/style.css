@@ -6,8 +6,56 @@
   height: 100%;
 }
 
+.battle-wild-voltspire {
+  background:
+    linear-gradient(180deg, rgba(255, 246, 120, 0.04), rgba(38, 50, 58, 0.1)),
+    url('/assets/battlegrounds/wild-voltspire.png') center 48% / cover no-repeat;
+}
+
 .landscape-content[hidden] {
   display: none;
+}
+
+.battle-gym-voltspire {
+  background:
+    linear-gradient(180deg, rgba(255, 246, 120, 0.04), rgba(38, 50, 58, 0.1)),
+    url('/assets/battlegrounds/gym-voltspire.png') center 48% / cover no-repeat;
+}
+
+.battle-wild-cloudrest {
+  background:
+    linear-gradient(180deg, rgba(223, 237, 255, 0.16), rgba(75, 93, 125, 0.1)),
+    url('/assets/battlegrounds/wild-cloudrest.png') center 48% / cover no-repeat;
+}
+
+.battle-gym-cloudrest {
+  background:
+    linear-gradient(180deg, rgba(223, 237, 255, 0.16), rgba(75, 93, 125, 0.1)),
+    url('/assets/battlegrounds/gym-cloudrest.png') center 48% / cover no-repeat;
+}
+
+.battle-wild-tidehaven {
+  background:
+    linear-gradient(180deg, rgba(105, 218, 236, 0.12), rgba(38, 75, 92, 0.14)),
+    url('/assets/battlegrounds/wild-tidehaven.png') center 48% / cover no-repeat;
+}
+
+.battle-gym-tidehaven {
+  background:
+    linear-gradient(180deg, rgba(105, 218, 236, 0.12), rgba(38, 75, 92, 0.14)),
+    url('/assets/battlegrounds/gym-tidehaven.png') center 48% / cover no-repeat;
+}
+
+.battle-wild-frostveil {
+  background:
+    linear-gradient(180deg, rgba(198, 244, 255, 0.16), rgba(46, 78, 103, 0.12)),
+    url('/assets/battlegrounds/wild-frostveil.png') center 48% / cover no-repeat;
+}
+
+.battle-gym-frostveil {
+  background:
+    linear-gradient(180deg, rgba(198, 244, 255, 0.16), rgba(46, 78, 103, 0.12)),
+    url('/assets/battlegrounds/gym-frostveil.png') center 48% / cover no-repeat;
 }
 
 .landscape-gate {
@@ -21,6 +69,13 @@
   background:
     linear-gradient(rgba(31, 48, 48, 0.62), rgba(31, 48, 48, 0.82)),
     url('/assets/maps/willowvale.png') center / cover no-repeat;
+}
+
+.world-view.voltspire.layered-planet {
+  --planet-map-image: url('/assets/maps/voltspire-layered.png');
+  background:
+    linear-gradient(180deg, rgba(84, 69, 21, 0.22), rgba(44, 43, 29, 0.34)),
+    var(--planet-map-image) center / cover no-repeat;
 }
 
 .landscape-card {
@@ -806,6 +861,27 @@
     var(--planet-map-image) center / cover no-repeat;
 }
 
+.world-view.cloudrest.layered-planet {
+  --planet-map-image: url('/assets/maps/cloudrest-layered.png');
+  background:
+    linear-gradient(180deg, rgba(100, 124, 154, 0.14), rgba(69, 92, 128, 0.28)),
+    var(--planet-map-image) center / cover no-repeat;
+}
+
+.world-view.tidehaven.layered-planet {
+  --planet-map-image: url('/assets/maps/tidehaven-layered.png');
+  background:
+    linear-gradient(180deg, rgba(28, 107, 139, 0.14), rgba(27, 71, 91, 0.3)),
+    var(--planet-map-image) center / cover no-repeat;
+}
+
+.world-view.frostveil.layered-planet {
+  --planet-map-image: url('/assets/maps/frostveil-layered.png');
+  background:
+    linear-gradient(180deg, rgba(80, 127, 160, 0.16), rgba(42, 73, 105, 0.3)),
+    var(--planet-map-image) center / cover no-repeat;
+}
+
 .bottom-nav {
   z-index: 30;
   position: relative;
@@ -981,6 +1057,18 @@
     url('/assets/battlegrounds/wild-mossgrove.png') center / cover no-repeat;
 }
 
+.battle-wild-voltspire .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(72, 64, 26, 0.22), rgba(38, 50, 58, 0.38)),
+    url('/assets/battlegrounds/wild-voltspire.png') center / cover no-repeat;
+}
+
+.battle-wild-cloudrest .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(86, 112, 150, 0.2), rgba(38, 50, 58, 0.32)),
+    url('/assets/battlegrounds/wild-cloudrest.png') center / cover no-repeat;
+}
+
 .battle-gym-emberfall .fixed-battle-arena::before {
   background:
     linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
@@ -991,6 +1079,42 @@
   background:
     linear-gradient(180deg, rgba(38, 50, 58, 0.22), rgba(38, 50, 58, 0.38)),
     url('/assets/battlegrounds/gym-mossgrove.png') center / cover no-repeat;
+}
+
+.battle-gym-voltspire .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(72, 64, 26, 0.22), rgba(38, 50, 58, 0.38)),
+    url('/assets/battlegrounds/gym-voltspire.png') center / cover no-repeat;
+}
+
+.battle-gym-cloudrest .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(86, 112, 150, 0.2), rgba(38, 50, 58, 0.32)),
+    url('/assets/battlegrounds/gym-cloudrest.png') center / cover no-repeat;
+}
+
+.battle-wild-tidehaven .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(31, 125, 155, 0.2), rgba(38, 50, 58, 0.35)),
+    url('/assets/battlegrounds/wild-tidehaven.png') center / cover no-repeat;
+}
+
+.battle-gym-tidehaven .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(31, 125, 155, 0.2), rgba(38, 50, 58, 0.35)),
+    url('/assets/battlegrounds/gym-tidehaven.png') center / cover no-repeat;
+}
+
+.battle-wild-frostveil .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(70, 135, 173, 0.2), rgba(38, 50, 58, 0.35)),
+    url('/assets/battlegrounds/wild-frostveil.png') center / cover no-repeat;
+}
+
+.battle-gym-frostveil .fixed-battle-arena::before {
+  background:
+    linear-gradient(180deg, rgba(70, 135, 173, 0.2), rgba(38, 50, 58, 0.35)),
+    url('/assets/battlegrounds/gym-frostveil.png') center / cover no-repeat;
 }
 
 .battle-gang-dark .fixed-battle-arena::before {
@@ -1035,6 +1159,38 @@
 
 .fixed-gym-mossgrove {
   background-image: url('/assets/battlegrounds/gym-mossgrove.png');
+}
+
+.fixed-wild-voltspire {
+  background-image: url('/assets/battlegrounds/wild-voltspire.png');
+}
+
+.fixed-gym-voltspire {
+  background-image: url('/assets/battlegrounds/gym-voltspire.png');
+}
+
+.fixed-wild-cloudrest {
+  background-image: url('/assets/battlegrounds/wild-cloudrest.png');
+}
+
+.fixed-gym-cloudrest {
+  background-image: url('/assets/battlegrounds/gym-cloudrest.png');
+}
+
+.fixed-wild-tidehaven {
+  background-image: url('/assets/battlegrounds/wild-tidehaven.png');
+}
+
+.fixed-gym-tidehaven {
+  background-image: url('/assets/battlegrounds/gym-tidehaven.png');
+}
+
+.fixed-wild-frostveil {
+  background-image: url('/assets/battlegrounds/wild-frostveil.png');
+}
+
+.fixed-gym-frostveil {
+  background-image: url('/assets/battlegrounds/gym-frostveil.png');
 }
 
 .fixed-gang-dark {
@@ -1967,6 +2123,26 @@
   background-image: url('/assets/maps/mossgrove.png');
 }
 
+.volt-preview {
+  background-image: url('/assets/maps/voltspire-layered.png');
+}
+
+.cloud-preview {
+  background-image: url('/assets/maps/cloudrest-layered.png');
+}
+
+.tide-preview {
+  background-image: url('/assets/maps/tidehaven-layered.png');
+}
+
+.frost-preview {
+  background-image: url('/assets/maps/frostveil-layered.png');
+}
+
+.planet-route {
+  grid-template-columns: 1fr 12px 1fr 12px 1fr 12px 1fr 12px 1fr 12px 1fr 12px 1fr;
+}
+
 .mystery-preview {
   display: grid;
   place-items: center;
@@ -2586,6 +2762,22 @@
   --event-map-image: url('/assets/maps/mossgrove.png');
 }
 
+.event-planet-3 {
+  --event-map-image: url('/assets/maps/voltspire-layered.png');
+}
+
+.event-planet-4 {
+  --event-map-image: url('/assets/maps/cloudrest-layered.png');
+}
+
+.event-planet-5 {
+  --event-map-image: url('/assets/maps/tidehaven-layered.png');
+}
+
+.event-planet-6 {
+  --event-map-image: url('/assets/maps/frostveil-layered.png');
+}
+
 .celebration-rays {
   position: absolute;
   width: min(780px, 110vw);
@@ -2732,6 +2924,95 @@
   background:
     radial-gradient(circle at 50% 44%, #d8ed87 0 18%, transparent 19%),
     conic-gradient(from 20deg, #dff3a1, #75ae58, #39734a, #91c369, #dff3a1);
+}
+
+.earned-badge.electric {
+  background:
+    radial-gradient(circle at 50% 44%, #fff7a6 0 18%, transparent 19%),
+    conic-gradient(from 20deg, #fff7a6, #e3c83a, #79651e, #ffd84f, #fff7a6);
+}
+
+.badge-bolt {
+  z-index: 2;
+  display: grid;
+  width: 88px;
+  height: 88px;
+  place-items: center;
+  border: 5px solid rgba(255, 255, 255, 0.62);
+  border-radius: 28px;
+  background: linear-gradient(145deg, #fff8b1, #e5c63a);
+  box-shadow: 0 7px 0 rgba(112, 78, 38, 0.22);
+  color: #594713;
+  font-size: 58px;
+  line-height: 1;
+  text-shadow: 0 0 14px #fff8b1;
+  transform: rotate(4deg);
+}
+
+.earned-badge.cloud {
+  background:
+    radial-gradient(circle at 50% 44%, #f4fbff 0 18%, transparent 19%),
+    conic-gradient(from 20deg, #edf8ff, #a8c8eb, #758eaf, #cfdcff, #edf8ff);
+}
+
+.badge-cloud {
+  z-index: 2;
+  display: grid;
+  width: 88px;
+  height: 88px;
+  place-items: center;
+  border: 5px solid rgba(255, 255, 255, 0.66);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f8fcff, #c7ddf5);
+  box-shadow: 0 7px 0 rgba(79, 102, 131, 0.22);
+  color: #6689b2;
+  font-size: 54px;
+  line-height: 1;
+  text-shadow: 0 0 14px #fff;
+}
+
+.earned-badge.water {
+  background:
+    radial-gradient(circle at 50% 44%, #dcfbff 0 18%, transparent 19%),
+    conic-gradient(from 20deg, #d8fbff, #54c3d8, #1a6b98, #82e1ec, #d8fbff);
+}
+
+.badge-wave {
+  z-index: 2;
+  display: grid;
+  width: 88px;
+  height: 88px;
+  place-items: center;
+  border: 5px solid rgba(255, 255, 255, 0.66);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #dffcff, #55c5db);
+  box-shadow: 0 7px 0 rgba(31, 105, 133, 0.22);
+  color: #186e8c;
+  font-size: 58px;
+  line-height: 1;
+  text-shadow: 0 0 14px #fff;
+}
+
+.earned-badge.ice {
+  background:
+    radial-gradient(circle at 50% 44%, #efffff 0 18%, transparent 19%),
+    conic-gradient(from 20deg, #f1ffff, #93e2ef, #5c83aa, #c8efff, #f1ffff);
+}
+
+.badge-snowflake {
+  z-index: 2;
+  display: grid;
+  width: 88px;
+  height: 88px;
+  place-items: center;
+  border: 5px solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f5ffff, #9cdef0);
+  box-shadow: 0 7px 0 rgba(70, 110, 145, 0.22);
+  color: #4c8cad;
+  font-size: 54px;
+  line-height: 1;
+  text-shadow: 0 0 14px #fff;
 }
 
 .badge-gem {
@@ -3284,7 +3565,7 @@
   .planet-route {
     height: calc(100% - 92px);
     min-height: 0;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 5px;
   }
 

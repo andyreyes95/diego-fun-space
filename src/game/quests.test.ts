@@ -13,7 +13,7 @@ function save(overrides: Partial<GameSave> = {}): GameSave {
     caught: ['embbite'],
     captureCounts: { embbite: 1 },
     badges: [],
-    gymProgress: { fire: 0, grass: 0 },
+    gymProgress: { fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0 },
     storyStep: 0,
     darkGangDefeated: false,
     currentPlanet: 1,
@@ -43,9 +43,57 @@ describe('quest progression', () => {
     expect(afterMore).toMatchObject({ completed: 4, title: 'Challenge Moss for the Bloom Badge' })
   })
 
-  it('finishes after the Bloom badge', () => {
-    const objective = getQuestObjective(save({ badges: ['Ember', 'Bloom'], storyStep: 5, currentPlanet: 2, mossgroveCaptureBaseline: 1, captureCounts: { embbite: 1, spriglet: 1, shadee: 1 } }))
+  it('continues from Bloom into Voltspire and finishes after the Spark badge', () => {
+    const readyForVoltspire = save({ badges: ['Ember', 'Bloom'], storyStep: 5, currentPlanet: 2, mossgroveCaptureBaseline: 1, captureCounts: { embbite: 1, spriglet: 1, shadee: 1 } })
+    expect(getQuestObjective(readyForVoltspire)).toMatchObject({ completed: 5, title: 'Travel to Voltspire', finished: false })
+
+    const inVoltspire = { ...readyForVoltspire, storyStep: 6, currentPlanet: 3 as const }
+    expect(getQuestObjective(inVoltspire)).toMatchObject({ completed: 6, title: 'Explore Voltspire and prepare your team' })
+
+    const readyForVolt = {
+      ...inVoltspire,
+      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 0 as const, water: 0 as const, ice: 0 as const },
+    }
+    expect(getQuestObjective(readyForVolt)).toMatchObject({ completed: 7, title: 'Challenge Volt for the Spark Badge' })
+
+    const sparkComplete = getQuestObjective({ ...readyForVolt, badges: ['Ember', 'Bloom', 'Spark'], storyStep: 8 })
+    expect(sparkComplete).toMatchObject({ completed: 8, title: 'Travel to Cloudrest', finished: false })
+
+    const inCloudrest = { ...readyForVolt, badges: ['Ember', 'Bloom', 'Spark'], storyStep: 9, currentPlanet: 4 as const }
+    expect(getQuestObjective(inCloudrest)).toMatchObject({ completed: 9, title: 'Explore Cloudrest and prepare your team' })
+
+    const readyForCirrus = {
+      ...inCloudrest,
+      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 2 as const, water: 0 as const, ice: 0 as const },
+    }
+    expect(getQuestObjective(readyForCirrus)).toMatchObject({ completed: 10, title: 'Challenge Cirrus for the Breeze Badge' })
+
+    const breezeComplete = getQuestObjective({ ...readyForCirrus, badges: ['Ember', 'Bloom', 'Spark', 'Breeze'], storyStep: 11 })
+    expect(breezeComplete).toMatchObject({ completed: 11, title: 'Travel to Tidehaven', finished: false })
+
+    const inTidehaven = { ...readyForCirrus, badges: ['Ember', 'Bloom', 'Spark', 'Breeze'], storyStep: 12, currentPlanet: 5 as const }
+    expect(getQuestObjective(inTidehaven)).toMatchObject({ completed: 12, title: 'Explore Tidehaven and prepare your team' })
+
+    const readyForMarina = {
+      ...inTidehaven,
+      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 2 as const, water: 2 as const, ice: 0 as const },
+    }
+    expect(getQuestObjective(readyForMarina)).toMatchObject({ completed: 13, title: 'Challenge Marina for the Tide Badge' })
+
+    const tideComplete = getQuestObjective({ ...readyForMarina, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide'], storyStep: 14 })
+    expect(tideComplete).toMatchObject({ completed: 14, title: 'Travel to Frostveil', finished: false })
+
+    const inFrostveil = { ...readyForMarina, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide'], storyStep: 15, currentPlanet: 6 as const }
+    expect(getQuestObjective(inFrostveil)).toMatchObject({ completed: 15, title: 'Explore Frostveil and prepare your team' })
+
+    const readyForGlacia = {
+      ...inFrostveil,
+      gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 2 as const, water: 2 as const, ice: 2 as const },
+    }
+    expect(getQuestObjective(readyForGlacia)).toMatchObject({ completed: 16, title: 'Challenge Glacia for the Frost Badge' })
+
+    const objective = getQuestObjective({ ...readyForGlacia, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost'], storyStep: 17 })
     expect(objective.finished).toBe(true)
-    expect(objective.completed).toBe(5)
+    expect(objective.completed).toBe(17)
   })
 })

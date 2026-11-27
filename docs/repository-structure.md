@@ -60,6 +60,10 @@ public/
       emberfall-layered.png
       mossgrove.png
       mossgrove-layered.png
+      voltspire-layered.png
+      cloudrest-layered.png
+      tidehaven-layered.png
+      frostveil-layered.png
       planet-map.png
        map-locations/           # transparent layered planet destinations
       emberfall/
@@ -69,6 +73,30 @@ public/
         market.png
         portal.png
          mossgrove/
+        wild.png
+        gym.png
+        healing.png
+        market.png
+        portal.png
+         voltspire/
+        wild.png
+        gym.png
+        healing.png
+        market.png
+        portal.png
+         cloudrest/
+        wild.png
+        gym.png
+        healing.png
+        market.png
+        portal.png
+         tidehaven/
+        wild.png
+        gym.png
+        healing.png
+        market.png
+        portal.png
+         frostveil/
         wild.png
         gym.png
         healing.png

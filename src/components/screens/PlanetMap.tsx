@@ -9,6 +9,10 @@ interface PlanetMapProps {
 
 export function PlanetMap({ save, onNavigate, onToast }: PlanetMapProps) {
   const mossgroveUnlocked = save.badges.includes('Ember')
+  const voltspireUnlocked = save.badges.includes('Bloom')
+  const cloudrestUnlocked = save.badges.includes('Spark')
+  const tidehavenUnlocked = save.badges.includes('Breeze')
+  const frostveilUnlocked = save.badges.includes('Tide')
 
   return (
     <section className="planet-map-view">
@@ -17,7 +21,7 @@ export function PlanetMap({ save, onNavigate, onToast }: PlanetMapProps) {
           <p className="eyebrow">Starlane Map</p>
           <h1>Choose a planet</h1>
         </div>
-        <span>{save.currentPlanet === 0 ? 'Willowvale route' : save.currentPlanet === 1 ? 'Emberfall route' : 'Mossgrove route'}</span>
+        <span>{save.currentPlanet === 0 ? 'Willowvale route' : save.currentPlanet === 1 ? 'Emberfall route' : save.currentPlanet === 2 ? 'Mossgrove route' : save.currentPlanet === 3 ? 'Voltspire route' : save.currentPlanet === 4 ? 'Cloudrest route' : save.currentPlanet === 5 ? 'Tidehaven route' : 'Frostveil route'}</span>
       </div>
       <div className="planet-route" aria-label="Planet route">
         <MapLocationCard
@@ -56,6 +60,70 @@ export function PlanetMap({ save, onNavigate, onToast }: PlanetMapProps) {
           title={mossgroveUnlocked ? 'Mossgrove' : 'Unknown planet'}
           detail={mossgroveUnlocked ? 'Planet 2 · Grass Gym' : 'Uncharted destination'}
           status={mossgroveUnlocked ? 'Available' : 'Locked · Ember Badge'}
+        />
+        <span className={voltspireUnlocked ? 'route-line unlocked' : 'route-line'} aria-hidden="true" />
+        <MapLocationCard
+          baseClassName="planet-node"
+          className={save.currentPlanet === 3 ? 'active' : voltspireUnlocked ? '' : 'locked'}
+          onClick={() => {
+            if (!voltspireUnlocked) {
+              onToast('Voltspire unlocks after you earn the Bloom Badge.')
+              return
+            }
+            onNavigate('planet3')
+          }}
+          previewClass={voltspireUnlocked ? 'volt-preview' : 'mystery-preview'}
+          title={voltspireUnlocked ? 'Voltspire' : 'Unknown planet'}
+          detail={voltspireUnlocked ? 'Planet 3 · Electric Gym' : 'Charged destination'}
+          status={voltspireUnlocked ? 'Available' : 'Locked · Bloom Badge'}
+        />
+        <span className={cloudrestUnlocked ? 'route-line unlocked' : 'route-line'} aria-hidden="true" />
+        <MapLocationCard
+          baseClassName="planet-node"
+          className={save.currentPlanet === 4 ? 'active' : cloudrestUnlocked ? '' : 'locked'}
+          onClick={() => {
+            if (!cloudrestUnlocked) {
+              onToast('Cloudrest unlocks after you earn the Spark Badge.')
+              return
+            }
+            onNavigate('planet4')
+          }}
+          previewClass={cloudrestUnlocked ? 'cloud-preview' : 'mystery-preview'}
+          title={cloudrestUnlocked ? 'Cloudrest' : 'Unknown planet'}
+          detail={cloudrestUnlocked ? 'Planet 4 · Cloud Gym' : 'Floating destination'}
+          status={cloudrestUnlocked ? 'Available' : 'Locked · Spark Badge'}
+        />
+        <span className={tidehavenUnlocked ? 'route-line unlocked' : 'route-line'} aria-hidden="true" />
+        <MapLocationCard
+          baseClassName="planet-node"
+          className={save.currentPlanet === 5 ? 'active' : tidehavenUnlocked ? '' : 'locked'}
+          onClick={() => {
+            if (!tidehavenUnlocked) {
+              onToast('Tidehaven unlocks after you earn the Breeze Badge.')
+              return
+            }
+            onNavigate('planet5')
+          }}
+          previewClass={tidehavenUnlocked ? 'tide-preview' : 'mystery-preview'}
+          title={tidehavenUnlocked ? 'Tidehaven' : 'Unknown planet'}
+          detail={tidehavenUnlocked ? 'Planet 5 · Water Gym' : 'Oceanic destination'}
+          status={tidehavenUnlocked ? 'Available' : 'Locked · Breeze Badge'}
+        />
+        <span className={frostveilUnlocked ? 'route-line unlocked' : 'route-line'} aria-hidden="true" />
+        <MapLocationCard
+          baseClassName="planet-node"
+          className={save.currentPlanet === 6 ? 'active' : frostveilUnlocked ? '' : 'locked'}
+          onClick={() => {
+            if (!frostveilUnlocked) {
+              onToast('Frostveil unlocks after you earn the Tide Badge.')
+              return
+            }
+            onNavigate('planet6')
+          }}
+          previewClass={frostveilUnlocked ? 'frost-preview' : 'mystery-preview'}
+          title={frostveilUnlocked ? 'Frostveil' : 'Unknown planet'}
+          detail={frostveilUnlocked ? 'Planet 6 · Ice Gym' : 'Frozen destination'}
+          status={frostveilUnlocked ? 'Available' : 'Locked · Tide Badge'}
         />
       </div>
     </section>

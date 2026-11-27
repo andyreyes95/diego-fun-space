@@ -11,7 +11,7 @@ interface GameHeaderProps {
 }
 
 export function GameHeader({ caughtCount, seenCount, badgeNames, badges, onHome }: GameHeaderProps) {
-  const badgeSymbols = ['◆', '♧', '❉', 'Ϟ', '☀', '☁', '◐', '✦']
+  const badgeSymbols = ['◆', '♧', 'Ϟ', '☁', '❉', '◐', '✦', '☀']
 
   return (
     <header className="game-header">
@@ -47,13 +47,13 @@ export function GameHeader({ caughtCount, seenCount, badgeNames, badges, onHome 
 
 interface BottomNavProps {
   view: View
-  currentPlanet: 0 | 1 | 2
+  currentPlanet: 0 | 1 | 2 | 3 | 4 | 5 | 6
   setView: (view: View) => void
   onReset: () => void
-  onCatchAll?: () => void
+  onUnlockAll?: () => void
 }
 
-export function BottomNav({ view, currentPlanet, setView, onReset, onCatchAll }: BottomNavProps) {
+export function BottomNav({ view, currentPlanet, setView, onReset, onUnlockAll }: BottomNavProps) {
   const navButton = (target: View, label: string, icon: ReactNode) => (
     <button className={view === target ? 'nav-button active' : 'nav-button'} onClick={() => setView(target)} type="button">
       <span className="nav-icon" aria-hidden="true">{icon}</span>
@@ -62,20 +62,20 @@ export function BottomNav({ view, currentPlanet, setView, onReset, onCatchAll }:
   )
 
   return (
-    <nav className={onCatchAll ? 'bottom-nav with-debug' : 'bottom-nav'} aria-label="Main navigation">
+    <nav className={onUnlockAll ? 'bottom-nav with-debug' : 'bottom-nav'} aria-label="Main navigation">
       <button
-        className={view === 'town' || view === 'planet1' || view === 'planet2' ? 'nav-button active' : 'nav-button'}
+        className={view === 'town' || view === 'planet1' || view === 'planet2' || view === 'planet3' || view === 'planet4' || view === 'planet5' || view === 'planet6' ? 'nav-button active' : 'nav-button'}
         type="button"
-        onClick={() => setView(currentPlanet === 0 ? 'town' : currentPlanet === 2 ? 'planet2' : 'planet1')}
+        onClick={() => setView(currentPlanet === 0 ? 'town' : currentPlanet === 1 ? 'planet1' : currentPlanet === 2 ? 'planet2' : currentPlanet === 3 ? 'planet3' : currentPlanet === 4 ? 'planet4' : currentPlanet === 5 ? 'planet5' : 'planet6')}
       >
         <span className="nav-icon" aria-hidden="true"><Planet size={35} weight="fill" /></span>
-        <span>{currentPlanet === 0 ? 'Willowvale' : currentPlanet === 2 ? 'Mossgrove' : 'Emberfall'}</span>
+        <span>{currentPlanet === 0 ? 'Willowvale' : currentPlanet === 1 ? 'Emberfall' : currentPlanet === 2 ? 'Mossgrove' : currentPlanet === 3 ? 'Voltspire' : currentPlanet === 4 ? 'Cloudrest' : currentPlanet === 5 ? 'Tidehaven' : 'Frostveil'}</span>
       </button>
       {navButton('dex', 'Dragon Dex', <ScanSmiley size={35} weight="fill" />)}
       {navButton('team', 'Team', <Strategy size={35} weight="fill" />)}
       <button className="nav-button" type="button" onClick={onReset}>Reset</button>
       {/* Temporary localhost debug cheat; the controller omits this action on other hosts. */}
-      {onCatchAll && <button className="nav-button" type="button" onClick={onCatchAll}>Catch all</button>}
+      {onUnlockAll && <button className="nav-button" type="button" onClick={onUnlockAll}>Unlock all</button>}
     </nav>
   )
 }

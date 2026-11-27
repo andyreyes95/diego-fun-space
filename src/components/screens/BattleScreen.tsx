@@ -57,18 +57,50 @@ export function BattleScreen({
       ? 'fixed-gym-emberfall'
       : battle.kind === 'grassGym'
         ? 'fixed-gym-mossgrove'
-        : save.currentPlanet === 2
-          ? 'fixed-wild-mossgrove'
-          : 'fixed-wild-emberfall'
+        : battle.kind === 'electricGym'
+          ? 'fixed-gym-voltspire'
+            : battle.kind === 'cloudGym'
+              ? 'fixed-gym-cloudrest'
+              : battle.kind === 'waterGym'
+                ? 'fixed-gym-tidehaven'
+                : battle.kind === 'iceGym'
+                  ? 'fixed-gym-frostveil'
+              : save.currentPlanet === 1
+                ? 'fixed-wild-emberfall'
+                : save.currentPlanet === 2
+                  ? 'fixed-wild-mossgrove'
+                  : save.currentPlanet === 3
+                    ? 'fixed-wild-voltspire'
+                    : save.currentPlanet === 4
+                      ? 'fixed-wild-cloudrest'
+                      : save.currentPlanet === 5
+                        ? 'fixed-wild-tidehaven'
+                        : 'fixed-wild-frostveil'
   const battleBackgroundClass = battle.kind === 'gang'
     ? 'battle-gang-dark'
     : battle.kind === 'fireGym'
       ? 'battle-gym-emberfall'
       : battle.kind === 'grassGym'
         ? 'battle-gym-mossgrove'
-        : save.currentPlanet === 2
-          ? 'battle-wild-mossgrove'
-          : 'battle-wild-emberfall'
+        : battle.kind === 'electricGym'
+          ? 'battle-gym-voltspire'
+            : battle.kind === 'cloudGym'
+              ? 'battle-gym-cloudrest'
+              : battle.kind === 'waterGym'
+                ? 'battle-gym-tidehaven'
+                : battle.kind === 'iceGym'
+                  ? 'battle-gym-frostveil'
+              : save.currentPlanet === 1
+                ? 'battle-wild-emberfall'
+                : save.currentPlanet === 2
+                  ? 'battle-wild-mossgrove'
+                  : save.currentPlanet === 3
+                    ? 'battle-wild-voltspire'
+                    : save.currentPlanet === 4
+                      ? 'battle-wild-cloudrest'
+                      : save.currentPlanet === 5
+                        ? 'battle-wild-tidehaven'
+                        : 'battle-wild-frostveil'
 
   return (
     <main className={`${screenShake ? 'battle-screen shake' : 'battle-screen'} ${battleBackgroundClass} fixed-battle`}>

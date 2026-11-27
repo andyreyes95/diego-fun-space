@@ -8,7 +8,7 @@ export type DragonType =
   | 'cloud'
   | 'dark'
 
-export type View = 'title' | 'town' | 'planet1' | 'planet2' | 'battle' | 'dex' | 'team' | 'map'
+export type View = 'title' | 'town' | 'planet1' | 'planet2' | 'planet3' | 'planet4' | 'planet5' | 'planet6' | 'battle' | 'dex' | 'team' | 'map'
 
 export interface DragonSpecies {
   id: string
@@ -47,7 +47,7 @@ export interface DragonInstance {
 }
 
 export interface BattleState {
-  kind: 'wild' | 'fireGym' | 'grassGym' | 'gang'
+  kind: 'wild' | 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'gang'
   trainerPhase?: 0 | 1 | 2
   enemy: DragonInstance
   enemyTeam: DragonInstance[]
@@ -67,7 +67,7 @@ export interface BattleLogEntry {
 
 export type BattleEvent =
   | { kind: 'evolution'; beforeId: string; afterId: string }
-  | { kind: 'badge'; badge: 'Ember' | 'Bloom' }
+  | { kind: 'badge'; badge: 'Ember' | 'Bloom' | 'Spark' | 'Breeze' | 'Tide' | 'Frost' }
   | { kind: 'catch'; speciesId: string; joinedParty: boolean }
   | { kind: 'escape'; speciesId: string; attempts: number }
   | { kind: 'ambush'; captainName: string }
@@ -85,9 +85,13 @@ export interface GameSave {
   gymProgress: {
     fire: 0 | 1 | 2
     grass: 0 | 1 | 2
+    electric: 0 | 1 | 2
+    cloud: 0 | 1 | 2
+    water: 0 | 1 | 2
+    ice: 0 | 1 | 2
   }
   storyStep: number
   darkGangDefeated: boolean
-  currentPlanet: 0 | 1 | 2
+  currentPlanet: 0 | 1 | 2 | 3 | 4 | 5 | 6
   mossgroveCaptureBaseline: number
 }

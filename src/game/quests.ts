@@ -6,6 +6,18 @@ export const questSteps = [
   'Travel to Mossgrove',
   'Catch more dragons on your journey',
   'Challenge Moss for the Bloom Badge',
+  'Travel to Voltspire',
+  'Explore Voltspire and prepare your team',
+  'Challenge Volt for the Spark Badge',
+  'Travel to Cloudrest',
+  'Explore Cloudrest and prepare your team',
+  'Challenge Cirrus for the Breeze Badge',
+  'Travel to Tidehaven',
+  'Explore Tidehaven and prepare your team',
+  'Challenge Marina for the Tide Badge',
+  'Travel to Frostveil',
+  'Explore Frostveil and prepare your team',
+  'Challenge Glacia for the Frost Badge',
 ] as const
 
 export interface QuestObjective {
@@ -32,6 +44,18 @@ export function getQuestObjective(save: GameSave): QuestObjective {
   if (completed >= 2 && (save.storyStep >= 3 || save.currentPlanet === 2)) completed = 3
   if (completed >= 3 && wildCaptures > save.mossgroveCaptureBaseline) completed = 4
   if (completed >= 4 && save.badges.includes('Bloom')) completed = 5
+  if (completed >= 5 && (save.storyStep >= 6 || save.currentPlanet === 3)) completed = 6
+  if (completed >= 6 && save.gymProgress.electric >= 2) completed = 7
+  if (completed >= 7 && save.badges.includes('Spark')) completed = 8
+  if (completed >= 8 && (save.storyStep >= 9 || save.currentPlanet === 4)) completed = 9
+  if (completed >= 9 && save.gymProgress.cloud >= 2) completed = 10
+  if (completed >= 10 && save.badges.includes('Breeze')) completed = 11
+  if (completed >= 11 && (save.storyStep >= 12 || save.currentPlanet === 5)) completed = 12
+  if (completed >= 12 && save.gymProgress.water >= 2) completed = 13
+  if (completed >= 13 && save.badges.includes('Tide')) completed = 14
+  if (completed >= 14 && (save.storyStep >= 15 || save.currentPlanet === 6)) completed = 15
+  if (completed >= 15 && save.gymProgress.ice >= 2) completed = 16
+  if (completed >= 16 && save.badges.includes('Frost')) completed = 17
 
   return {
     title: questSteps[Math.min(completed, questSteps.length - 1)],

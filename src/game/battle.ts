@@ -108,7 +108,7 @@ export function doesWildDragonRunAway(attempt: number, roll: () => number = Math
   return roll() < runChance
 }
 
-export type TrainerBattleKind = 'fireGym' | 'grassGym' | 'gang'
+export type TrainerBattleKind = 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'gang'
 
 export function applyKnockoutExperience(dragon: DragonInstance, defeatedLevel: number): {
   instance: DragonInstance
@@ -135,6 +135,38 @@ export function getOpponentTeam(kind: TrainerBattleKind, phase: 0 | 1 | 2 = 2): 
       [['budlet', 7], ['sproutkin', 8], ['seedpip', 9]],
       [['florwick', 10], ['leafling', 11], ['thornling', 12]],
       [['bloomstrider', 14], ['canopyshade', 16], ['bramblewhip', 16], ['groveclaw', 18]],
+    ] as const
+    return teams[phase].map(([speciesId, level]) => createDragon(speciesId, level))
+  }
+  if (kind === 'electricGym') {
+    const teams = [
+      [['zappup', 9], ['voltick', 10], ['sparkwheel', 11], ['buzzcoil', 12]],
+      [['volthare', 12], ['volthorn', 13], ['gearstrike', 14], ['spiralvolt', 15]],
+      [['stormaxa', 17], ['thundermaw', 19], ['turbovolt', 19], ['shockfuzz', 21]],
+    ] as const
+    return teams[phase].map(([speciesId, level]) => createDragon(speciesId, level))
+  }
+  if (kind === 'cloudGym') {
+    const teams = [
+      [['mistlet', 13], ['pufflet', 14], ['cumulus', 15], ['mistwhisper', 15]],
+      [['nimbuskit', 16], ['cirruspaw', 17], ['stratolift', 18], ['fogwhirler', 18]],
+      [['aerowisp', 21], ['skycrest', 23], ['cumulussovereign', 23], ['nimbusdancer', 25]],
+    ] as const
+    return teams[phase].map(([speciesId, level]) => createDragon(speciesId, level))
+  }
+  if (kind === 'waterGym') {
+    const teams = [
+      [['puddlefin', 17], ['shellfin', 18], ['coralkit', 19], ['bubblekin', 19]],
+      [['tidehopper', 20], ['marivolt', 21], ['reefsprite', 22], ['floatwhisper', 22]],
+      [['leviquill', 25], ['tidewyrm', 27], ['coraluxe', 27], ['aeroquell', 29]],
+    ] as const
+    return teams[phase].map(([speciesId, level]) => createDragon(speciesId, level))
+  }
+  if (kind === 'iceGym') {
+    const teams = [
+      [['frostle', 21], ['chillka', 22], ['frostpip', 23], ['snowmite', 23]],
+      [['glacibun', 24], ['frosthorn', 25], ['glacielf', 26], ['blizzkit', 26]],
+      [['boreastra', 29], ['cryowyrm', 31], ['icewarden', 31], ['frostdrake', 33]],
     ] as const
     return teams[phase].map(([speciesId, level]) => createDragon(speciesId, level))
   }

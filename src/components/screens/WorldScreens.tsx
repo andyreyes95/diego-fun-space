@@ -33,10 +33,10 @@ export function TownScreen({ save, onTravel }: TownScreenProps) {
 
 interface PlanetScreenProps {
   save: GameSave
-  planet: 1 | 2
+  planet: 1 | 2 | 3 | 4 | 5 | 6
   onViewChange: (view: View) => void
-  onWildBattle: (planet: 1 | 2) => void
-  onTrainerBattle: (kind: 'fireGym' | 'grassGym' | 'gang') => void
+  onWildBattle: (planet: 1 | 2 | 3 | 4 | 5 | 6) => void
+  onTrainerBattle: (kind: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'gang') => void
   onHeal: () => void
   onToast: (message: string) => void
 }
@@ -97,7 +97,8 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
     )
   }
 
-  return (
+  if (planet === 2) {
+    return (
     <section className="world-view planet-view mossgrove layered-planet">
       <div className="world-copy">
         <p className="eyebrow">Planet 02 · Mossgrove</p>
@@ -145,6 +146,155 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
           title="Planet Map"
           onClick={() => onViewChange('map')}
         />
+      </div>
+      <QuestCard save={save} />
+    </section>
+    )
+  }
+
+  if (planet === 3) {
+    return (
+    <section className="world-view planet-view voltspire layered-planet">
+      <div className="world-copy">
+        <p className="eyebrow">Planet 03 · Voltspire</p>
+        <h1>The Thunderstep Expanse</h1>
+        <p>Cross golden charged dunes and lightning gardens on the way to Volt's Electric Gym.</p>
+      </div>
+      <div className="planet-map layered-planet-map" aria-label="Voltspire locations">
+        <MapLocationCard
+          className="planet-location-card wild-location"
+          artSrc="/assets/map-locations/voltspire/wild.png"
+          artAlt="Voltspire charged wild trail"
+          eyebrow="Explore"
+          title="Wild dragons"
+          onClick={() => onWildBattle(3)}
+        />
+        <MapLocationCard
+          className="planet-location-card gym-location"
+          artSrc="/assets/map-locations/voltspire/gym.png"
+          artAlt="Voltspire Electric Gym"
+          eyebrow={save.badges.includes('Spark') ? 'Badge earned' : `Electric Gym · ${save.gymProgress.electric + 1} / 3`}
+          title={save.gymProgress.electric === 2 ? 'Challenge Volt' : `Battle Trainer ${save.gymProgress.electric + 1}`}
+          onClick={() => onTrainerBattle('electricGym')}
+        />
+        <MapLocationCard
+          className="planet-location-card healing-location"
+          artSrc="/assets/map-locations/voltspire/healing.png"
+          artAlt="Voltspire healing center"
+          eyebrow="Healing Center"
+          title="Rest your team"
+          onClick={onHeal}
+        />
+        <MapLocationCard
+          className="planet-location-card market-location"
+          artSrc="/assets/map-locations/voltspire/market.png"
+          artAlt="Voltspire market"
+          eyebrow="Market"
+          title="Coming soon"
+          onClick={() => onToast('The Voltspire market is not open yet.')}
+        />
+        <MapLocationCard
+          className="planet-location-card portal-location"
+          artSrc="/assets/map-locations/voltspire/portal.png"
+          artAlt="Portal to other planets"
+          eyebrow="Travel"
+          title="Planet Map"
+          onClick={() => onViewChange('map')}
+        />
+      </div>
+      <QuestCard save={save} />
+    </section>
+    )
+  }
+
+  if (planet === 4) {
+    return (
+    <section className="world-view planet-view cloudrest layered-planet">
+      <div className="world-copy">
+        <p className="eyebrow">Planet 04 · Cloudrest</p>
+        <h1>The Skybridge Gardens</h1>
+        <p>Follow pearl-cloud paths through floating gardens toward Cirrus's Cloud Gym.</p>
+      </div>
+      <div className="planet-map layered-planet-map" aria-label="Cloudrest locations">
+        <MapLocationCard
+          className="planet-location-card wild-location"
+          artSrc="/assets/map-locations/cloudrest/wild.png"
+          artAlt="Cloudrest cloud-grove wild trail"
+          eyebrow="Explore"
+          title="Wild dragons"
+          onClick={() => onWildBattle(4)}
+        />
+        <MapLocationCard
+          className="planet-location-card gym-location"
+          artSrc="/assets/map-locations/cloudrest/gym.png"
+          artAlt="Cloudrest Cloud Gym"
+          eyebrow={save.badges.includes('Breeze') ? 'Badge earned' : `Cloud Gym · ${save.gymProgress.cloud + 1} / 3`}
+          title={save.gymProgress.cloud === 2 ? 'Challenge Cirrus' : `Battle Trainer ${save.gymProgress.cloud + 1}`}
+          onClick={() => onTrainerBattle('cloudGym')}
+        />
+        <MapLocationCard
+          className="planet-location-card healing-location"
+          artSrc="/assets/map-locations/cloudrest/healing.png"
+          artAlt="Cloudrest healing center"
+          eyebrow="Healing Center"
+          title="Rest your team"
+          onClick={onHeal}
+        />
+        <MapLocationCard
+          className="planet-location-card market-location"
+          artSrc="/assets/map-locations/cloudrest/market.png"
+          artAlt="Cloudrest market"
+          eyebrow="Market"
+          title="Coming soon"
+          onClick={() => onToast('The Cloudrest market is not open yet.')}
+        />
+        <MapLocationCard
+          className="planet-location-card portal-location"
+          artSrc="/assets/map-locations/cloudrest/portal.png"
+          artAlt="Portal to other planets"
+          eyebrow="Travel"
+          title="Planet Map"
+          onClick={() => onViewChange('map')}
+        />
+      </div>
+      <QuestCard save={save} />
+    </section>
+    )
+  }
+
+  if (planet === 5) {
+    return (
+    <section className="world-view planet-view tidehaven layered-planet">
+      <div className="world-copy">
+        <p className="eyebrow">Planet 05 · Tidehaven</p>
+        <h1>The Luminous Reef Isles</h1>
+        <p>Cross pearl shores and turquoise lagoons on the route to Marina's Water Gym.</p>
+      </div>
+      <div className="planet-map layered-planet-map" aria-label="Tidehaven locations">
+        <MapLocationCard className="planet-location-card wild-location" artSrc="/assets/map-locations/tidehaven/wild.png" artAlt="Tidehaven reef wild trail" eyebrow="Explore" title="Wild dragons" onClick={() => onWildBattle(5)} />
+        <MapLocationCard className="planet-location-card gym-location" artSrc="/assets/map-locations/tidehaven/gym.png" artAlt="Tidehaven Water Gym" eyebrow={save.badges.includes('Tide') ? 'Badge earned' : `Water Gym · ${save.gymProgress.water + 1} / 3`} title={save.gymProgress.water === 2 ? 'Challenge Marina' : `Battle Trainer ${save.gymProgress.water + 1}`} onClick={() => onTrainerBattle('waterGym')} />
+        <MapLocationCard className="planet-location-card healing-location" artSrc="/assets/map-locations/tidehaven/healing.png" artAlt="Tidehaven healing center" eyebrow="Healing Center" title="Rest your team" onClick={onHeal} />
+        <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/tidehaven/market.png" artAlt="Tidehaven market" eyebrow="Market" title="Coming soon" onClick={() => onToast('The Tidehaven market is not open yet.')} />
+        <MapLocationCard className="planet-location-card portal-location" artSrc="/assets/map-locations/tidehaven/portal.png" artAlt="Portal to other planets" eyebrow="Travel" title="Planet Map" onClick={() => onViewChange('map')} />
+      </div>
+      <QuestCard save={save} />
+    </section>
+    )
+  }
+
+  return (
+    <section className="world-view planet-view frostveil layered-planet">
+      <div className="world-copy">
+        <p className="eyebrow">Planet 06 · Frostveil</p>
+        <h1>The Aurora Icefields</h1>
+        <p>Follow crystal trails beneath glowing auroras toward Glacia's Ice Gym.</p>
+      </div>
+      <div className="planet-map layered-planet-map" aria-label="Frostveil locations">
+        <MapLocationCard className="planet-location-card wild-location" artSrc="/assets/map-locations/frostveil/wild.png" artAlt="Frostveil crystal wild trail" eyebrow="Explore" title="Wild dragons" onClick={() => onWildBattle(6)} />
+        <MapLocationCard className="planet-location-card gym-location" artSrc="/assets/map-locations/frostveil/gym.png" artAlt="Frostveil Ice Gym" eyebrow={save.badges.includes('Frost') ? 'Badge earned' : `Ice Gym · ${save.gymProgress.ice + 1} / 3`} title={save.gymProgress.ice === 2 ? 'Challenge Glacia' : `Battle Trainer ${save.gymProgress.ice + 1}`} onClick={() => onTrainerBattle('iceGym')} />
+        <MapLocationCard className="planet-location-card healing-location" artSrc="/assets/map-locations/frostveil/healing.png" artAlt="Frostveil healing center" eyebrow="Healing Center" title="Rest your team" onClick={onHeal} />
+        <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/frostveil/market.png" artAlt="Frostveil market" eyebrow="Market" title="Coming soon" onClick={() => onToast('The Frostveil market is not open yet.')} />
+        <MapLocationCard className="planet-location-card portal-location" artSrc="/assets/map-locations/frostveil/portal.png" artAlt="Portal to other planets" eyebrow="Travel" title="Planet Map" onClick={() => onViewChange('map')} />
       </div>
       <QuestCard save={save} />
     </section>

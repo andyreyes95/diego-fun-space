@@ -4,7 +4,7 @@ import type { BattleEvent } from '../../types'
 
 interface EventScreenProps {
   event: BattleEvent
-  currentPlanet: 0 | 1 | 2
+  currentPlanet: 0 | 1 | 2 | 3 | 4 | 5 | 6
   onDismiss: () => void
 }
 
@@ -108,14 +108,14 @@ export function EventScreen({ event, currentPlanet, onDismiss }: EventScreenProp
     )
   }
 
-  const badgeName = event.badge === 'Ember' ? 'Ember Badge' : 'Bloom Badge'
-  const badgeType = event.badge === 'Ember' ? 'fire' : 'grass'
+  const badgeName = event.badge === 'Ember' ? 'Ember Badge' : event.badge === 'Bloom' ? 'Bloom Badge' : event.badge === 'Spark' ? 'Spark Badge' : event.badge === 'Breeze' ? 'Breeze Badge' : event.badge === 'Tide' ? 'Tide Badge' : 'Frost Badge'
+  const badgeType = event.badge === 'Ember' ? 'fire' : event.badge === 'Bloom' ? 'grass' : event.badge === 'Spark' ? 'electric' : event.badge === 'Breeze' ? 'cloud' : event.badge === 'Tide' ? 'water' : 'ice'
   return (
     <main className={`celebration-screen badge-celebration ${planetClass}`}>
       <div className="celebration-rays" aria-hidden="true" />
       <section className="celebration-card badge-card" role="dialog" aria-modal="true" aria-labelledby="badge-title">
         <p className="eyebrow">Gym Victory</p>
-        <h1 id="badge-title">You defeated {event.badge === 'Ember' ? 'Sol' : 'Moss'}!</h1>
+        <h1 id="badge-title">You defeated {event.badge === 'Ember' ? 'Sol' : event.badge === 'Bloom' ? 'Moss' : event.badge === 'Spark' ? 'Volt' : event.badge === 'Breeze' ? 'Cirrus' : event.badge === 'Tide' ? 'Marina' : 'Glacia'}!</h1>
         <div className={`earned-badge ${badgeType}`} aria-label={badgeName}>
           {badgeType === 'fire' ? (
             <>
@@ -123,18 +123,34 @@ export function EventScreen({ event, currentPlanet, onDismiss }: EventScreenProp
               <span className="badge-gem">✦</span>
               <span className="badge-wing right" />
             </>
-          ) : (
+          ) : badgeType === 'grass' ? (
             <>
               <span className="badge-leaf left" />
               <span className="badge-gem">♧</span>
               <span className="badge-leaf right" />
             </>
+          ) : badgeType === 'electric' ? (
+            <span className="badge-bolt">Ϟ</span>
+          ) : badgeType === 'cloud' ? (
+            <span className="badge-cloud">☁</span>
+          ) : badgeType === 'water' ? (
+            <span className="badge-wave">≈</span>
+          ) : (
+            <span className="badge-snowflake">❄</span>
           )}
         </div>
         <h2>{badgeName}</h2>
         <p>{badgeType === 'fire'
           ? 'Emberfall recognizes your courage. Fire dragons will remember your brave start.'
-          : 'Mossgrove recognizes your teamwork. The path to the Light dragons is now open.'}</p>
+          : badgeType === 'grass'
+            ? 'Mossgrove recognizes your teamwork. Voltspire now shines on the starlane.'
+            : badgeType === 'electric'
+              ? 'Voltspire recognizes your precision. Cloudrest now rises into view.'
+              : badgeType === 'cloud'
+                ? 'Cloudrest recognizes your adaptability. Tidehaven now appears on the starlane.'
+                : badgeType === 'water'
+                  ? 'Tidehaven recognizes your resolve. Frostveil now glows beneath the aurora.'
+                  : 'Frostveil recognizes your calm under pressure. A darker route waits beyond the snow.'}</p>
         <button className="primary-button" type="button" onClick={onDismiss}>Add to my badges</button>
       </section>
     </main>

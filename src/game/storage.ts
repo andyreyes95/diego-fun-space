@@ -32,6 +32,10 @@ export function migrateSave(parsed: Partial<GameSave> & { bench?: DragonInstance
     gymProgress: {
       fire: parsed.gymProgress?.fire ?? (parsed.badges?.includes('Ember') ? 2 : 0),
       grass: parsed.gymProgress?.grass ?? (parsed.badges?.includes('Bloom') ? 2 : 0),
+      electric: parsed.gymProgress?.electric ?? (parsed.badges?.includes('Spark') ? 2 : 0),
+      cloud: parsed.gymProgress?.cloud ?? (parsed.badges?.includes('Breeze') ? 2 : 0),
+      water: parsed.gymProgress?.water ?? (parsed.badges?.includes('Tide') ? 2 : 0),
+      ice: parsed.gymProgress?.ice ?? (parsed.badges?.includes('Frost') ? 2 : 0),
     },
     storyStep: parsed.storyStep ?? 0,
     darkGangDefeated: parsed.darkGangDefeated ?? false,

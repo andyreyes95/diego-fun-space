@@ -64,7 +64,7 @@ function App() {
         seenCount={game.save.seen.length}
         badgeNames={game.badgeNames}
         badges={game.save.badges}
-        onHome={() => game.setView(currentPlanet === 0 ? 'town' : currentPlanet === 2 ? 'planet2' : 'planet1')}
+        onHome={() => game.setView(currentPlanet === 0 ? 'town' : currentPlanet === 1 ? 'planet1' : currentPlanet === 2 ? 'planet2' : currentPlanet === 3 ? 'planet3' : currentPlanet === 4 ? 'planet4' : currentPlanet === 5 ? 'planet5' : 'planet6')}
       />
 
       {game.view === 'town' && (
@@ -77,6 +77,22 @@ function App() {
 
       {game.view === 'planet2' && (
         <PlanetScreen save={game.save} planet={2} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+      )}
+
+      {game.view === 'planet3' && (
+        <PlanetScreen save={game.save} planet={3} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+      )}
+
+      {game.view === 'planet4' && (
+        <PlanetScreen save={game.save} planet={4} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+      )}
+
+      {game.view === 'planet5' && (
+        <PlanetScreen save={game.save} planet={5} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+      )}
+
+      {game.view === 'planet6' && (
+        <PlanetScreen save={game.save} planet={6} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
       )}
 
       {game.view === 'map' && (
@@ -104,13 +120,13 @@ function App() {
         />
       )}
 
-      {/* Temporary localhost debug action is wired through onCatchAll. */}
+      {/* Temporary localhost debug action is wired through onUnlockAll. */}
       <BottomNav
         view={game.view}
         currentPlanet={currentPlanet}
         setView={game.setView}
         onReset={game.resetGame}
-        onCatchAll={game.debugCatchAll}
+        onUnlockAll={game.debugUnlockAll}
       />
 
       {game.toast && <div className="toast" role="status">{game.toast}</div>}

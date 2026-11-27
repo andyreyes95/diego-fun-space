@@ -111,6 +111,14 @@ Only after a battleground passes desktop and iPad rotation checks should its bac
 - `public/assets/battlegrounds/wild-mossgrove.png`
 - `public/assets/battlegrounds/gym-emberfall.png`
 - `public/assets/battlegrounds/gym-mossgrove.png`
+- `public/assets/battlegrounds/wild-voltspire.png`
+- `public/assets/battlegrounds/gym-voltspire.png`
+- `public/assets/battlegrounds/wild-cloudrest.png`
+- `public/assets/battlegrounds/gym-cloudrest.png`
+- `public/assets/battlegrounds/wild-tidehaven.png`
+- `public/assets/battlegrounds/gym-tidehaven.png`
+- `public/assets/battlegrounds/wild-frostveil.png`
+- `public/assets/battlegrounds/gym-frostveil.png`
 - `public/assets/battlegrounds/gang-dark.png`
 
 For future planets/types:
