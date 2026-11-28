@@ -1,18 +1,19 @@
 import type { View } from '../types'
 import type { ReactNode } from 'react'
-import { Planet, ScanSmiley, Strategy } from '@phosphor-icons/react'
+import { CoinVertical, Planet, ScanSmiley, Strategy } from '@phosphor-icons/react'
 import { BadgeIcon } from './BadgeIcon'
+import { normalizeCoins } from '../game/economy'
 
 interface GameHeaderProps {
-  caughtCount: number
-  seenCount: number
   badgeNames: string[]
   badges: string[]
+  coins: number
   onHome: () => void
 }
 
-export function GameHeader({ caughtCount, seenCount, badgeNames, badges, onHome }: GameHeaderProps) {
+export function GameHeader({ badgeNames, badges, coins, onHome }: GameHeaderProps) {
   const badgeTypes = ['fire', 'grass', 'electric', 'cloud', 'water', 'ice', 'dark', 'light'] as const
+  const safeCoins = normalizeCoins(coins)
 
   return (
     <header className="game-header">
@@ -27,18 +28,26 @@ export function GameHeader({ caughtCount, seenCount, badgeNames, badges, onHome 
         <span><strong>STARCREST</strong><small>DRAGONS</small></span>
       </button>
       <div className="header-progress">
-        <span><strong>{caughtCount}</strong> caught</span>
-        <span><strong>{seenCount}</strong> seen</span>
+        <span className="coin-count" aria-label={`${safeCoins} Coins`}>
+          <CoinVertical size={20} weight="fill" aria-hidden="true" />
+          <strong>{safeCoins}</strong>
+          <span>Coins</span>
+        </span>
         <span className="badge-dots" aria-label={`${badges.length} gym badges`}>
           {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-            <span
-              key={index}
-              className={badges.includes(badgeNames[index]) ? `header-badge earned badge-${index}` : `header-badge badge-${index}`}
-              title={badges.includes(badgeNames[index]) ? `${badgeNames[index]} Badge earned` : `${badgeNames[index]} Badge locked`}
-              aria-label={badges.includes(badgeNames[index]) ? `${badgeNames[index]} Badge earned` : `${badgeNames[index]} Badge locked`}
-            >
-              <BadgeIcon type={badgeTypes[index]} size={15} />
-            </span>
+            (() => {
+              const earned = badges.includes(badgeNames[index])
+              return (
+                <span
+                  key={index}
+                  className={earned ? `header-badge earned badge-${index}` : `header-badge badge-${index}`}
+                  title={earned ? `${badgeNames[index]} Badge earned` : 'Undiscovered badge'}
+                  aria-label={earned ? `${badgeNames[index]} Badge earned` : 'Undiscovered badge'}
+                >
+                  {earned ? <BadgeIcon type={badgeTypes[index]} size={15} /> : '?'}
+                </span>
+              )
+            })()
           ))}
         </span>
       </div>

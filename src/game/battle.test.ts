@@ -29,9 +29,9 @@ describe('battle rules', () => {
     ])
   })
 
-  it('gives each uncaught Light encounter a 30% appearance chance', () => {
-    expect(doesLightEncounterAppear(() => 0.299)).toBe(true)
-    expect(doesLightEncounterAppear(() => 0.3)).toBe(false)
+  it('gives each uncaught Light encounter a 20% appearance chance', () => {
+    expect(doesLightEncounterAppear(() => 0.199)).toBe(true)
+    expect(doesLightEncounterAppear(() => 0.2)).toBe(false)
   })
 
   it('resolves missed attacks without damage', () => {

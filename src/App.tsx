@@ -8,7 +8,11 @@ import { TeamScreen } from './components/screens/TeamScreen'
 import { TitleScreen } from './components/screens/TitleScreen'
 import { PlanetScreen, TownScreen } from './components/screens/WorldScreens'
 import { useGameController } from './hooks/useGameController'
+import type { View } from './types'
 import { UnlockScreen } from './components/UnlockScreen'
+import { MarketScreen } from './components/screens/MarketScreen'
+import { CostConfirmDialog } from './components/CostConfirmDialog'
+import { getHealingCost, GYM_ENTRY_COST, normalizeCoins, PORTAL_COST } from './game/economy'
 
 function App() {
   const game = useGameController()
@@ -59,6 +63,9 @@ function App() {
         onTryCapture={game.tryCapture}
         onRun={game.runFromBattle}
         onSwitch={game.switchDragon}
+        selectedOrb={game.selectedCaptureOrb}
+        onSelectOrb={game.setSelectedCaptureOrb}
+        toast={game.toast}
       />
     )
   }
@@ -66,55 +73,64 @@ function App() {
   return (
     <main className="game-shell">
       <GameHeader
-        caughtCount={game.save.caught.length}
-        seenCount={game.save.seen.length}
         badgeNames={game.badgeNames}
         badges={game.save.badges}
+        coins={game.save.coins}
         onHome={() => game.setView(currentPlanet === 0 ? 'town' : currentPlanet === 1 ? 'planet1' : currentPlanet === 2 ? 'planet2' : currentPlanet === 3 ? 'planet3' : currentPlanet === 4 ? 'planet4' : currentPlanet === 5 ? 'planet5' : currentPlanet === 6 ? 'planet6' : currentPlanet === 7 ? 'planet7' : 'planet8')}
       />
 
       {game.view === 'town' && (
         <TownScreen
           save={game.save}
-          onTravel={() => game.setView('planet1')}
+          onTravel={() => game.setView('map')}
           onReplayStory={() => game.setView('intro')}
         />
       )}
 
       {game.view === 'planet1' && (
-        <PlanetScreen save={game.save} planet={1} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+        <PlanetScreen save={game.save} planet={1} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.requestTrainerBattle} onHeal={game.requestHealing} onToast={game.showToast} onMarket={() => game.setView('market')} />
       )}
 
       {game.view === 'planet2' && (
-        <PlanetScreen save={game.save} planet={2} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+        <PlanetScreen save={game.save} planet={2} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.requestTrainerBattle} onHeal={game.requestHealing} onToast={game.showToast} onMarket={() => game.setView('market')} />
       )}
 
       {game.view === 'planet3' && (
-        <PlanetScreen save={game.save} planet={3} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+        <PlanetScreen save={game.save} planet={3} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.requestTrainerBattle} onHeal={game.requestHealing} onToast={game.showToast} onMarket={() => game.setView('market')} />
       )}
 
       {game.view === 'planet4' && (
-        <PlanetScreen save={game.save} planet={4} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+        <PlanetScreen save={game.save} planet={4} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.requestTrainerBattle} onHeal={game.requestHealing} onToast={game.showToast} onMarket={() => game.setView('market')} />
       )}
 
       {game.view === 'planet5' && (
-        <PlanetScreen save={game.save} planet={5} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+        <PlanetScreen save={game.save} planet={5} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.requestTrainerBattle} onHeal={game.requestHealing} onToast={game.showToast} onMarket={() => game.setView('market')} />
       )}
 
       {game.view === 'planet6' && (
-        <PlanetScreen save={game.save} planet={6} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+        <PlanetScreen save={game.save} planet={6} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.requestTrainerBattle} onHeal={game.requestHealing} onToast={game.showToast} onMarket={() => game.setView('market')} />
       )}
 
       {game.view === 'planet7' && (
-        <PlanetScreen save={game.save} planet={7} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+        <PlanetScreen save={game.save} planet={7} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.requestTrainerBattle} onHeal={game.requestHealing} onToast={game.showToast} onMarket={() => game.setView('market')} />
       )}
 
       {game.view === 'planet8' && (
-        <PlanetScreen save={game.save} planet={8} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.beginTrainerBattle} onHeal={game.healParty} onToast={game.showToast} />
+        <PlanetScreen save={game.save} planet={8} onViewChange={game.setView} onWildBattle={game.beginWildBattle} onTrainerBattle={game.requestTrainerBattle} onHeal={game.requestHealing} onToast={game.showToast} onMarket={() => game.setView('market')} />
       )}
 
       {game.view === 'map' && (
-        <SolarMap save={game.save} onNavigate={game.setView} onToast={game.showToast} />
+        <SolarMap save={game.save} onNavigate={game.requestTravel} onToast={game.showToast} />
+      )}
+
+      {game.view === 'market' && (
+        <MarketScreen
+          save={game.save}
+          planet={game.save.currentPlanet}
+          planetName={['Willowvale', 'Emberfall', 'Mossgrove', 'Voltspire', 'Cloudrest', 'Tidehaven', 'Frostveil', 'Umbralis', 'Luminara'][game.save.currentPlanet]}
+          onBuy={game.buyCaptureOrb}
+          onClose={() => game.setView(game.save!.currentPlanet === 0 ? 'town' : (`planet${game.save!.currentPlanet}` as View))}
+        />
       )}
 
       {game.view === 'dex' && (
@@ -149,6 +165,22 @@ function App() {
 
       {game.unlockScreenOpen && (
         <UnlockScreen save={game.save} onApply={game.applyUnlocks} onClose={game.closeUnlockScreen} />
+      )}
+
+      {game.pendingCostAction && (
+        <CostConfirmDialog
+          kind={game.pendingCostAction.kind}
+          battleKind={game.pendingCostAction.kind === 'gym' ? game.pendingCostAction.battleKind : undefined}
+          cost={game.pendingCostAction.kind === 'heal'
+            ? getHealingCost(game.save)
+            : game.pendingCostAction.kind === 'travel'
+              ? PORTAL_COST
+              : GYM_ENTRY_COST}
+          balance={normalizeCoins(game.save.coins)}
+          party={game.save.party}
+          onConfirm={game.confirmPendingCostAction}
+          onCancel={game.cancelPendingCostAction}
+        />
       )}
 
       {game.toast && <div className="toast" role="status">{game.toast}</div>}

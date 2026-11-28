@@ -13,6 +13,8 @@ function save(overrides: Partial<GameSave> = {}): GameSave {
     caught: ['embbite'],
     captureCounts: { embbite: 1 },
     badges: [],
+    coins: 0,
+    inventory: { sparkOrb: 3, moonOrb: 0, novaOrb: 0 },
     gymProgress: { fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0, dark: 0, light: 0 },
     storyStep: 0,
     darkGangDefeated: false,
@@ -123,5 +125,18 @@ describe('quest progression', () => {
     const objective = getQuestObjective({ ...readyForAuriel, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse', 'Radiant'], storyStep: 23 })
     expect(objective.finished).toBe(true)
     expect(objective.completed).toBe(24)
+  })
+
+  it('distinguishes Jake from the eight gym badges in chapter progression', () => {
+    const afterEclipse = save({
+      badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse'],
+      gymProgress: { fire: 2, grass: 2, electric: 2, cloud: 2, water: 2, ice: 2, dark: 2, light: 0 },
+      storyStep: 20,
+      currentPlanet: 7,
+      captureCounts: { embbite: 1, spriglet: 1, shadee: 1 },
+      mossgroveCaptureBaseline: 1,
+    })
+    expect(getQuestObjective(afterEclipse).title).toBe('Defeat Jake at the Dark Gang Fortress')
+    expect(getQuestObjective({ ...afterEclipse, darkGangDefeated: true }).title).toBe('Travel to Luminara')
   })
 })

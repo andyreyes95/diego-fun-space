@@ -142,7 +142,7 @@ export function getLightEncounterPlanet(planet: number): 1 | 3 | 5 | 7 | null {
 }
 
 export function doesLightEncounterAppear(roll: () => number = Math.random): boolean {
-  return roll() < 0.3
+  return roll() < 0.2
 }
 
 export function getLightEncounter(planet: 1 | 3 | 5 | 7): { speciesId: string; level: number } {

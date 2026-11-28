@@ -1,10 +1,12 @@
 import type { BattleState, DragonInstance, GameSave } from '../../types'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { speciesById, typeColors, typeNames } from '../../data'
 import type { Move } from '../../types'
 import { DragonIcon } from '../DragonIcon'
 import { DragonName } from '../DragonName'
 import { HealthBar, XpBar } from '../StatusBars'
+import { captureOrbs, type CaptureOrbId } from '../../game/economy'
+import { CompassRose } from '@phosphor-icons/react'
 
 function GenericDragonIcon() {
   return (
@@ -29,6 +31,9 @@ interface BattleScreenProps {
   onTryCapture: () => void
   onRun: () => void
   onSwitch: (index: number) => void
+  selectedOrb: CaptureOrbId | ''
+  onSelectOrb: (orbId: CaptureOrbId | '') => void
+  toast: string
 }
 
 export function BattleScreen({
@@ -42,7 +47,11 @@ export function BattleScreen({
   onTryCapture,
   onRun,
   onSwitch,
+  selectedOrb,
+  onSelectOrb,
+  toast,
 }: BattleScreenProps) {
+  const [orbPickerOpen, setOrbPickerOpen] = useState(false)
   const logRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const log = logRef.current
@@ -198,9 +207,27 @@ export function BattleScreen({
                 </button>
               ))}
               {(battle.kind === 'wild' || battle.kind === 'lightEncounter') && (
-                <button type="button" className="capture-button" onClick={onTryCapture} disabled={busy || (battle.kind === 'wild' && battle.catchAttempts >= 3)}>
-                  {battle.kind === 'lightEncounter' ? 'Catch' : `Catch · ${3 - battle.catchAttempts} left`}
-                </button>
+                <div className="capture-controls">
+                  <button
+                    className="capture-orb-button"
+                    type="button"
+                    onClick={() => setOrbPickerOpen(true)}
+                    disabled={busy}
+                    aria-haspopup="dialog"
+                  >
+                    <span>{selectedOrb ? captureOrbs.find((orb) => orb.id === selectedOrb)?.name : 'Choose an orb'}</span>
+                    <small>{selectedOrb ? `${save.inventory[selectedOrb] ?? 0} owned` : 'Open orb bag'}</small>
+                  </button>
+                  <button
+                    type="button"
+                    className="capture-button"
+                    onClick={onTryCapture}
+                    disabled={busy || (battle.kind === 'wild' && battle.catchAttempts >= 3)}
+                    aria-disabled={selectedOrb === '' || !save.inventory[selectedOrb]}
+                  >
+                    {battle.kind === 'lightEncounter' ? 'Catch' : `Catch · ${3 - battle.catchAttempts} left`}
+                  </button>
+                </div>
               )}
               {battle.kind !== 'gang' && battle.kind !== 'jakeBoss' && (
                 <button type="button" className="run-button" onClick={onRun} disabled={busy}>Run</button>
@@ -229,6 +256,43 @@ export function BattleScreen({
           </div>
         )}
       </section>
+      {orbPickerOpen && (
+        <div className="orb-picker-overlay">
+          <section className="orb-picker-dialog celebration-card" role="dialog" aria-modal="true" aria-labelledby="orb-picker-title">
+            <button className="orb-picker-close icon-button" type="button" onClick={() => setOrbPickerOpen(false)} aria-label="Close orb bag">×</button>
+            <p className="eyebrow">Orb Bag</p>
+            <h2 id="orb-picker-title">Choose a capture orb</h2>
+            <div className="orb-picker-list">
+              {captureOrbs.filter((orb) => (save.inventory[orb.id] ?? 0) > 0).map((orb) => (
+                <button
+                  key={orb.id}
+                  type="button"
+                  className={`market-item orb-picker-option ${orb.id} ${selectedOrb === orb.id ? 'selected' : ''}`}
+                  onClick={() => {
+                    onSelectOrb(orb.id)
+                    setOrbPickerOpen(false)
+                  }}
+                >
+                  <div className="market-orb" aria-hidden="true">
+                    <i className="orb-orbit orb-orbit-back" />
+                    <span className="orb-picker-compass"><CompassRose size={16} weight="regular" /></span>
+                    <i className="orb-orbit orb-orbit-front" />
+                  </div>
+                  <span className="orb-picker-copy">
+                    <strong>{orb.name}</strong>
+                    <small>{orb.multiplier === 1 ? 'Standard catch power' : `+${Math.round((orb.multiplier - 1) * 100)}% catch power`}</small>
+                  </span>
+                  <b>{save.inventory[orb.id]} owned</b>
+                </button>
+              ))}
+              {captureOrbs.every((orb) => !save.inventory[orb.id]) && (
+                <p className="orb-picker-empty">Your orb bag is empty. Visit a market to buy more.</p>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
+      {toast && <div className="toast battle-toast" role="status">{toast}</div>}
     </main>
   )
 }

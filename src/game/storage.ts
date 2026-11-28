@@ -1,9 +1,10 @@
 import type { DragonInstance, GameSave } from '../types'
 import { createDragon, dragonSpecies } from '../data'
+import { normalizeCoins } from './economy'
 import { createInstanceId } from './registration'
 
 export const SAVE_KEY = 'starcrest-dragons-save-v1'
-export const SAVE_VERSION = 3
+export const SAVE_VERSION = 4
 
 const validPlanetIds = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const
 
@@ -14,7 +15,7 @@ function ensureInstanceIds(instances: DragonInstance[]): DragonInstance[] {
   }))
 }
 
-export function migrateSave(parsed: Partial<GameSave> & { bench?: DragonInstance[] }): GameSave {
+export function migrateSave(parsed: Partial<GameSave> & { bench?: DragonInstance[]; crowns?: number }): GameSave {
   const validSpeciesIds = new Set(dragonSpecies.map((species) => species.id))
   const party = ensureInstanceIds(parsed.party ?? []).filter((dragon) => validSpeciesIds.has(dragon.speciesId))
   const reserve = ensureInstanceIds(parsed.reserve ?? parsed.bench ?? []).filter((dragon) => validSpeciesIds.has(dragon.speciesId))
@@ -39,6 +40,12 @@ export function migrateSave(parsed: Partial<GameSave> & { bench?: DragonInstance
     caught,
     captureCounts,
     badges: parsed.badges ?? [],
+    coins: normalizeCoins(parsed.coins, parsed.crowns, 200),
+    inventory: {
+      sparkOrb: Math.max(0, parsed.inventory?.sparkOrb ?? 3),
+      moonOrb: Math.max(0, parsed.inventory?.moonOrb ?? 0),
+      novaOrb: Math.max(0, parsed.inventory?.novaOrb ?? 0),
+    },
     gymProgress: {
       fire: parsed.gymProgress?.fire ?? (parsed.badges?.includes('Ember') ? 2 : 0),
       grass: parsed.gymProgress?.grass ?? (parsed.badges?.includes('Bloom') ? 2 : 0),
@@ -56,6 +63,8 @@ export function migrateSave(parsed: Partial<GameSave> & { bench?: DragonInstance
       : 1,
     mossgroveCaptureBaseline: parsed.mossgroveCaptureBaseline
       ?? (parsed.currentPlanet === 2 ? getCapturedTotal(parsed.captureCounts, parsed.starterId) : 0),
+    hasVisitedEmberfall: parsed.hasVisitedEmberfall
+      ?? (typeof parsed.currentPlanet === 'number' && parsed.currentPlanet > 0),
     lightEncountersCaught: parsed.lightEncountersCaught?.filter((planet) =>
       planet === 1 || planet === 3 || planet === 5 || planet === 7,
     ) ?? caught

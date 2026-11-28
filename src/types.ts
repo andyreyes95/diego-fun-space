@@ -8,7 +8,9 @@ export type DragonType =
   | 'cloud'
   | 'dark'
 
-export type View = 'title' | 'intro' | 'town' | 'planet1' | 'planet2' | 'planet3' | 'planet4' | 'planet5' | 'planet6' | 'planet7' | 'planet8' | 'battle' | 'dex' | 'team' | 'map'
+export type View = 'title' | 'intro' | 'town' | 'planet1' | 'planet2' | 'planet3' | 'planet4' | 'planet5' | 'planet6' | 'planet7' | 'planet8' | 'battle' | 'dex' | 'team' | 'map' | 'market'
+
+export type CaptureOrbId = 'sparkOrb' | 'moonOrb' | 'novaOrb'
 
 export interface DragonSpecies {
   id: string
@@ -97,7 +99,10 @@ export interface GameSave {
   }
   storyStep: number
   darkGangDefeated: boolean
+  coins: number
+  inventory: Record<CaptureOrbId, number>
   currentPlanet: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
   mossgroveCaptureBaseline: number
+  hasVisitedEmberfall?: boolean
   lightEncountersCaught?: number[]
 }

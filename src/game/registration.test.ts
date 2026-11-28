@@ -26,6 +26,8 @@ function makeSave(overrides: Partial<GameSave> = {}): GameSave {
     caught: ['embbite'],
     captureCounts: { embbite: 1 },
     badges: [],
+    coins: 0,
+    inventory: { sparkOrb: 3, moonOrb: 0, novaOrb: 0 },
     gymProgress: { fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0, dark: 0, light: 0 },
     storyStep: 0,
     darkGangDefeated: false,
@@ -96,9 +98,11 @@ describe('save migration', () => {
       bench: [legacyReserveDragon],
       seen: ['embbite'],
       caught: ['embbite'],
-    } as Partial<GameSave> & { bench: ReturnType<typeof createDragon>[] })
+      crowns: 35,
+    } as Partial<GameSave> & { bench: ReturnType<typeof createDragon>[]; crowns: number })
 
-    expect(migrated.saveVersion).toBe(3)
+    expect(migrated.saveVersion).toBe(4)
+    expect(migrated.coins).toBe(35)
     expect(migrated.reserve).toEqual([legacyReserveDragon])
     expect(migrated.captureCounts.embbite).toBe(1)
     expect(migrated.gymProgress).toEqual({ fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0, dark: 0, light: 0 })

@@ -40,10 +40,11 @@ interface PlanetScreenProps {
   onWildBattle: (planet: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8) => void
   onTrainerBattle: (kind: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss') => void
   onHeal: () => void
+  onMarket: () => void
   onToast: (message: string) => void
 }
 
-export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrainerBattle, onHeal, onToast }: PlanetScreenProps) {
+export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrainerBattle, onHeal, onMarket, onToast }: PlanetScreenProps) {
   if (planet === 1) {
     return (
       <section className="world-view planet-view emberfall layered-planet">
@@ -82,8 +83,8 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
             artSrc="/assets/map-locations/emberfall/market.png"
             artAlt="Emberfall market"
             eyebrow="Market"
-            title="Coming soon"
-            onClick={() => onToast('The Emberfall market is not open yet.')}
+            title="Browse Items"
+            onClick={onMarket}
           />
           <MapLocationCard
             className="planet-location-card portal-location"
@@ -137,8 +138,8 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
           artSrc="/assets/map-locations/mossgrove/market.png"
           artAlt="Mossgrove market"
           eyebrow="Market"
-          title="Coming soon"
-          onClick={() => onToast('The Mossgrove market is not open yet.')}
+          title="Browse Items"
+          onClick={onMarket}
         />
         <MapLocationCard
           className="planet-location-card portal-location"
@@ -192,8 +193,8 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
           artSrc="/assets/map-locations/voltspire/market.png"
           artAlt="Voltspire market"
           eyebrow="Market"
-          title="Coming soon"
-          onClick={() => onToast('The Voltspire market is not open yet.')}
+          title="Browse Items"
+          onClick={onMarket}
         />
         <MapLocationCard
           className="planet-location-card portal-location"
@@ -247,8 +248,8 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
           artSrc="/assets/map-locations/cloudrest/market.png"
           artAlt="Cloudrest market"
           eyebrow="Market"
-          title="Coming soon"
-          onClick={() => onToast('The Cloudrest market is not open yet.')}
+          title="Browse Items"
+          onClick={onMarket}
         />
         <MapLocationCard
           className="planet-location-card portal-location"
@@ -276,7 +277,7 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
         <MapLocationCard className="planet-location-card wild-location" artSrc="/assets/map-locations/tidehaven/wild.png" artAlt="Tidehaven reef wild trail" eyebrow="Explore" title="Wild dragons" onClick={() => onWildBattle(5)} />
         <MapLocationCard className="planet-location-card gym-location" artSrc="/assets/map-locations/tidehaven/gym.png" artAlt="Tidehaven Water Gym" eyebrow={save.badges.includes('Tide') ? 'Badge earned' : `Water Gym · ${save.gymProgress.water + 1} / 3`} title={save.gymProgress.water === 2 ? 'Challenge Marina' : `Battle Trainer ${save.gymProgress.water + 1}`} onClick={() => onTrainerBattle('waterGym')} />
         <MapLocationCard className="planet-location-card healing-location" artSrc="/assets/map-locations/tidehaven/healing.png" artAlt="Tidehaven healing center" eyebrow="Healing Center" title="Rest your team" onClick={onHeal} />
-        <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/tidehaven/market.png" artAlt="Tidehaven market" eyebrow="Market" title="Coming soon" onClick={() => onToast('The Tidehaven market is not open yet.')} />
+        <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/tidehaven/market.png" artAlt="Tidehaven market" eyebrow="Market" title="Browse Items" onClick={onMarket} />
         <MapLocationCard className="planet-location-card portal-location" artSrc="/assets/map-locations/tidehaven/portal.png" artAlt="Portal to other planets" eyebrow="Travel" title="Planet Map" onClick={() => onViewChange('map')} />
       </div>
       <QuestCard save={save} />
@@ -296,7 +297,7 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
         <MapLocationCard className="planet-location-card wild-location" artSrc="/assets/map-locations/frostveil/wild.png" artAlt="Frostveil crystal wild trail" eyebrow="Explore" title="Wild dragons" onClick={() => onWildBattle(6)} />
         <MapLocationCard className="planet-location-card gym-location" artSrc="/assets/map-locations/frostveil/gym.png" artAlt="Frostveil Ice Gym" eyebrow={save.badges.includes('Frost') ? 'Badge earned' : `Ice Gym · ${save.gymProgress.ice + 1} / 3`} title={save.gymProgress.ice === 2 ? 'Challenge Glacia' : `Battle Trainer ${save.gymProgress.ice + 1}`} onClick={() => onTrainerBattle('iceGym')} />
         <MapLocationCard className="planet-location-card healing-location" artSrc="/assets/map-locations/frostveil/healing.png" artAlt="Frostveil healing center" eyebrow="Healing Center" title="Rest your team" onClick={onHeal} />
-        <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/frostveil/market.png" artAlt="Frostveil market" eyebrow="Market" title="Coming soon" onClick={() => onToast('The Frostveil market is not open yet.')} />
+        <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/frostveil/market.png" artAlt="Frostveil market" eyebrow="Market" title="Browse Items" onClick={onMarket} />
         <MapLocationCard className="planet-location-card portal-location" artSrc="/assets/map-locations/frostveil/portal.png" artAlt="Portal to other planets" eyebrow="Travel" title="Planet Map" onClick={() => onViewChange('map')} />
       </div>
       <QuestCard save={save} />
@@ -335,7 +336,7 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
           }}
         />
         <MapLocationCard className="planet-location-card healing-location" artSrc="/assets/map-locations/umbralis/healing.png" artAlt="Umbralis healing center" eyebrow="Healing Center" title="Rest your team" onClick={onHeal} />
-        <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/umbralis/market.png" artAlt="Umbralis market" eyebrow="Market" title="Coming soon" onClick={() => onToast('The Umbralis market is not open yet.')} />
+        <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/umbralis/market.png" artAlt="Umbralis market" eyebrow="Market" title="Browse Items" onClick={onMarket} />
         <MapLocationCard className="planet-location-card portal-location" artSrc="/assets/map-locations/umbralis/portal.png" artAlt="Portal to other planets" eyebrow="Travel" title="Planet Map" onClick={() => onViewChange('map')} />
       </div>
       <QuestCard save={save} />
@@ -354,7 +355,7 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
         <MapLocationCard className="planet-location-card wild-location" artSrc="/assets/map-locations/luminara/wild.png" artAlt="Luminara sacred light garden trail" eyebrow="Explore" title="Wild dragons" onClick={() => onWildBattle(8)} />
         <MapLocationCard className="planet-location-card gym-location" artSrc="/assets/map-locations/luminara/gym.png" artAlt="Luminara Light Gym" eyebrow={save.badges.includes('Radiant') ? 'Badge earned' : `Light Gym · ${save.gymProgress.light + 1} / 3`} title={save.gymProgress.light === 2 ? 'Challenge Auriel' : `Battle Trainer ${save.gymProgress.light + 1}`} onClick={() => onTrainerBattle('lightGym')} />
         <MapLocationCard className="planet-location-card healing-location" artSrc="/assets/map-locations/luminara/healing.png" artAlt="Luminara healing center" eyebrow="Healing Center" title="Rest your team" onClick={onHeal} />
-        <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/luminara/market.png" artAlt="Luminara sacred market" eyebrow="Market" title="Coming soon" onClick={() => onToast('The Luminara market is not open yet.')} />
+        <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/luminara/market.png" artAlt="Luminara sacred market" eyebrow="Market" title="Browse Items" onClick={onMarket} />
         <MapLocationCard className="planet-location-card portal-location" artSrc="/assets/map-locations/luminara/portal.png" artAlt="Portal to other planets" eyebrow="Travel" title="Planet Map" onClick={() => onViewChange('map')} />
       </div>
       <QuestCard save={save} />

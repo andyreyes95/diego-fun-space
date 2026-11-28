@@ -7,8 +7,11 @@ import { applyKnockoutExperience, doesLightEncounterAppear, effectivenessText, g
 import { filterDexSpecies } from '../game/dex'
 import { advanceStoryStep, getWildCaptureCount } from '../game/quests'
 import type { UnlockOptions } from '../components/UnlockScreen'
+import { consumeOrb, getBattleReward, getGymEntryCost, getSelectedHealingCost, normalizeCoins, orbById, PORTAL_COST, purchaseOrb, type CaptureOrbId } from '../game/economy'
 
 const badgeNames = ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse', 'Radiant']
+type TrainerBattleKind = 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss'
+type GymBattleKind = Exclude<TrainerBattleKind, 'gang' | 'jakeBoss'>
 
 function displayName(dragon: DragonInstance): string {
   const speciesName = speciesById[dragon.speciesId].name
@@ -51,6 +54,13 @@ export function useGameController() {
   const [toast, setToast] = useState('')
   const [screenShake, setScreenShake] = useState(false)
   const [eventQueue, setEventQueue] = useState<BattleEvent[]>([])
+  const [selectedCaptureOrb, setSelectedCaptureOrb] = useState<CaptureOrbId | ''>('')
+  const [pendingCostAction, setPendingCostAction] = useState<
+    | { kind: 'heal' }
+    | { kind: 'gym'; battleKind: GymBattleKind }
+    | { kind: 'travel'; destination: View }
+    | null
+  >(null)
 
   useEffect(() => {
     if (!save) return
@@ -133,7 +143,7 @@ export function useGameController() {
     const starter = createDragon(selectedStarter, 5)
     const starterSpecies = speciesById[selectedStarter]
     setSave({
-      saveVersion: 3,
+      saveVersion: 4,
       playerName: playerName.trim() || 'Nova',
       starterId: selectedStarter,
       party: [starter],
@@ -142,11 +152,14 @@ export function useGameController() {
       caught: [selectedStarter],
       captureCounts: { [selectedStarter]: 1 },
       badges: [],
+      coins: 200,
+      inventory: { sparkOrb: 3, moonOrb: 0, novaOrb: 0 },
       gymProgress: { fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0, dark: 0, light: 0 },
       storyStep: 0,
       darkGangDefeated: false,
       currentPlanet: 0,
       mossgroveCaptureBaseline: 0,
+      hasVisitedEmberfall: false,
       lightEncountersCaught: [],
     })
     setSelectedDexId(selectedStarter)
@@ -221,13 +234,35 @@ export function useGameController() {
     setSave((current) => current ? registerSeen(current, speciesId) : current)
   }
 
-  const healParty = () => {
+  const requestHealing = () => {
+    if (!save) return
+    if (save.party.every((dragon) => dragon.hp === dragon.maxHp)) {
+      setToast('Your dragons are already fully rested.')
+      return
+    }
+    setPendingCostAction({ kind: 'heal' })
+  }
+
+  const healParty = (selectedInstanceIds: string[]) => {
+    if (!save) return
+    if (save.party.every((dragon) => dragon.hp === dragon.maxHp)) {
+      setToast('Your dragons are already fully rested.')
+      return
+    }
+    const validSelections = new Set(save.party
+      .filter((dragon) => selectedInstanceIds.includes(dragon.instanceId))
+      .map((dragon) => dragon.instanceId))
+    const healingCost = getSelectedHealingCost([...validSelections])
+    if (healingCost === 0) return
     setSave((current) => current ? {
       ...current,
-      party: current.party.map((dragon) => ({ ...dragon, hp: dragon.maxHp })),
+      coins: normalizeCoins(current.coins) - healingCost,
+      party: current.party.map((dragon) => validSelections.has(dragon.instanceId)
+        ? { ...dragon, hp: dragon.maxHp }
+        : dragon),
     } : current)
-    setActivePartyIndex(0)
-    setToast('Your dragons are fully rested!')
+    setActivePartyIndex((index) => save.party[index] && validSelections.has(save.party[index].instanceId) ? index : save.party.findIndex((dragon) => dragon.hp > 0 || validSelections.has(dragon.instanceId)))
+    setToast(`${validSelections.size} ${validSelections.size === 1 ? 'dragon is' : 'dragons are'} fully rested! ${healingCost} Coins spent.`)
   }
 
   const beginLightEncounter = (planet: 1 | 3 | 5 | 7) => {
@@ -296,8 +331,13 @@ export function useGameController() {
     setViewState('battle')
   }
 
-  const beginTrainerBattle = (kind: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss', originPlanet?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8) => {
+  const beginTrainerBattle = (kind: TrainerBattleKind, originPlanet?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8) => {
     if (!save) return
+    const entryCost = getGymEntryCost(kind)
+    if (entryCost > 0 && entryCost > normalizeCoins(save.coins)) {
+      setToast(`This gym battle costs ${entryCost} Coins.`)
+      return
+    }
     const currentBattlePlanet: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 = save.currentPlanet === 0 ? 1 : save.currentPlanet
     const trainerPlanet = originPlanet ?? (
       kind === 'grassGym'
@@ -324,6 +364,11 @@ export function useGameController() {
       setToast('No dragons can battle. Visit the Healing Center.')
       setView(trainerPlanet === 1 ? 'planet1' : trainerPlanet === 2 ? 'planet2' : trainerPlanet === 3 ? 'planet3' : trainerPlanet === 4 ? 'planet4' : trainerPlanet === 5 ? 'planet5' : trainerPlanet === 6 ? 'planet6' : trainerPlanet === 7 ? 'planet7' : 'planet8')
       return
+    }
+    if (entryCost > 0) {
+      setSave((current) => current
+        ? { ...current, coins: normalizeCoins(current.coins) - entryCost }
+        : current)
     }
     setActivePartyIndex(firstAbleDragon)
     const trainerPhase = kind === 'fireGym'
@@ -394,6 +439,64 @@ export function useGameController() {
     }
     setBattleBusy(false)
     setViewState('battle')
+  }
+
+  const requestTrainerBattle = (kind: TrainerBattleKind) => {
+    if (kind === 'gang' || kind === 'jakeBoss') {
+      beginTrainerBattle(kind)
+      return
+    }
+    setPendingCostAction({ kind: 'gym', battleKind: kind })
+  }
+
+  const confirmPendingCostAction = (selectedHealingIds: string[] = []) => {
+    const action = pendingCostAction
+    setPendingCostAction(null)
+    if (action?.kind === 'heal') {
+      healParty(selectedHealingIds)
+      return
+    }
+    if (action?.kind === 'travel') {
+      if (!save || normalizeCoins(save.coins) < PORTAL_COST) {
+        setToast(`Portal travel costs ${PORTAL_COST} Coins.`)
+        return
+      }
+      setSave((current) => current
+        ? { ...current, coins: normalizeCoins(current.coins) - PORTAL_COST }
+        : current)
+      setView(action.destination)
+      return
+    }
+    if (action?.kind === 'gym') beginTrainerBattle(action.battleKind)
+  }
+
+  const cancelPendingCostAction = () => setPendingCostAction(null)
+
+  const requestTravel = (destination: View) => {
+    if (!save) return
+    const destinationPlanet = destination === 'planet1' ? 1
+      : destination === 'planet2' ? 2
+        : destination === 'planet3' ? 3
+          : destination === 'planet4' ? 4
+            : destination === 'planet5' ? 5
+              : destination === 'planet6' ? 6
+                : destination === 'planet7' ? 7
+                  : destination === 'planet8' ? 8
+                    : null
+    if (destinationPlanet !== null && destinationPlanet === save.currentPlanet) {
+      setView(destination)
+      return
+    }
+    if (destination === 'planet1' && !save.hasVisitedEmberfall) {
+      setSave((current) => current ? { ...current, hasVisitedEmberfall: true } : current)
+      setView(destination)
+      return
+    }
+    if (normalizeCoins(save.coins) < PORTAL_COST) {
+      setToast(`Portal travel costs ${PORTAL_COST} Coins. Clear any debt before traveling.`)
+      return
+    }
+    setPendingCostAction({ kind: 'travel', destination })
   }
 
   const enemyTurn = (attackingIndex = activePartyIndex) => {
@@ -492,6 +595,7 @@ export function useGameController() {
     window.setTimeout(() => setScreenShake(false), 180)
 
     if (enemyHp <= 0) {
+      const leaderBattle = battle.trainerPhase === 2
       const knockoutReward = applyKnockoutExperience(active, battle.enemy.level)
       const victoriousDragon = knockoutReward.instance
       const updatedParty = save.party.map((dragon, index) => index === activeIndex ? victoriousDragon : dragon)
@@ -532,7 +636,6 @@ export function useGameController() {
         setBattleBusy(false)
         return
       }
-      const leaderBattle = battle.trainerPhase === 2
       if (battle.kind === 'fireGym' && leaderBattle && !save.badges.includes('Ember')) {
         setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Ember' }])
       }
@@ -586,6 +689,7 @@ export function useGameController() {
         const withProgress = {
           ...registered,
           party: updatedParty,
+          coins: normalizeCoins(current.coins) + getBattleReward(battle.kind, leaderBattle),
           badges: nextBadges,
           gymProgress: {
             fire: battle.kind === 'fireGym' ? Math.min(2, current.gymProgress.fire + (leaderBattle ? 0 : 1)) as 0 | 1 | 2 : current.gymProgress.fire,
@@ -652,12 +756,26 @@ export function useGameController() {
     if (battle.kind === 'wild' && battle.catchAttempts >= 3) return
     setBattleBusy(true)
     const catchAttempts = battle.catchAttempts + 1
+    if (!selectedCaptureOrb) {
+      setToast('Choose an orb before trying to catch a dragon.')
+      setBattleBusy(false)
+      return
+    }
+    const orb = orbById[selectedCaptureOrb]
+    if (!save.inventory[orb.id]) {
+      setToast(`You have no ${orb.name}s left.`)
+      setBattleBusy(false)
+      return
+    }
     const captureAttempt = resolveCaptureAttempt(
       battle.enemy.hp,
       battle.enemy.maxHp,
       catchAttempts,
       battle.kind === 'wild',
+      Math.random,
+      orb.multiplier,
     )
+    setSave((current) => current ? consumeOrb(current, orb.id) ?? current : current)
     const species = speciesById[battle.enemy.speciesId]
     if (captureAttempt.caught) {
       const caughtIndividual = { ...battle.enemy, hp: battle.enemy.maxHp }
@@ -734,6 +852,7 @@ export function useGameController() {
       setToast('That dragon needs to rest!')
       return
     }
+
     setBattleBusy(true)
     setActivePartyIndex(nextIndex)
     setBattle((current) => current ? {
@@ -741,6 +860,20 @@ export function useGameController() {
       log: [...current.log, { side: 'player', text: `${displayName(nextDragon)} entered the battle!` }],
     } : current)
     enemyTurn(nextIndex)
+  }
+
+  const buyCaptureOrb = (orbId: CaptureOrbId) => {
+    if (!save) return
+    setSave((current) => {
+      if (!current) return current
+      const result = purchaseOrb(current, orbId)
+      if (!result.purchased) {
+        setToast('Not enough Coins for that orb.')
+        return current
+      }
+      setToast(`${orbById[orbId].name} added to your bag.`)
+      return result.save
+    })
   }
 
   const runFromBattle = () => {
@@ -782,6 +915,8 @@ export function useGameController() {
     showToast: setToast,
     screenShake,
     eventQueue,
+    selectedCaptureOrb,
+    setSelectedCaptureOrb,
     badgeNames,
     filteredDex,
     setDragonNickname,
@@ -794,11 +929,16 @@ export function useGameController() {
     applyUnlocks,
     closeUnlockScreen: () => setUnlockScreenOpen(false),
     dismissEvent,
-    healParty,
+    requestHealing,
     beginWildBattle,
-    beginTrainerBattle,
+    requestTrainerBattle,
+    requestTravel,
+    pendingCostAction,
+    confirmPendingCostAction,
+    cancelPendingCostAction,
     useMove,
     tryCapture,
+    buyCaptureOrb,
     switchDragon,
     runFromBattle,
   }
