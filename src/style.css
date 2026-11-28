@@ -568,7 +568,7 @@
 .story-earned-badge.badge-water { color: #1b688e; }
 .story-earned-badge.badge-cloud { background: linear-gradient(145deg, #dbe9fa, #7597b5); }
 .story-earned-badge.badge-water { background: linear-gradient(145deg, #8bd7ec, #347eaa); }
-.story-earned-badge.badge-ice { background: linear-gradient(145deg, #edf7ff, #7597b5); color: #3f6885; }
+.story-earned-badge.badge-ice { background: #fff; color: #3f6885; }
 .story-earned-badge.badge-dark { background: linear-gradient(145deg, #a99abd, #4a3d62); color: #281d35; }
 .story-earned-badge.badge-light { background: linear-gradient(145deg, #fff7cc, #e1b54a); color: #755f28; }
 
@@ -766,6 +766,17 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.unlock-coins-button {
+  margin-right: auto;
+  border-color: rgba(255, 222, 132, 0.58);
+  color: #ffe49a;
+}
+
+.unlock-level-button {
+  border-color: rgba(190, 225, 157, 0.55);
+  color: #dff4b5;
 }
 
 .unlock-gym-list {
@@ -967,7 +978,7 @@
 }
 
 .header-badge.badge-5.earned {
-  background: linear-gradient(145deg, #edf7ff, #7597b5);
+  background: #fff;
   color: #3f6885;
 }
 
@@ -2370,7 +2381,7 @@
 
 .cost-dialog-overlay {
   position: fixed;
-  z-index: 100;
+  z-index: 1000;
   inset: 0;
   display: grid;
   place-items: center;
@@ -3867,6 +3878,39 @@
   box-shadow: 0 7px 0 rgba(31, 18, 44, 0.96);
 }
 
+.legendary-reveal-screen,
+.legendary-encounter-screen {
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 238, 154, 0.22), transparent 27%),
+    linear-gradient(145deg, rgba(40, 39, 54, 0.7), rgba(17, 23, 34, 0.9)),
+    var(--event-map-image) center / cover no-repeat;
+}
+
+.legendary-reveal-card {
+  border-color: rgba(255, 240, 170, 0.68);
+}
+
+.legendary-silhouettes {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin: 26px 0 20px;
+}
+
+.legendary-silhouettes span {
+  width: 58px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 3px double rgba(255, 255, 255, 0.58);
+  border-radius: 50%;
+  background: rgba(18, 23, 34, 0.72);
+  color: #ffe995;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 28px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+}
+
 .jake-victory-celebration {
   background:
     radial-gradient(circle at 50% 46%, rgba(216, 190, 239, 0.28), transparent 28%),
@@ -4225,9 +4269,9 @@
   place-items: center;
   border: 5px solid rgba(255, 255, 255, 0.72);
   border-radius: 50%;
-  background: linear-gradient(145deg, #f5ffff, #9cdef0);
+  background: #fff;
   box-shadow: 0 7px 0 rgba(70, 110, 145, 0.22);
-  color: #4c8cad;
+  color: #3f6885;
   font-size: 54px;
   line-height: 1;
   text-shadow: 0 0 14px #fff;

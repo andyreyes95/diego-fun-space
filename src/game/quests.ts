@@ -25,6 +25,7 @@ export const questSteps = [
   'Travel to Luminara',
   'Explore Luminara and prepare your team',
   'Challenge Auriel for the Radiant Badge',
+  'Capture the four legendary Dragons',
 ] as const
 
 export interface QuestObjective {
@@ -70,6 +71,7 @@ export function getQuestObjective(save: GameSave): QuestObjective {
   if (completed >= 21 && (save.storyStep >= 21 || save.currentPlanet === 8)) completed = 22
   if (completed >= 22 && save.gymProgress.light >= 2) completed = 23
   if (completed >= 23 && save.badges.includes('Radiant')) completed = 24
+  if (completed >= 24 && ['vihaarion', 'hudsorion', 'phurion', 'diegorion'].every((id) => save.caught.includes(id))) completed = 25
 
   return {
     title: questSteps[Math.min(completed, questSteps.length - 1)],

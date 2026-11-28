@@ -134,8 +134,8 @@ export function BattleScreen({
           <button className="icon-button" type="button" onClick={onRun} aria-label="Leave battle">×</button>
         )}
         <div>
-          <span>{battle.kind === 'lightEncounter' ? 'Rare Light Encounter' : `${battle.enemyName} Battle`}</span>
-          {battle.kind !== 'wild' && battle.kind !== 'lightEncounter' && <strong>{battle.kind === 'jakeBoss' ? 'Dark Gang Fortress' : battle.kind === 'gang' ? 'Dark Gang' : battle.trainerPhase === 2 ? 'Gym Leader' : `Gym Trainer ${(battle.trainerPhase ?? 0) + 1}`}</strong>}
+          <span>{battle.kind === 'legendaryEncounter' ? 'Legendary Dragon Encounter' : battle.kind === 'lightEncounter' ? 'Rare Light Encounter' : `${battle.enemyName} Battle`}</span>
+          {battle.kind !== 'wild' && battle.kind !== 'lightEncounter' && battle.kind !== 'legendaryEncounter' && <strong>{battle.kind === 'jakeBoss' ? 'Dark Gang Fortress' : battle.kind === 'gang' ? 'Dark Gang' : battle.trainerPhase === 2 ? 'Gym Leader' : `Gym Trainer ${(battle.trainerPhase ?? 0) + 1}`}</strong>}
         </div>
       </header>
       <section className="battle-arena fixed-battle-arena">
@@ -206,7 +206,7 @@ export function BattleScreen({
                   <small style={{ color: typeColors[move.type] }}>{typeNames[move.type]} · {move.power} power</small>
                 </button>
               ))}
-              {(battle.kind === 'wild' || battle.kind === 'lightEncounter') && (
+              {(battle.kind === 'wild' || battle.kind === 'lightEncounter' || battle.kind === 'legendaryEncounter') && (
                 <div className="capture-controls">
                   <button
                     className="capture-orb-button"

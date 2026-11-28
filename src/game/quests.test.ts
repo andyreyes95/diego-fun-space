@@ -123,8 +123,18 @@ describe('quest progression', () => {
     expect(getQuestObjective(readyForAuriel)).toMatchObject({ completed: 23, title: 'Challenge Auriel for the Radiant Badge' })
 
     const objective = getQuestObjective({ ...readyForAuriel, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse', 'Radiant'], storyStep: 23 })
-    expect(objective.finished).toBe(true)
+    expect(objective.title).toBe('Capture the four legendary Dragons')
+    expect(objective.finished).toBe(false)
     expect(objective.completed).toBe(24)
+
+    const legendaryComplete = getQuestObjective({
+      ...readyForAuriel,
+      badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse', 'Radiant'],
+      caught: [...readyForAuriel.caught, 'vihaarion', 'hudsorion', 'phurion', 'diegorion'],
+      storyStep: 23,
+    })
+    expect(legendaryComplete.finished).toBe(true)
+    expect(legendaryComplete.completed).toBe(25)
   })
 
   it('distinguishes Jake from the eight gym badges in chapter progression', () => {

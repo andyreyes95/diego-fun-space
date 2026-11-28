@@ -1,5 +1,5 @@
 import { createDragon, dragonSpecies, getEffectiveness, speciesById } from '../data'
-import type { DragonInstance, Move } from '../types'
+import type { DragonInstance, GameSave, Move } from '../types'
 
 export interface AttackResult {
   hit: boolean
@@ -94,7 +94,11 @@ export function getWildEncounterLevel(stage: 1 | 2, roll: () => number = Math.ra
 
 export function getWildEncounter(roll: () => number = Math.random): { speciesId: string; level: number } {
   const stage: 1 | 2 = roll() < 0.6 ? 1 : 2
-  const pool = dragonSpecies.filter((species) => species.stage === stage && species.type !== 'light')
+  const pool = dragonSpecies.filter((species) =>
+    species.stage === stage
+    && species.type !== 'light'
+    && !(legendaryDragonIds as readonly string[]).includes(species.id),
+  )
   const speciesId = pool[Math.floor(roll() * pool.length)].id
   return { speciesId, level: getWildEncounterLevel(stage, roll) }
 }
@@ -108,10 +112,12 @@ export function doesWildDragonRunAway(attempt: number, roll: () => number = Math
   return roll() < runChance
 }
 
-export function getCaptureChance(currentHp: number, maxHp: number): number {
-  if (maxHp <= 0) return 0.15
+export function getCaptureChance(currentHp: number, maxHp: number, targetLevel = 5): number {
+  if (maxHp <= 0) return 0.05
   const hpRatio = Math.min(1, Math.max(0, currentHp / maxHp))
-  return 0.15 + (1 - hpRatio) * 0.75
+  const hpChance = 0.15 + (1 - hpRatio) * 0.75
+  const levelPenalty = Math.min(0.3, Math.max(0, targetLevel - 9) * 0.005)
+  return Math.min(0.9, Math.max(0.05, hpChance - levelPenalty))
 }
 
 export interface CaptureAttemptResult {
@@ -127,8 +133,9 @@ export function resolveCaptureAttempt(
   canEscape: boolean,
   roll: () => number = Math.random,
   itemMultiplier = 1,
+  targetLevel = 5,
 ): CaptureAttemptResult {
-  const chance = Math.min(1, getCaptureChance(currentHp, maxHp) * itemMultiplier)
+  const chance = Math.min(0.9, Math.max(0.05, getCaptureChance(currentHp, maxHp, targetLevel) * itemMultiplier))
   const caught = roll() < chance
   return {
     caught,
@@ -153,6 +160,30 @@ export function getLightEncounter(planet: 1 | 3 | 5 | 7): { speciesId: string; l
     7: { speciesId: 'haloflare', level: 34 },
   } as const
   return encounters[planet]
+}
+
+export const legendaryDragonIds = ['vihaarion', 'hudsorion', 'phurion', 'diegorion'] as const
+
+export function getLegendaryEncounter(
+  planet: number,
+  save: Pick<GameSave, 'badges' | 'caught'>,
+  roll: () => number = Math.random,
+): { speciesId: typeof legendaryDragonIds[number]; level: number } | null {
+  if (!save.badges.includes('Radiant')) return null
+
+  const planetLegend: Partial<Record<number, 'vihaarion' | 'hudsorion' | 'phurion' | 'diegorion'>> = {
+    1: 'vihaarion',
+    2: 'hudsorion',
+    3: 'phurion',
+    8: 'diegorion',
+  }
+  const speciesId = planetLegend[planet]
+  if (!speciesId || save.caught.includes(speciesId)) return null
+  if (speciesId === 'diegorion' && !['vihaarion', 'hudsorion', 'phurion'].every((id) => save.caught.includes(id))) {
+    return null
+  }
+  if (roll() >= 0.1) return null
+  return { speciesId, level: speciesId === 'diegorion' ? 70 : 60 }
 }
 
 export type TrainerBattleKind = 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss'

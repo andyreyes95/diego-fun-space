@@ -175,7 +175,13 @@ function App() {
       />
 
       {game.unlockScreenOpen && (
-        <UnlockScreen save={game.save} onApply={game.applyUnlocks} onClose={game.closeUnlockScreen} />
+        <UnlockScreen
+          save={game.save}
+          onApply={game.applyUnlocks}
+          onGiveCoins={game.giveDebugCoins}
+          onLevelParty={game.levelPartyTo45}
+          onClose={game.closeUnlockScreen}
+        />
       )}
 
       {game.pendingCostAction && (

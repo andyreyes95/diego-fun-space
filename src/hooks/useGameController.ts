@@ -3,7 +3,7 @@ import { createDragon, dragonSpecies, speciesById } from '../data'
 import type { BattleEvent, BattleLogEntry, BattleState, DragonInstance, DragonType, GameSave, Move, View } from '../types'
 import { clearSave, loadSave, persistSave } from '../game/storage'
 import { addCapturedInstance, moveInstance, registerEvolution, registerSeen, renameInstance } from '../game/registration'
-import { applyAttackExperience, doesLightEncounterAppear, effectivenessText, getLightEncounter, getLightEncounterPlanet, getWildEncounter, getOpponentTeam, isDarkGangAmbush, resolveAttack, resolveCaptureAttempt } from '../game/battle'
+import { applyAttackExperience, doesLightEncounterAppear, effectivenessText, getLegendaryEncounter, getLightEncounter, getLightEncounterPlanet, getWildEncounter, getOpponentTeam, isDarkGangAmbush, resolveAttack, resolveCaptureAttempt } from '../game/battle'
 import { filterDexSpecies } from '../game/dex'
 import { advanceStoryStep, getWildCaptureCount } from '../game/quests'
 import type { UnlockOptions } from '../components/UnlockScreen'
@@ -213,14 +213,48 @@ export function useGameController() {
         let next = current
         if (options.allDragons) {
           const owned = new Set([...current.party, ...current.reserve].map((dragon) => dragon.speciesId))
-          next = dragonSpecies.reduce((progress, species) => owned.has(species.id)
+          const regularSpecies = dragonSpecies.filter((species) =>
+            !['vihaarion', 'hudsorion', 'phurion', 'diegorion'].includes(species.id),
+          )
+          next = regularSpecies.reduce((progress, species) => owned.has(species.id)
             ? progress
-            : addCapturedInstance(progress, createDragon(species.id, 5)), current)
-          const ids = dragonSpecies.map((species) => species.id)
+            : addCapturedInstance(progress, createDragon(
+              species.id,
+              species.stage === 1 ? 5 : species.stage === 2 ? 10 : 15,
+            )), current)
+          const ids = regularSpecies.map((species) => species.id)
           next = {
             ...next,
             seen: [...new Set([...next.seen, ...ids])],
             caught: [...new Set([...next.caught, ...ids])],
+          }
+        }
+        const legendaryIds = ['vihaarion', 'hudsorion', 'phurion', 'diegorion']
+        if (options.legendaryDragonsCaught) {
+          next = legendaryIds.reduce((progress, speciesId) =>
+            progress.caught.includes(speciesId)
+              ? progress
+              : addCapturedInstance(progress, createDragon(speciesId, speciesId === 'diegorion' ? 70 : 60)),
+          next)
+          next = {
+            ...next,
+            seen: [...new Set([...next.seen, ...legendaryIds])],
+            caught: [...new Set([...next.caught, ...legendaryIds])],
+          }
+        } else {
+          const legendarySet = new Set(legendaryIds)
+          const party = next.party.filter((dragon) => !legendarySet.has(dragon.speciesId))
+          const reserve = next.reserve.filter((dragon) => !legendarySet.has(dragon.speciesId))
+          const safeParty = party.length > 0 ? party : [reserve.shift() ?? createDragon(next.starterId, 5)]
+          const captureCounts = { ...next.captureCounts }
+          legendaryIds.forEach((id) => delete captureCounts[id])
+          next = {
+            ...next,
+            party: safeParty,
+            reserve,
+            seen: next.seen.filter((id) => !legendarySet.has(id)),
+            caught: next.caught.filter((id) => !legendarySet.has(id)),
+            captureCounts,
           }
         }
         return {
@@ -235,6 +269,44 @@ export function useGameController() {
       setUnlockScreenOpen(false)
       setToast('Selected debug unlocks applied.')
     }
+
+  const giveDebugCoins = () => {
+    setSave((current) => current ? {
+      ...current,
+      coins: normalizeCoins(current.coins) + 1000,
+    } : current)
+    setToast('1,000 Coins added.')
+  }
+
+  const levelPartyTo45 = () => {
+    setSave((current) => {
+      if (!current) return current
+      const party: DragonInstance[] = current.party.map((dragon) => {
+        let rebuilt = createDragon(dragon.speciesId, 45)
+        let speciesId = dragon.speciesId
+        while (speciesById[speciesId].evolvesTo && speciesById[speciesId].evolvesAt! <= 45) {
+          speciesId = speciesById[speciesId].evolvesTo!
+          rebuilt = createDragon(speciesId, 45)
+        }
+        return {
+          ...rebuilt,
+          instanceId: dragon.instanceId,
+          nickname: dragon.nickname,
+        }
+      })
+      let evolutionUpdates: GameSave = { ...current, party }
+      for (let index = 0; index < party.length; index += 1) {
+        const dragon = party[index]
+        const before = current.party[index].speciesId
+        if (before !== dragon.speciesId) {
+          evolutionUpdates = registerEvolution(evolutionUpdates, before, dragon.speciesId)
+        }
+      }
+      return evolutionUpdates
+    })
+    setActivePartyIndex(0)
+    setToast('Party set to level 45.')
+  }
 
   const markSeen = (speciesId: string) => {
     setSave((current) => current ? registerSeen(current, speciesId) : current)
@@ -303,6 +375,38 @@ export function useGameController() {
     setViewState('battle')
   }
 
+  const beginLegendaryEncounter = (
+    planet: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8,
+    speciesId: string,
+    level: number,
+  ) => {
+    if (!save) return
+    const firstAbleDragon = save.party.findIndex((dragon) => dragon.hp > 0)
+    if (firstAbleDragon < 0) return
+    const enemy = createDragon(speciesId, level)
+    setBattlePlanet(planet)
+    setActivePartyIndex(firstAbleDragon)
+    markSeen(speciesId)
+    setBattle({
+      kind: 'legendaryEncounter',
+      enemy,
+      enemyTeam: [enemy],
+      enemyActiveIndex: 0,
+      enemyName: speciesById[speciesId].name,
+      log: [
+        { side: 'system', text: `A legendary presence emerges from the wild: ${speciesById[speciesId].name}!` },
+        { side: 'system', text: 'It will not faint. Weakening it may earn the chance to capture it.' },
+      ],
+      finished: false,
+      won: false,
+      caught: false,
+      catchAttempts: 0,
+    })
+    setEventQueue([{ kind: 'legendaryEncounter', speciesId }])
+    setBattleBusy(false)
+    setViewState('battle')
+  }
+
   const beginWildBattle = (planet: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8) => {
     if (!save) return
     setBattlePlanet(planet)
@@ -314,6 +418,11 @@ export function useGameController() {
     }
 
     setActivePartyIndex(firstAbleDragon)
+    const legendaryEncounter = getLegendaryEncounter(planet, save)
+    if (legendaryEncounter) {
+      beginLegendaryEncounter(planet, legendaryEncounter.speciesId, legendaryEncounter.level)
+      return
+    }
     if (planet !== 8 && isDarkGangAmbush()) {
       beginTrainerBattle('gang', planet)
       return
@@ -604,7 +713,7 @@ export function useGameController() {
       return
     }
 
-    const enemyHp = battle.kind === 'lightEncounter'
+    const enemyHp = battle.kind === 'lightEncounter' || battle.kind === 'legendaryEncounter'
       ? Math.max(1, battle.enemy.hp - result.damage)
       : Math.max(0, battle.enemy.hp - result.damage)
     const effect = effectivenessText(result.effectiveness)
@@ -678,7 +787,7 @@ export function useGameController() {
         setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Eclipse' }, { kind: 'jakeReveal' }])
       }
       if (battle.kind === 'lightGym' && leaderBattle && !save.badges.includes('Radiant')) {
-        setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Radiant' }])
+        setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Radiant' }, { kind: 'legendaryReveal' }])
       }
       if (battle.kind === 'jakeBoss') {
         setEventQueue((queue) => [...queue, { kind: 'jakeVictory' }])
@@ -776,7 +885,7 @@ export function useGameController() {
   }
 
   const tryCapture = () => {
-    if (!save || !battle || (battle.kind !== 'wild' && battle.kind !== 'lightEncounter') || battle.finished || battleBusy) return
+    if (!save || !battle || (battle.kind !== 'wild' && battle.kind !== 'lightEncounter' && battle.kind !== 'legendaryEncounter') || battle.finished || battleBusy) return
     if (battle.kind === 'wild' && battle.catchAttempts >= 3) return
     setBattleBusy(true)
     const catchAttempts = battle.catchAttempts + 1
@@ -795,9 +904,10 @@ export function useGameController() {
       battle.enemy.hp,
       battle.enemy.maxHp,
       catchAttempts,
-      battle.kind === 'wild',
+      true,
       Math.random,
       orb.multiplier,
+      battle.enemy.level,
     )
     setSave((current) => current ? consumeOrb(current, orb.id) ?? current : current)
     const species = speciesById[battle.enemy.speciesId]
@@ -861,7 +971,7 @@ export function useGameController() {
       catchAttempts,
       log: [...current.log, {
         side: 'system',
-        text: battle.kind === 'lightEncounter'
+        text: battle.kind === 'lightEncounter' || battle.kind === 'legendaryEncounter'
           ? `${species.name} broke free! Stay determined and try again.`
           : `${species.name} broke free! ${3 - catchAttempts} ${catchAttempts === 2 ? 'try' : 'tries'} left.`,
       }],
@@ -960,6 +1070,8 @@ export function useGameController() {
     debugUnlockAll,
     unlockScreenOpen,
     applyUnlocks,
+    giveDebugCoins,
+    levelPartyTo45,
     closeUnlockScreen: () => setUnlockScreenOpen(false),
     dismissEvent,
     requestHealing,

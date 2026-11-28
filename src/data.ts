@@ -158,6 +158,11 @@ export const dragonSpecies: DragonSpecies[] = [
   { id: 'shadowstalk', dexNo: 116, name: 'Shadowstalk', type: 'dark', stage: 2, evolvesAt: 14, evolvesTo: 'phantomcrest', color: '#463a5a', accent: '#9d88b8', habitat: 'The Velvet Pouncing Paths', height: '1.3 m', weight: '25 kg', description: 'Ribbonlike shadow veils follow its paws between patches of darkness.' },
   { id: 'phantomcrest', dexNo: 117, name: 'Phantomcrest', type: 'dark', stage: 3, color: '#342844', accent: '#7f6898', habitat: 'The Ethereal Black Garden', height: '2.3 m', weight: '86 kg', description: 'Its spectral crown and shadow cape drift silently through the darkest gardens.' },
 
+  { id: 'vihaarion', dexNo: 118, name: 'Vihaarion', type: 'fire', stage: 1, color: '#d94724', accent: '#ffd166', habitat: 'The hottest crater of Emberfall', height: '4.8 m', weight: '420 kg', description: 'The strongest Fire Dragon known to Starcrest, said to make even molten stone retreat before its flame.' },
+  { id: 'hudsorion', dexNo: 119, name: 'Hudsorion', type: 'grass', stage: 1, color: '#4f8f44', accent: '#d7f29a', habitat: 'The living depths beneath Mossgrove', height: '5.1 m', weight: '510 kg', description: 'An ancient guardian that communicates with every plant and animal and carries a whole forest in its memory.' },
+  { id: 'phurion', dexNo: 120, name: 'Phurion', type: 'electric', stage: 1, color: '#d6b12f', accent: '#fff39a', habitat: 'The charged crust of Voltspire', height: '4.6 m', weight: '390 kg', description: 'Its impossible speed turns every thunderclap into a sign of its arrival.' },
+  { id: 'diegorion', dexNo: 121, name: 'Diegorion', type: 'light', stage: 1, color: '#e4c957', accent: '#fffbd5', habitat: 'The holiest sanctuary of Luminara', height: '6.2 m', weight: '640 kg', description: 'The most powerful Dragon of all, awakened only when the other legendary guardians answer its distant call.' },
+
 ]
 
 export const speciesById = Object.fromEntries(dragonSpecies.map((species) => [species.id, species])) as Record<string, DragonSpecies>
@@ -202,6 +207,29 @@ export const moves: Record<DragonType, [Move, Move, Move]> = {
     { name: 'Shadow Bite', type: 'dark', power: 14, accuracy: 95 },
     { name: 'Night Surge', type: 'dark', power: 22, accuracy: 82 },
     { name: 'Eclipse Sneak', type: 'dark', power: 9, accuracy: 100 },
+  ],
+}
+
+const legendaryMoves: Record<string, [Move, Move, Move]> = {
+  vihaarion: [
+    { name: 'Crater Cataclysm', type: 'fire', power: 38, accuracy: 90 },
+    { name: 'Crown of Inferno', type: 'fire', power: 32, accuracy: 98 },
+    { name: 'Ashen Roar', type: 'fire', power: 24, accuracy: 100 },
+  ],
+  hudsorion: [
+    { name: 'Verdant Communion', type: 'grass', power: 32, accuracy: 100 },
+    { name: 'Worldroot Dominion', type: 'grass', power: 38, accuracy: 90 },
+    { name: 'Canopy Rebirth', type: 'grass', power: 24, accuracy: 100 },
+  ],
+  phurion: [
+    { name: 'Crustbreak Rush', type: 'electric', power: 38, accuracy: 95 },
+    { name: 'Quarkflash', type: 'electric', power: 34, accuracy: 100 },
+    { name: 'Thunderblink', type: 'electric', power: 28, accuracy: 100 },
+  ],
+  diegorion: [
+    { name: 'Genesis Radiance', type: 'light', power: 42, accuracy: 95 },
+    { name: 'Halo of Creation', type: 'light', power: 36, accuracy: 100 },
+    { name: 'Starlit Judgment', type: 'light', power: 40, accuracy: 90 },
   ],
 }
 
@@ -254,6 +282,6 @@ export function createDragon(speciesId: string, level: number): DragonInstance {
     maxHp,
     attack: 8 + level * 2 + species.stage,
     defense: 7 + level * 2,
-    moves: [...moves[species.type]],
+    moves: [...(legendaryMoves[speciesId] ?? moves[species.type])],
   }
 }

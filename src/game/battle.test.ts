@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createDragon, dragonSpecies } from '../data'
-import { applyAttackExperience, doesLightEncounterAppear, doesWildDragonRunAway, evolveInstance, gainExperience, getCaptureChance, getLightEncounter, getLightEncounterPlanet, getOpponentTeam, getWildEncounter, getWildEncounterLevel, isDarkGangAmbush, resolveAttack, resolveCaptureAttempt } from './battle'
+import { applyAttackExperience, doesLightEncounterAppear, doesWildDragonRunAway, evolveInstance, gainExperience, getCaptureChance, getLegendaryEncounter, getLightEncounter, getLightEncounterPlanet, getOpponentTeam, getWildEncounter, getWildEncounterLevel, isDarkGangAmbush, resolveAttack, resolveCaptureAttempt } from './battle'
 import { speciesById } from '../data'
 
 describe('battle rules', () => {
@@ -11,12 +11,22 @@ describe('battle rules', () => {
     expect(getCaptureChance(0, 100)).toBeCloseTo(0.9)
   })
 
+  it('reduces catch chance for high-level targets and clamps it to 5-90%', () => {
+    expect(getCaptureChance(100, 100, 5)).toBeCloseTo(0.15)
+    expect(getCaptureChance(100, 100, 30)).toBeCloseTo(0.05)
+    expect(getCaptureChance(10, 100, 30)).toBeCloseTo(0.72)
+    expect(getCaptureChance(10, 100, 60)).toBeCloseTo(0.57)
+    expect(getCaptureChance(10, 100, 70)).toBeCloseTo(0.525)
+    expect(getCaptureChance(100, 100, 999)).toBe(0.05)
+    expect(getCaptureChance(0, 0, 999)).toBe(0.05)
+  })
+
   it('resolves catch success, escape, and future item modifiers', () => {
     const rolls = [() => 0.1, () => 0.5]
     expect(resolveCaptureAttempt(100, 100, 1, true, rolls.shift()!)).toMatchObject({ caught: true, escaped: false, chance: 0.15 })
     expect(resolveCaptureAttempt(100, 100, 1, true, rolls.shift()!, 2)).toMatchObject({ caught: false, escaped: false, chance: 0.3 })
     expect(resolveCaptureAttempt(100, 100, 3, true, () => 0.9)).toMatchObject({ caught: false, escaped: true })
-    expect(resolveCaptureAttempt(100, 100, 3, false, () => 0.9)).toMatchObject({ caught: false, escaped: false })
+    expect(resolveCaptureAttempt(100, 100, 3, true, () => 0.9)).toMatchObject({ caught: false, escaped: true })
   })
 
   it('maps only story planets to the four rare Light encounters', () => {
@@ -32,6 +42,42 @@ describe('battle rules', () => {
   it('gives each uncaught Light encounter a 20% appearance chance', () => {
     expect(doesLightEncounterAppear(() => 0.199)).toBe(true)
     expect(doesLightEncounterAppear(() => 0.2)).toBe(false)
+  })
+
+  it('gates and rolls legendary encounters after the Radiant Badge', () => {
+    const hidden = { badges: [], caught: [] }
+    expect(getLegendaryEncounter(1, hidden, () => 0)).toBeNull()
+
+    const revealed = { badges: ['Radiant'], caught: [] }
+    expect(getLegendaryEncounter(1, revealed, () => 0.099)).toEqual({ speciesId: 'vihaarion', level: 60 })
+    expect(getLegendaryEncounter(1, revealed, () => 0.1)).toBeNull()
+    expect(getLegendaryEncounter(2, revealed, () => 0)).toEqual({ speciesId: 'hudsorion', level: 60 })
+    expect(getLegendaryEncounter(3, revealed, () => 0)).toEqual({ speciesId: 'phurion', level: 60 })
+    expect(getLegendaryEncounter(8, revealed, () => 0)).toBeNull()
+    expect(getLegendaryEncounter(8, { ...revealed, caught: ['vihaarion', 'hudsorion', 'phurion'] }, () => 0))
+      .toEqual({ speciesId: 'diegorion', level: 70 })
+    expect(getLegendaryEncounter(1, { ...revealed, caught: ['vihaarion'] }, () => 0)).toBeNull()
+  })
+
+  it('gives each legendary Dragon a unique high-power move set', () => {
+    expect(createDragon('vihaarion', 60).moves.map((move) => move.name)).toEqual([
+      'Crater Cataclysm', 'Crown of Inferno', 'Ashen Roar',
+    ])
+    expect(createDragon('hudsorion', 60).moves.map((move) => move.name)).toEqual([
+      'Verdant Communion', 'Worldroot Dominion', 'Canopy Rebirth',
+    ])
+    expect(createDragon('phurion', 60).moves.map((move) => move.name)).toEqual([
+      'Crustbreak Rush', 'Quarkflash', 'Thunderblink',
+    ])
+    expect(createDragon('diegorion', 70).moves.map((move) => move.name)).toEqual([
+      'Genesis Radiance', 'Halo of Creation', 'Starlit Judgment',
+    ])
+  })
+
+  it('excludes legendary dragons from ordinary wild encounters', () => {
+    expect(Array.from({ length: 100 }, () => getWildEncounter()).every((entry) =>
+      !['vihaarion', 'hudsorion', 'phurion', 'diegorion'].includes(entry.speciesId),
+    )).toBe(true)
   })
 
   it('resolves missed attacks without damage', () => {
@@ -149,7 +195,11 @@ describe('battle rules', () => {
       }
       expect(encountered).toEqual(new Set(
         dragonSpecies
-          .filter((species) => species.stage === stage && species.type !== 'light')
+          .filter((species) =>
+            species.stage === stage
+            && species.type !== 'light'
+            && !['vihaarion', 'hudsorion', 'phurion', 'diegorion'].includes(species.id),
+          )
           .map((species) => species.id),
       ))
     }

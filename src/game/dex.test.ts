@@ -42,9 +42,9 @@ describe('Dex filters', () => {
     expect(getEvolutionChain('flamico').map((species) => species.id)).toEqual(['embbite', 'flamico', 'pyravolt'])
   })
 
-  it('contains 117 species and complete three-stage batch lines', () => {
-    expect(dragonSpecies).toHaveLength(117)
-    expect(dragonSpecies.map((species) => species.stage)).toEqual(
+  it('contains 121 species and complete three-stage batch lines', () => {
+    expect(dragonSpecies).toHaveLength(121)
+    expect(dragonSpecies.slice(0, 117).map((species) => species.stage)).toEqual(
       Array.from({ length: 39 }, () => [1, 2, 3]).flat(),
     )
     const storyTypeOrder = ['fire', 'grass', 'electric', 'cloud', 'water', 'ice', 'dark', 'light']
@@ -53,7 +53,7 @@ describe('Dex filters', () => {
       ...storyTypeOrder.slice(0, 7),
     ]
     expect(
-      dragonSpecies.filter((species) => species.stage === 1).map((species) => species.type),
+      dragonSpecies.slice(0, 117).filter((species) => species.stage === 1).map((species) => species.type),
     ).toEqual(expectedFamilyTypes)
     expect(
       Array.from({ length: 39 }, (_, index) =>
@@ -65,9 +65,9 @@ describe('Dex filters', () => {
   })
 
   it('keeps the reindexed Dex contiguous and evolution references valid', () => {
-    expect(new Set(dragonSpecies.map((species) => species.id)).size).toBe(117)
+    expect(new Set(dragonSpecies.map((species) => species.id)).size).toBe(121)
     expect(dragonSpecies.map((species) => species.dexNo)).toEqual(
-      Array.from({ length: 117 }, (_, index) => index + 1),
+      Array.from({ length: 121 }, (_, index) => index + 1),
     )
     expect(dragonSpecies.map((species) => species.id)).not.toEqual(
       expect.arrayContaining(['starwhisk', 'cosmowhisper', 'celestiglow']),
@@ -75,6 +75,16 @@ describe('Dex filters', () => {
     expect(dragonSpecies.every((species) =>
       !species.evolvesTo || dragonSpecies.some((next) => next.id === species.evolvesTo),
     )).toBe(true)
+  })
+
+  it('places four non-evolving legendary species at the end of the Dex', () => {
+    expect(dragonSpecies.slice(-4).map((species) => [species.dexNo, species.id, species.type, species.stage])).toEqual([
+      [118, 'vihaarion', 'fire', 1],
+      [119, 'hudsorion', 'grass', 1],
+      [120, 'phurion', 'electric', 1],
+      [121, 'diegorion', 'light', 1],
+    ])
+    expect(dragonSpecies.slice(-4).every((species) => !species.evolvesAt && !species.evolvesTo)).toBe(true)
   })
 })
 

@@ -49,7 +49,7 @@ export interface DragonInstance {
 }
 
 export interface BattleState {
-  kind: 'wild' | 'lightEncounter' | 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss'
+  kind: 'wild' | 'lightEncounter' | 'legendaryEncounter' | 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss'
   trainerPhase?: 0 | 1 | 2
   enemy: DragonInstance
   enemyTeam: DragonInstance[]
@@ -71,6 +71,8 @@ export type BattleEvent =
   | { kind: 'evolution'; beforeId: string; afterId: string }
   | { kind: 'badge'; badge: 'Ember' | 'Bloom' | 'Spark' | 'Breeze' | 'Tide' | 'Frost' | 'Eclipse' | 'Radiant' }
   | { kind: 'lightEncounter'; speciesId: string }
+  | { kind: 'legendaryReveal' }
+  | { kind: 'legendaryEncounter'; speciesId: string }
   | { kind: 'jakeVictory' }
   | { kind: 'jakeReveal' }
   | { kind: 'catch'; speciesId: string; joinedParty: boolean }

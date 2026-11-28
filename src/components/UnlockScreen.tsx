@@ -7,11 +7,14 @@ export interface UnlockOptions {
   allDragons: boolean
   jakeDefeated: boolean
   lightEncountersCaught: boolean
+  legendaryDragonsCaught: boolean
 }
 
 interface UnlockScreenProps {
   save: GameSave
   onApply: (options: UnlockOptions) => void
+  onGiveCoins: () => void
+  onLevelParty: () => void
   onClose: () => void
 }
 
@@ -19,13 +22,14 @@ const gymTypes = ['fire', 'grass', 'electric', 'cloud', 'water', 'ice', 'dark', 
 const gymNames = ['Emberfall', 'Mossgrove', 'Voltspire', 'Cloudrest', 'Tidehaven', 'Frostveil', 'Umbralis', 'Luminara'] as const
 const progressLabels = ['No progress', 'Trainer 1 defeated', 'Trainer 2 defeated', 'Leader defeated'] as const
 
-export function UnlockScreen({ save, onApply, onClose }: UnlockScreenProps) {
+export function UnlockScreen({ save, onApply, onGiveCoins, onLevelParty, onClose }: UnlockScreenProps) {
   const [options, setOptions] = useState<UnlockOptions>({
     gymProgress: { ...save.gymProgress },
     badges: [...save.badges],
     allDragons: false,
     jakeDefeated: save.darkGangDefeated,
     lightEncountersCaught: (save.lightEncountersCaught?.length ?? 0) === 4,
+    legendaryDragonsCaught: ['vihaarion', 'hudsorion', 'phurion', 'diegorion'].every((id) => save.caught.includes(id)),
   })
 
   const toggle = (key: keyof UnlockOptions) => {
@@ -63,6 +67,10 @@ export function UnlockScreen({ save, onApply, onClose }: UnlockScreenProps) {
             <input type="checkbox" checked={options.lightEncountersCaught} onChange={() => toggle('lightEncountersCaught')} />
             <span><strong>Complete Light encounters</strong><small>Prevent the four rare encounter checks from appearing.</small></span>
           </label>
+          <label>
+            <input type="checkbox" checked={options.legendaryDragonsCaught} onChange={() => toggle('legendaryDragonsCaught')} />
+            <span><strong>Catch legendary Dragons</strong><small>Toggle off to remove all four from owned progress and test their encounters again.</small></span>
+          </label>
         </div>
         <div className="unlock-gym-list">
           {gymTypes.map((type, index) => {
@@ -87,6 +95,8 @@ export function UnlockScreen({ save, onApply, onClose }: UnlockScreenProps) {
           })}
         </div>
         <div className="unlock-actions">
+          <button className="secondary-button unlock-coins-button" type="button" onClick={onGiveCoins}>Give 1,000 Coins</button>
+          <button className="secondary-button unlock-level-button" type="button" onClick={onLevelParty}>Party → Level 45</button>
           <button className="secondary-button" type="button" onClick={onClose}>Cancel</button>
           <button className="primary-button" type="button" onClick={() => onApply(options)}>Apply selected</button>
         </div>

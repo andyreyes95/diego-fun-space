@@ -12,6 +12,45 @@ interface EventScreenProps {
 export function EventScreen({ event, currentPlanet, onDismiss }: EventScreenProps) {
   const planetClass = `event-planet-${currentPlanet}`
 
+  if (event.kind === 'legendaryReveal') {
+    return (
+      <main className="celebration-screen legendary-reveal-screen event-planet-8">
+        <div className="celebration-rays" aria-hidden="true" />
+        <section className="celebration-card legendary-reveal-card" role="dialog" aria-modal="true" aria-labelledby="legendary-reveal-title">
+          <p className="eyebrow">One final quest</p>
+          <h1 id="legendary-reveal-title">Four legends await</h1>
+          <div className="legendary-silhouettes" aria-hidden="true">
+            <span>?</span><span>?</span><span>?</span><span>?</span>
+          </div>
+          <p>Auriel reveals a final truth: Champion Mark will face you only after you capture the four legendary Dragons. Their names and hiding places remain unknown—continue exploring the Starcrest System.</p>
+          <button className="primary-button" type="button" onClick={onDismiss}>Begin the legendary quest</button>
+        </section>
+      </main>
+    )
+  }
+
+  if (event.kind === 'legendaryEncounter') {
+    const species = speciesById[event.speciesId]
+    return (
+      <main className={`celebration-screen legendary-encounter-screen ${planetClass}`}>
+        <div className="celebration-rays" aria-hidden="true" />
+        <section className="celebration-card" role="dialog" aria-modal="true" aria-labelledby="legendary-encounter-title">
+          <p className="eyebrow">Legendary Dragon discovered</p>
+          <h1 id="legendary-encounter-title">{species.name}</h1>
+          <div className="catch-reveal">
+            <DragonIcon species={species} size={240} battleMode />
+          </div>
+          <div className="detail-pills">
+            <span style={{ background: typeColors[species.type] }}>{typeNames[species.type]}</span>
+            <span>Legendary</span>
+          </div>
+          <p>{species.description} It will not faint, but it may escape if the capture fails.</p>
+          <button className="primary-button" type="button" onClick={onDismiss}>Face the legend</button>
+        </section>
+      </main>
+    )
+  }
+
   if (event.kind === 'lightEncounter') {
     const species = speciesById[event.speciesId]
     return (
