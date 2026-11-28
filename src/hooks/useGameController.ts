@@ -487,7 +487,8 @@ export function useGameController() {
       setView(destination)
       return
     }
-    if (destination === 'planet1' && !save.hasVisitedEmberfall) {
+    if (destination === 'town'
+      || (destination === 'planet1' && save.currentPlanet === 0)) {
       setSave((current) => current ? { ...current, hasVisitedEmberfall: true } : current)
       setView(destination)
       return

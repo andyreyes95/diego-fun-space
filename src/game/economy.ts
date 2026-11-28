@@ -31,9 +31,9 @@ export interface CaptureOrb {
 }
 
 export const captureOrbs: CaptureOrb[] = [
-  { id: 'sparkOrb', name: `${captureOrbProgression[0]} Orb`, description: 'A simple, dependable orb made for every new trainer.', price: 20, multiplier: 1 },
-  { id: 'moonOrb', name: `${captureOrbProgression[1]} Orb`, description: 'A bright starter orb with a little extra capture pull.', price: 40, multiplier: 1.1 },
-  { id: 'novaOrb', name: `${captureOrbProgression[2]} Orb`, description: 'A warm, powerful orb for more stubborn dragons.', price: 80, multiplier: 1.2 },
+  { id: 'sparkOrb', name: `${captureOrbProgression[0]} Orb`, description: 'A simple, dependable orb made for every new trainer.', price: 10, multiplier: 1 },
+  { id: 'moonOrb', name: `${captureOrbProgression[1]} Orb`, description: 'A bright starter orb with a little extra capture pull.', price: 30, multiplier: 1.1 },
+  { id: 'novaOrb', name: `${captureOrbProgression[2]} Orb`, description: 'A warm, powerful orb for more stubborn dragons.', price: 50, multiplier: 1.2 },
 ]
 
 export const orbById = Object.fromEntries(captureOrbs.map((orb) => [orb.id, orb])) as Record<CaptureOrbId, CaptureOrb>

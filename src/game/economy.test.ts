@@ -32,7 +32,7 @@ describe('currency and orb economy', () => {
   })
 
   it('uses the planned doubling-price progression', () => {
-    expect(captureOrbs.map((orb) => orb.price)).toEqual([20, 40, 80])
+    expect(captureOrbs.map((orb) => orb.price)).toEqual([10, 30, 50])
   })
 
   it('charges healing and gym entry without charging other battles', () => {
@@ -63,12 +63,12 @@ describe('currency and orb economy', () => {
   it('spends coins and adds an orb without mutating the save', () => {
     const result = purchaseOrb(save(50), 'moonOrb')
     expect(result.purchased).toBe(true)
-    expect(result.save.coins).toBe(10)
+    expect(result.save.coins).toBe(20)
     expect(result.save.inventory.moonOrb).toBe(1)
   })
 
   it('rejects unaffordable purchases', () => {
-    const original = save(10)
+    const original = save(9)
     const result = purchaseOrb(original, 'sparkOrb')
     expect(result.purchased).toBe(false)
     expect(result.save).toBe(original)
