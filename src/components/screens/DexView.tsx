@@ -43,7 +43,7 @@ export function DexView({
           <h1>Dragon Collection</h1>
         </div>
         <div className="dex-progress">
-          <strong>{caughtCount} / 120</strong>
+          <strong>{caughtCount} / {dragonSpecies.length}</strong>
           <span>Caught</span>
         </div>
       </div>

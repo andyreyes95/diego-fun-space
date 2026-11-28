@@ -1,4 +1,5 @@
 import type { DragonInstance, GameSave } from '../types'
+import { createDragon, dragonSpecies } from '../data'
 import { createInstanceId } from './registration'
 
 export const SAVE_KEY = 'starcrest-dragons-save-v1'
@@ -12,20 +13,27 @@ function ensureInstanceIds(instances: DragonInstance[]): DragonInstance[] {
 }
 
 export function migrateSave(parsed: Partial<GameSave> & { bench?: DragonInstance[] }): GameSave {
-  const party = ensureInstanceIds(parsed.party ?? [])
-  const reserve = ensureInstanceIds(parsed.reserve ?? parsed.bench ?? [])
-  const caught = parsed.caught ?? []
+  const validSpeciesIds = new Set(dragonSpecies.map((species) => species.id))
+  const party = ensureInstanceIds(parsed.party ?? []).filter((dragon) => validSpeciesIds.has(dragon.speciesId))
+  const reserve = ensureInstanceIds(parsed.reserve ?? parsed.bench ?? []).filter((dragon) => validSpeciesIds.has(dragon.speciesId))
+  const starterId = validSpeciesIds.has(parsed.starterId ?? '') ? parsed.starterId! : 'embbite'
+  if (party.length === 0) {
+    party.push(reserve.shift() ?? createDragon(starterId, 5))
+  }
+  const caught = (parsed.caught ?? []).filter((speciesId) => validSpeciesIds.has(speciesId))
   const captureCounts = parsed.captureCounts
-    ? { ...parsed.captureCounts }
+    ? Object.fromEntries(
+      Object.entries(parsed.captureCounts).filter(([speciesId]) => validSpeciesIds.has(speciesId)),
+    )
     : Object.fromEntries(caught.map((speciesId) => [speciesId, 1]))
 
   return {
     saveVersion: SAVE_VERSION,
     playerName: parsed.playerName ?? 'Nova',
-    starterId: parsed.starterId ?? 'embbite',
+    starterId,
     party,
     reserve,
-    seen: parsed.seen ?? [],
+    seen: (parsed.seen ?? []).filter((speciesId) => validSpeciesIds.has(speciesId)),
     caught,
     captureCounts,
     badges: parsed.badges ?? [],

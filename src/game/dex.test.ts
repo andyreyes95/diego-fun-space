@@ -40,53 +40,39 @@ describe('Dex filters', () => {
     expect(getEvolutionChain('flamico').map((species) => species.id)).toEqual(['embbite', 'flamico', 'pyravolt'])
   })
 
-  it('contains 120 species and complete three-stage batch lines', () => {
-    expect(dragonSpecies).toHaveLength(120)
-    const batch = dragonSpecies.filter((species) => species.dexNo >= 25 && species.dexNo <= 48)
-    expect(batch.map((species) => species.dexNo)).toEqual(
-      Array.from({ length: 24 }, (_, index) => index + 25),
+  it('contains 117 species and complete three-stage batch lines', () => {
+    expect(dragonSpecies).toHaveLength(117)
+    expect(dragonSpecies.map((species) => species.stage)).toEqual(
+      Array.from({ length: 39 }, () => [1, 2, 3]).flat(),
     )
-    expect(batch.map((species) => species.stage)).toEqual([
-      1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-      1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-    ])
-    expect(batch.map((species) => species.type)).toEqual([
-      'fire', 'fire', 'fire',
-      'water', 'water', 'water',
-      'grass', 'grass', 'grass',
-      'ice', 'ice', 'ice',
-      'electric', 'electric', 'electric',
-      'light', 'light', 'light',
-      'cloud', 'cloud', 'cloud',
-      'dark', 'dark', 'dark',
-    ])
+    const storyTypeOrder = ['fire', 'grass', 'electric', 'cloud', 'water', 'ice', 'dark', 'light']
+    const expectedFamilyTypes = [
+      ...Array.from({ length: 4 }, () => storyTypeOrder).flat(),
+      ...storyTypeOrder.slice(0, 7),
+    ]
+    expect(
+      dragonSpecies.filter((species) => species.stage === 1).map((species) => species.type),
+    ).toEqual(expectedFamilyTypes)
+    expect(
+      Array.from({ length: 39 }, (_, index) =>
+        new Set(dragonSpecies.slice(index * 3, index * 3 + 3).map((species) => species.type)).size,
+      ),
+    ).toEqual(Array(39).fill(1))
     expect(getEvolutionChain('cindrake').map((species) => species.id)).toEqual(['cindrake', 'pyrocub', 'ashrex'])
     expect(getEvolutionChain('voidscale').map((species) => species.id)).toEqual(['dusklit', 'nightfang', 'voidscale'])
   })
 
-  it('orders all 72 new species as 24 complete type lines', () => {
-    const batch = dragonSpecies.filter((species) => species.dexNo >= 49)
-    const typeCycle = [
-      'fire', 'fire', 'fire',
-      'water', 'water', 'water',
-      'grass', 'grass', 'grass',
-      'ice', 'ice', 'ice',
-      'electric', 'electric', 'electric',
-      'light', 'light', 'light',
-      'cloud', 'cloud', 'cloud',
-      'dark', 'dark', 'dark',
-    ]
-    expect(batch.map((species) => species.dexNo)).toEqual(
-      Array.from({ length: 72 }, (_, index) => index + 49),
+  it('keeps the reindexed Dex contiguous and evolution references valid', () => {
+    expect(new Set(dragonSpecies.map((species) => species.id)).size).toBe(117)
+    expect(dragonSpecies.map((species) => species.dexNo)).toEqual(
+      Array.from({ length: 117 }, (_, index) => index + 1),
     )
-    expect(batch.map((species) => species.stage)).toEqual(
-      Array.from({ length: 24 }, () => [1, 2, 3]).flat(),
+    expect(dragonSpecies.map((species) => species.id)).not.toEqual(
+      expect.arrayContaining(['starwhisk', 'cosmowhisper', 'celestiglow']),
     )
-    expect(batch.map((species) => species.type)).toEqual(
-      Array.from({ length: 3 }, () => typeCycle).flat(),
-    )
-    expect(new Set(dragonSpecies.map((species) => species.id)).size).toBe(120)
-    expect(batch.every((species) => !species.evolvesTo || dragonSpecies.some((next) => next.id === species.evolvesTo))).toBe(true)
+    expect(dragonSpecies.every((species) =>
+      !species.evolvesTo || dragonSpecies.some((next) => next.id === species.evolvesTo),
+    )).toBe(true)
   })
 })
 
