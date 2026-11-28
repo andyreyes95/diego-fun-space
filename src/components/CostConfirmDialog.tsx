@@ -1,15 +1,16 @@
-import { CoinVertical, FirstAidIcon, PlanetIcon } from '@phosphor-icons/react'
+import { CoinVertical, FirstAidIcon, PlanetIcon, SignOutIcon } from '@phosphor-icons/react'
 import type { DragonType } from '../types'
 import { typeColors } from '../data'
 import { BadgeIcon } from './BadgeIcon'
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import type { DragonInstance } from '../types'
 import { speciesById } from '../data'
 import { DragonName } from './DragonName'
 import { HEALING_COST_PER_DRAGON } from '../game/economy'
 
 interface CostConfirmDialogProps {
-  kind: 'heal' | 'gym' | 'travel'
+  kind: 'heal' | 'gym' | 'travel' | 'escape'
   battleKind?: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym'
   cost: number
   balance: number
@@ -32,6 +33,7 @@ const gymTypes: Record<NonNullable<CostConfirmDialogProps['battleKind']>, Dragon
 export function CostConfirmDialog({ kind, battleKind, cost, balance, party = [], onConfirm, onCancel }: CostConfirmDialogProps) {
   const isHealing = kind === 'heal'
   const isTravel = kind === 'travel'
+  const isEscape = kind === 'escape'
   const [selectedHealingIds, setSelectedHealingIds] = useState<string[]>(
     party.filter((dragon) => dragon.hp < dragon.maxHp).map((dragon) => dragon.instanceId),
   )
@@ -39,28 +41,32 @@ export function CostConfirmDialog({ kind, battleKind, cost, balance, party = [],
   const affordable = isHealing ? selectedHealingIds.length > 0 : balance >= cost
   const balanceAfter = balance - effectiveCost
 
-  return (
+  return createPortal(
     <div className="cost-dialog-overlay">
       <section className="cost-dialog celebration-card" role="dialog" aria-modal="true" aria-labelledby="cost-dialog-title">
         <div
-          className={`cost-dialog-icon ${isHealing ? 'healing' : isTravel ? 'travel' : `badge-${battleKind ? gymTypes[battleKind] : 'fire'}`}`}
-          style={!isHealing && !isTravel && battleKind ? { '--badge-dialog-color': typeColors[gymTypes[battleKind]] } as React.CSSProperties : undefined}
+          className={`cost-dialog-icon ${isHealing ? 'healing' : isTravel || isEscape ? 'travel' : `badge-${battleKind ? gymTypes[battleKind] : 'fire'}`}`}
+          style={!isHealing && !isTravel && !isEscape && battleKind ? { '--badge-dialog-color': typeColors[gymTypes[battleKind]] } as React.CSSProperties : undefined}
           aria-hidden="true"
         >
-          {          isHealing
+          {isHealing
             ? <FirstAidIcon size={42} weight="duotone" />
             : isTravel
               ? <PlanetIcon size={42} weight="duotone" />
-              : battleKind && <BadgeIcon type={gymTypes[battleKind]} size={42} />}
+              : isEscape
+                ? <SignOutIcon size={42} weight="duotone" />
+                : battleKind && <BadgeIcon type={gymTypes[battleKind]} size={42} />}
         </div>
-        <p className="eyebrow">{isHealing ? 'Healing Center' : isTravel ? 'Planet Portal' : 'Gym Entrance'}</p>
-        <h2 id="cost-dialog-title">{isHealing ? 'Rest your team?' : isTravel ? 'Travel to this planet?' : 'Enter the gym battle?'}</h2>
+        <p className="eyebrow">{isHealing ? 'Healing Center' : isTravel ? 'Planet Portal' : isEscape ? 'Dark Gang Ambush' : 'Gym Entrance'}</p>
+        <h2 id="cost-dialog-title">{isHealing ? 'Rest your team?' : isTravel ? 'Travel to this planet?' : isEscape ? 'Escape the ambush?' : 'Enter the gym battle?'}</h2>
         <p>
           {isHealing
             ? 'Choose injured Party members to restore to full health.'
             : isTravel
               ? 'The portal fare is paid once before traveling.'
-              : 'The entry fee is paid before this battle begins.'}
+              : isEscape
+                ? 'Pay the escape cost to leave this ambush safely.'
+                : 'The entry fee is paid before this battle begins.'}
         </p>
         {isHealing && (
           <div className="healing-party-list">
@@ -99,10 +105,11 @@ export function CostConfirmDialog({ kind, battleKind, cost, balance, party = [],
         <div className="cost-dialog-actions">
           <button type="button" className="secondary-button" onClick={onCancel}>Not now</button>
           <button type="button" className="primary-button" onClick={() => onConfirm(isHealing ? selectedHealingIds : undefined)} disabled={!affordable}>
-            {isHealing ? 'Heal team' : isTravel ? 'Use portal' : 'Enter battle'}
+            {isHealing ? 'Heal team' : isTravel ? 'Use portal' : isEscape ? 'Pay and run' : 'Enter battle'}
           </button>
         </div>
       </section>
-    </div>
+    </div>,
+    document.body,
   )
 }

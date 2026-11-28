@@ -12,7 +12,7 @@ import type { View } from './types'
 import { UnlockScreen } from './components/UnlockScreen'
 import { MarketScreen } from './components/screens/MarketScreen'
 import { CostConfirmDialog } from './components/CostConfirmDialog'
-import { getHealingCost, GYM_ENTRY_COST, normalizeCoins, PORTAL_COST } from './game/economy'
+import { AMBUSH_ESCAPE_COST, getHealingCost, GYM_ENTRY_COST, normalizeCoins, PORTAL_COST } from './game/economy'
 
 function App() {
   const game = useGameController()
@@ -52,21 +52,32 @@ function App() {
     }
 
     return (
-      <BattleScreen
-        save={game.save}
-        battle={game.battle}
-        active={active}
-        activePartyIndex={activeIndex >= 0 ? activeIndex : 0}
-        screenShake={game.screenShake}
-        busy={game.battleBusy}
-        onUseMove={game.useMove}
-        onTryCapture={game.tryCapture}
-        onRun={game.runFromBattle}
-        onSwitch={game.switchDragon}
-        selectedOrb={game.selectedCaptureOrb}
-        onSelectOrb={game.setSelectedCaptureOrb}
-        toast={game.toast}
-      />
+      <>
+        <BattleScreen
+          save={game.save}
+          battle={game.battle}
+          active={active}
+          activePartyIndex={activeIndex >= 0 ? activeIndex : 0}
+          screenShake={game.screenShake}
+          busy={game.battleBusy}
+          onUseMove={game.useMove}
+          onTryCapture={game.tryCapture}
+          onRun={game.runFromBattle}
+          onSwitch={game.switchDragon}
+          selectedOrb={game.selectedCaptureOrb}
+          onSelectOrb={game.setSelectedCaptureOrb}
+          toast={game.toast}
+        />
+        {game.pendingCostAction?.kind === 'escape' && (
+          <CostConfirmDialog
+            kind="escape"
+            cost={AMBUSH_ESCAPE_COST}
+            balance={normalizeCoins(game.save.coins)}
+            onConfirm={game.confirmPendingCostAction}
+            onCancel={game.cancelPendingCostAction}
+          />
+        )}
+      </>
     )
   }
 
@@ -175,7 +186,9 @@ function App() {
             ? getHealingCost(game.save)
             : game.pendingCostAction.kind === 'travel'
               ? PORTAL_COST
-              : GYM_ENTRY_COST}
+              : game.pendingCostAction.kind === 'escape'
+                ? AMBUSH_ESCAPE_COST
+                : GYM_ENTRY_COST}
           balance={normalizeCoins(game.save.coins)}
           party={game.save.party}
           onConfirm={game.confirmPendingCostAction}

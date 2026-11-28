@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { GameSave } from '../types'
-import { captureOrbProgression, captureOrbs, consumeOrb, getBattleReward, getGymEntryCost, getHealingCost, getSelectedHealingCost, HEALING_COST_PER_DRAGON, normalizeCoins, PORTAL_COST, purchaseOrb } from './economy'
+import { AMBUSH_ESCAPE_COST, captureOrbProgression, captureOrbs, consumeOrb, getBattleReward, getGymEntryCost, getHealingCost, getSelectedHealingCost, HEALING_COST_PER_DRAGON, normalizeCoins, PORTAL_COST, purchaseOrb } from './economy'
 
 const save = (coins = 100): GameSave => ({
   saveVersion: 4,
@@ -43,6 +43,7 @@ describe('currency and orb economy', () => {
     expect(getGymEntryCost('gang')).toBe(0)
     expect(getGymEntryCost('jakeBoss')).toBe(0)
     expect(PORTAL_COST).toBe(20)
+    expect(AMBUSH_ESCAPE_COST).toBe(10)
   })
 
   it('provides standard, intermediate, and advanced orb bonuses', () => {

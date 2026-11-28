@@ -30,6 +30,13 @@ export function isSolarNodeUnlocked(node: SolarNode, save: GameSave): boolean {
     : !node.unlockedBy || save.badges.includes(node.unlockedBy)
 }
 
+export function getHighestUnlockedPlanet(save: GameSave): 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 {
+  const highest = solarNodes
+    .filter((node) => node.routeIndex > 0 && isSolarNodeUnlocked(node, save))
+    .reduce((max, node) => Math.max(max, node.routeIndex), 1)
+  return highest as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
+}
+
 export function getNextSolarNode(save: GameSave): SolarNode | undefined {
   return [...solarNodes]
     .sort((a, b) => a.routeIndex - b.routeIndex)

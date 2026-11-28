@@ -3,11 +3,12 @@ import { createDragon, dragonSpecies, speciesById } from '../data'
 import type { BattleEvent, BattleLogEntry, BattleState, DragonInstance, DragonType, GameSave, Move, View } from '../types'
 import { clearSave, loadSave, persistSave } from '../game/storage'
 import { addCapturedInstance, moveInstance, registerEvolution, registerSeen, renameInstance } from '../game/registration'
-import { applyKnockoutExperience, doesLightEncounterAppear, effectivenessText, getLightEncounter, getLightEncounterPlanet, getWildEncounter, getOpponentTeam, isDarkGangAmbush, resolveAttack, resolveCaptureAttempt } from '../game/battle'
+import { applyAttackExperience, doesLightEncounterAppear, effectivenessText, getLightEncounter, getLightEncounterPlanet, getWildEncounter, getOpponentTeam, isDarkGangAmbush, resolveAttack, resolveCaptureAttempt } from '../game/battle'
 import { filterDexSpecies } from '../game/dex'
 import { advanceStoryStep, getWildCaptureCount } from '../game/quests'
 import type { UnlockOptions } from '../components/UnlockScreen'
-import { consumeOrb, getBattleReward, getGymEntryCost, getSelectedHealingCost, normalizeCoins, orbById, PORTAL_COST, purchaseOrb, type CaptureOrbId } from '../game/economy'
+import { AMBUSH_ESCAPE_COST, consumeOrb, getBattleReward, getGymEntryCost, getSelectedHealingCost, normalizeCoins, orbById, PORTAL_COST, purchaseOrb, type CaptureOrbId } from '../game/economy'
+import { getHighestUnlockedPlanet } from '../game/solarMap'
 
 const badgeNames = ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse', 'Radiant']
 type TrainerBattleKind = 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss'
@@ -16,6 +17,10 @@ type GymBattleKind = Exclude<TrainerBattleKind, 'gang' | 'jakeBoss'>
 function displayName(dragon: DragonInstance): string {
   const speciesName = speciesById[dragon.speciesId].name
   return dragon.nickname?.trim() ? `${speciesName} (${dragon.nickname.trim()})` : speciesName
+}
+
+function planetView(planet: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8): View {
+  return `planet${planet}` as View
 }
 
 export function useGameController() {
@@ -59,6 +64,7 @@ export function useGameController() {
     | { kind: 'heal' }
     | { kind: 'gym'; battleKind: GymBattleKind }
     | { kind: 'travel'; destination: View }
+    | { kind: 'escape' }
     | null
   >(null)
 
@@ -190,7 +196,7 @@ export function useGameController() {
     if (dismissedEvent?.kind === 'escape') {
       setBattle(null)
       setSave((current) => current ? { ...current, currentPlanet: battlePlanet } : current)
-      setViewState(battlePlanet === 1 ? 'planet1' : battlePlanet === 2 ? 'planet2' : battlePlanet === 3 ? 'planet3' : battlePlanet === 4 ? 'planet4' : battlePlanet === 5 ? 'planet5' : battlePlanet === 6 ? 'planet6' : battlePlanet === 7 ? 'planet7' : 'planet8')
+      setViewState(planetView(battlePlanet))
     }
   }
 
@@ -308,7 +314,7 @@ export function useGameController() {
     }
 
     setActivePartyIndex(firstAbleDragon)
-    if (isDarkGangAmbush()) {
+    if (planet !== 8 && isDarkGangAmbush()) {
       beginTrainerBattle('gang', planet)
       return
     }
@@ -409,7 +415,7 @@ export function useGameController() {
                     : kind === 'jakeBoss'
                       ? 'Dark Gang Leader Jake'
                       : 'Dark Gang Captain'
-    const enemyTeam = getOpponentTeam(kind, trainerPhase)
+    const enemyTeam = getOpponentTeam(kind, trainerPhase, getHighestUnlockedPlanet(save))
     const enemy = enemyTeam[0]
     enemyTeam.forEach((dragon) => markSeen(dragon.speciesId))
     setBattle({
@@ -467,6 +473,19 @@ export function useGameController() {
       setView(action.destination)
       return
     }
+    if (action?.kind === 'escape') {
+      if (!save || normalizeCoins(save.coins) < AMBUSH_ESCAPE_COST) {
+        setToast(`Escaping the ambush costs ${AMBUSH_ESCAPE_COST} Coins.`)
+        return
+      }
+      setSave((current) => current
+        ? { ...current, coins: normalizeCoins(current.coins) - AMBUSH_ESCAPE_COST }
+        : current)
+      setBattle(null)
+      setEventQueue([])
+      setViewState(planetView(battlePlanet))
+      return
+    }
     if (action?.kind === 'gym') beginTrainerBattle(action.battleKind)
   }
 
@@ -500,9 +519,9 @@ export function useGameController() {
     setPendingCostAction({ kind: 'travel', destination })
   }
 
-  const enemyTurn = (attackingIndex = activePartyIndex) => {
+  const enemyTurn = (attackingIndex = activePartyIndex, activeOverride?: DragonInstance) => {
     if (!save || !battle) return
-    const active = save.party[attackingIndex]
+    const active = activeOverride ?? save.party[attackingIndex]
     if (!active) return
     const currentEnemy = battle.enemyTeam[battle.enemyActiveIndex] ?? battle.enemy
     const enemyMove = currentEnemy.moves[Math.floor(Math.random() * currentEnemy.moves.length)]
@@ -526,7 +545,7 @@ export function useGameController() {
       }
 
       const hp = Math.max(0, active.hp - result.damage)
-      const party = save.party.map((dragon, index) => index === attackingIndex ? { ...dragon, hp } : dragon)
+      const party = save.party.map((dragon, index) => index === attackingIndex ? { ...active, hp } : dragon)
       const effect = effectivenessText(result.effectiveness)
       const entries: BattleLogEntry[] = [
         { side: 'opponent' as const, text: `${enemySpecies.name} used ${enemyMove.name}!${effect}` },
@@ -592,29 +611,29 @@ export function useGameController() {
     const enemyTeamAfterHit = battle.enemyTeam.map((enemy, index) =>
       index === battle.enemyActiveIndex ? { ...enemy, hp: enemyHp } : enemy,
     )
+    const attackReward = applyAttackExperience(active, result.damage)
+    const rewardedDragon = attackReward.instance
+    const updatedParty = save.party.map((dragon, index) => index === activeIndex ? rewardedDragon : dragon)
+    const { evolution } = attackReward
+
+    if (evolution) {
+      setEventQueue((queue) => [
+        ...queue,
+        { kind: 'evolution', beforeId: evolution.beforeId, afterId: evolution.afterId },
+      ])
+    }
+
+    setSave((current) => current ? {
+      ...(evolution
+        ? registerEvolution(current, evolution.beforeId, evolution.afterId)
+        : current),
+      party: updatedParty,
+    } : current)
     setScreenShake(true)
     window.setTimeout(() => setScreenShake(false), 180)
 
     if (enemyHp <= 0) {
       const leaderBattle = battle.trainerPhase === 2
-      const knockoutReward = applyKnockoutExperience(active, battle.enemy.level)
-      const victoriousDragon = knockoutReward.instance
-      const updatedParty = save.party.map((dragon, index) => index === activeIndex ? victoriousDragon : dragon)
-      const { evolution } = knockoutReward
-
-      if (evolution) {
-        setEventQueue((queue) => [
-          ...queue,
-          { kind: 'evolution', beforeId: evolution.beforeId, afterId: evolution.afterId },
-        ])
-      }
-
-      setSave((current) => current ? {
-        ...(evolution
-          ? registerEvolution(current, evolution.beforeId, evolution.afterId)
-          : current),
-        party: updatedParty,
-      } : current)
 
       if (battle.kind !== 'wild' && battle.enemyTeam.length > battle.enemyActiveIndex + 1) {
         const nextEnemyIndex = battle.enemyActiveIndex + 1
@@ -630,7 +649,7 @@ export function useGameController() {
             ...battle.log,
             { side: 'player', text: `${playerName} used ${move.name}!${effect}` },
             { side: 'system', text: `${enemySpecies.name} fainted!` },
-            { side: 'system', text: `${playerName} gained ${knockoutReward.xpGain} XP.` },
+            { side: 'system', text: `${playerName} gained ${attackReward.xpGain} XP.` },
             { side: 'opponent', text: `${battle.enemyName} sent out ${speciesById[nextEnemy.speciesId].name}!` },
           ],
         })
@@ -733,7 +752,7 @@ export function useGameController() {
           ...battle.log,
           { side: 'player', text: `${playerName} used ${move.name}!${effect}` },
           { side: 'system', text: `${enemySpecies.name} fainted!` },
-          { side: 'system', text: `${playerName} gained ${knockoutReward.xpGain} XP.` },
+          { side: 'system', text: `${playerName} gained ${attackReward.xpGain} XP.` },
         ],
         finished: true,
         won: true,
@@ -747,9 +766,13 @@ export function useGameController() {
       ...current,
       enemy: { ...current.enemy, hp: enemyHp },
       enemyTeam: enemyTeamAfterHit,
-      log: [...current.log, { side: 'player', text: `${playerName} used ${move.name}!${effect}` }],
+      log: [
+        ...current.log,
+        { side: 'player', text: `${playerName} used ${move.name}!${effect}` },
+        { side: 'system', text: `${playerName} gained ${attackReward.xpGain} XP.` },
+      ],
     } : current)
-    enemyTurn(activeIndex)
+    enemyTurn(activeIndex, rewardedDragon)
   }
 
   const tryCapture = () => {
@@ -879,15 +902,24 @@ export function useGameController() {
 
   const runFromBattle = () => {
     if (battleBusy) return
+    if (battle?.kind === 'gang' && !battle.finished) {
+      if (normalizeCoins(save?.coins) < AMBUSH_ESCAPE_COST) {
+        setToast(`Escaping the ambush costs ${AMBUSH_ESCAPE_COST} Coins. Win the battle to earn your way out.`)
+        return
+      }
+      setPendingCostAction({ kind: 'escape' })
+      return
+    }
     if (battle?.kind === 'lightEncounter' && !battle.won) {
       setToast('The rare Light dragon slipped away. The encounter may appear again later.')
       setBattle(null)
-      setViewState(battlePlanet === 1 ? 'planet1' : battlePlanet === 3 ? 'planet3' : battlePlanet === 5 ? 'planet5' : 'planet7')
+      setViewState(planetView(battlePlanet))
       return
     }
     setBattle(null)
+    setEventQueue([])
     setSave((current) => current ? { ...current, currentPlanet: battlePlanet } : current)
-    setView(battlePlanet === 1 ? 'planet1' : battlePlanet === 2 ? 'planet2' : battlePlanet === 3 ? 'planet3' : battlePlanet === 4 ? 'planet4' : battlePlanet === 5 ? 'planet5' : battlePlanet === 6 ? 'planet6' : battlePlanet === 7 ? 'planet7' : 'planet8')
+    setViewState(planetView(battlePlanet))
   }
 
   const filteredDex = useMemo(

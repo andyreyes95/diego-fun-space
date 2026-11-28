@@ -157,18 +157,22 @@ export function getLightEncounter(planet: 1 | 3 | 5 | 7): { speciesId: string; l
 
 export type TrainerBattleKind = 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss'
 
-export function applyKnockoutExperience(dragon: DragonInstance, defeatedLevel: number): {
+export function applyAttackExperience(dragon: DragonInstance, damageDealt: number): {
   instance: DragonInstance
   evolution: ReturnType<typeof evolveInstance>
   xpGain: number
 } {
-  const xpGain = defeatedLevel * 7
+  const xpGain = Math.max(1, Math.ceil(damageDealt / 3))
   const instance = gainExperience(dragon, xpGain)
   const evolution = evolveInstance(instance)
   return { instance: evolution?.instance ?? instance, evolution, xpGain }
 }
 
-export function getOpponentTeam(kind: TrainerBattleKind, phase: 0 | 1 | 2 = 2): DragonInstance[] {
+export function getOpponentTeam(
+  kind: TrainerBattleKind,
+  phase: 0 | 1 | 2 = 2,
+  gangProgressPlanet: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 = 1,
+): DragonInstance[] {
   if (kind === 'fireGym') {
     const teams = [
       [['sparkfox', 5], ['cindrake', 6], ['glowmoth', 7]],
@@ -241,10 +245,15 @@ export function getOpponentTeam(kind: TrainerBattleKind, phase: 0 | 1 | 2 = 2): 
       createDragon('umbrawyrm', 42),
     ]
   }
-  return [
-    createDragon('shadee', 8),
-    createDragon('noxibear', 12),
-    createDragon('umbrawyrm', 16),
-    createDragon('umbrawyrm', 18),
-  ]
+  const gangTeams = [
+    [['shadee', 7]],
+    [['shadee', 9], ['noxibear', 12]],
+    [['dusklit', 13], ['noxibear', 16]],
+    [['veilcat', 17], ['nightfang', 20], ['umbrawyrm', 20]],
+    [['veilcat', 21], ['nightfang', 24], ['umbrawyrm', 24]],
+    [['shadowstalk', 25], ['voidscale', 28], ['umbrawyrm', 28]],
+    [['shadowstalk', 29], ['nightfang', 31], ['voidscale', 33], ['umbrawyrm', 33]],
+    [['phantomcrest', 34], ['nightfang', 36], ['voidscale', 38], ['noctilith', 38]],
+  ] as const
+  return gangTeams[gangProgressPlanet - 1].map(([speciesId, level]) => createDragon(speciesId, level))
 }

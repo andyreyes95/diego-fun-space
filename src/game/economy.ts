@@ -41,6 +41,7 @@ export const orbById = Object.fromEntries(captureOrbs.map((orb) => [orb.id, orb]
 export const HEALING_COST_PER_DRAGON = 10
 export const GYM_ENTRY_COST = 20
 export const PORTAL_COST = 20
+export const AMBUSH_ESCAPE_COST = 10
 
 export function getHealingCost(save: Pick<GameSave, 'party'>): number {
   return save.party.length * HEALING_COST_PER_DRAGON

@@ -229,8 +229,10 @@ export function BattleScreen({
                   </button>
                 </div>
               )}
-              {battle.kind !== 'gang' && battle.kind !== 'jakeBoss' && (
-                <button type="button" className="run-button" onClick={onRun} disabled={busy}>Run</button>
+              {battle.kind !== 'jakeBoss' && (
+                <button type="button" className="run-button" onClick={onRun} disabled={busy}>
+                  {battle.kind === 'gang' ? 'Run · 10 Coins' : 'Run'}
+                </button>
               )}
             </div>
             <div className="team-switcher" aria-label="Switch active dragon">
