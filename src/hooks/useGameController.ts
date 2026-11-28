@@ -3,9 +3,10 @@ import { createDragon, dragonSpecies, speciesById } from '../data'
 import type { BattleEvent, BattleLogEntry, BattleState, DragonInstance, DragonType, GameSave, Move, View } from '../types'
 import { clearSave, loadSave, persistSave } from '../game/storage'
 import { addCapturedInstance, moveInstance, registerEvolution, registerSeen, renameInstance } from '../game/registration'
-import { applyKnockoutExperience, doesWildDragonRunAway, effectivenessText, getWildEncounter, getOpponentTeam, isDarkGangAmbush, resolveAttack } from '../game/battle'
+import { applyKnockoutExperience, doesLightEncounterAppear, effectivenessText, getLightEncounter, getLightEncounterPlanet, getWildEncounter, getOpponentTeam, isDarkGangAmbush, resolveAttack, resolveCaptureAttempt } from '../game/battle'
 import { filterDexSpecies } from '../game/dex'
 import { advanceStoryStep, getWildCaptureCount } from '../game/quests'
+import type { UnlockOptions } from '../components/UnlockScreen'
 
 const badgeNames = ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse', 'Radiant']
 
@@ -99,6 +100,11 @@ export function useGameController() {
                   ? advanceStoryStep(navigated, 3)
                   : navigated
       })
+      const lightPlanet = getLightEncounterPlanet(currentPlanet)
+      if (lightPlanet && save && !save.lightEncountersCaught?.includes(lightPlanet) && doesLightEncounterAppear()) {
+        beginLightEncounter(lightPlanet)
+        return
+      }
     }
     setViewState(nextView)
   }
@@ -141,11 +147,14 @@ export function useGameController() {
       darkGangDefeated: false,
       currentPlanet: 0,
       mossgroveCaptureBaseline: 0,
+      lightEncountersCaught: [],
     })
     setSelectedDexId(selectedStarter)
     setToast(`${starterSpecies.name} joined your team!`)
-    setView('town')
+    setViewState('intro')
   }
+
+  const finishIntro = () => setView('town')
 
   const resetGame = () => {
     if (!window.confirm('Start over and erase this local save?')) return
@@ -172,29 +181,41 @@ export function useGameController() {
     }
   }
 
+  const [unlockScreenOpen, setUnlockScreenOpen] = useState(false)
+
   // Temporary localhost debug cheat: remove this block and the debugUnlockAll UI wiring to disable.
   const debugUnlockAll = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)
-    ? () => {
+    ? () => setUnlockScreenOpen(true)
+    : undefined
+
+  const applyUnlocks = (options: UnlockOptions) => {
       setSave((current) => {
         if (!current) return current
-        const owned = new Set([...current.party, ...current.reserve].map((dragon) => dragon.speciesId))
-        const next = dragonSpecies.reduce((progress, species) => owned.has(species.id)
-          ? progress
-          : addCapturedInstance(progress, createDragon(species.id, 5)), current)
-        const ids = dragonSpecies.map((species) => species.id)
+        let next = current
+        if (options.allDragons) {
+          const owned = new Set([...current.party, ...current.reserve].map((dragon) => dragon.speciesId))
+          next = dragonSpecies.reduce((progress, species) => owned.has(species.id)
+            ? progress
+            : addCapturedInstance(progress, createDragon(species.id, 5)), current)
+          const ids = dragonSpecies.map((species) => species.id)
+          next = {
+            ...next,
+            seen: [...new Set([...next.seen, ...ids])],
+            caught: [...new Set([...next.caught, ...ids])],
+          }
+        }
         return {
           ...next,
-          seen: [...new Set([...next.seen, ...ids])],
-          caught: [...new Set([...next.caught, ...ids])],
-          badges: [...badgeNames],
-          gymProgress: { fire: 2, grass: 2, electric: 2, cloud: 2, water: 2, ice: 2, dark: 2, light: 2 },
-          darkGangDefeated: true,
-          storyStep: Math.max(23, next.storyStep),
+          badges: options.badges,
+          gymProgress: options.gymProgress,
+          darkGangDefeated: options.jakeDefeated,
+          lightEncountersCaught: options.lightEncountersCaught ? [1, 3, 5, 7] : [],
+          storyStep: options.badges.includes('Radiant') ? Math.max(23, next.storyStep) : next.storyStep,
         }
       })
-      setToast('Everything unlocked! All dragons, badges, and planets are ready.')
+      setUnlockScreenOpen(false)
+      setToast('Selected debug unlocks applied.')
     }
-    : undefined
 
   const markSeen = (speciesId: string) => {
     setSave((current) => current ? registerSeen(current, speciesId) : current)
@@ -209,6 +230,38 @@ export function useGameController() {
     setToast('Your dragons are fully rested!')
   }
 
+  const beginLightEncounter = (planet: 1 | 3 | 5 | 7) => {
+    if (!save) return
+    const firstAbleDragon = save.party.findIndex((dragon) => dragon.hp > 0)
+    if (firstAbleDragon < 0) {
+      setToast('Heal your team, then revisit this planet to meet the Light dragon.')
+      return
+    }
+    const { speciesId, level } = getLightEncounter(planet)
+    const enemy = createDragon(speciesId, level)
+    setBattlePlanet(planet)
+    setActivePartyIndex(firstAbleDragon)
+    markSeen(speciesId)
+    setBattle({
+      kind: 'lightEncounter',
+      enemy,
+      enemyTeam: [enemy],
+      enemyActiveIndex: 0,
+      enemyName: 'Rare Light Dragon',
+      log: [
+        { side: 'system', text: `A rare ${speciesById[speciesId].name} challenges you!` },
+        { side: 'system', text: 'This Light dragon will not faint. Weaken it and catch it to continue.' },
+      ],
+      finished: false,
+      won: false,
+      caught: false,
+      catchAttempts: 0,
+    })
+    setEventQueue([{ kind: 'lightEncounter', speciesId }])
+    setBattleBusy(false)
+    setViewState('battle')
+  }
+
   const beginWildBattle = (planet: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8) => {
     if (!save) return
     setBattlePlanet(planet)
@@ -218,6 +271,7 @@ export function useGameController() {
       setView(planet === 1 ? 'planet1' : planet === 2 ? 'planet2' : planet === 3 ? 'planet3' : planet === 4 ? 'planet4' : planet === 5 ? 'planet5' : planet === 6 ? 'planet6' : planet === 7 ? 'planet7' : 'planet8')
       return
     }
+
     setActivePartyIndex(firstAbleDragon)
     if (isDarkGangAmbush()) {
       beginTrainerBattle('gang', planet)
@@ -242,7 +296,7 @@ export function useGameController() {
     setViewState('battle')
   }
 
-  const beginTrainerBattle = (kind: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang', originPlanet?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8) => {
+  const beginTrainerBattle = (kind: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss', originPlanet?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8) => {
     if (!save) return
     const currentBattlePlanet: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 = save.currentPlanet === 0 ? 1 : save.currentPlanet
     const trainerPlanet = originPlanet ?? (
@@ -260,7 +314,7 @@ export function useGameController() {
           ? 7
         : kind === 'lightGym'
           ? 8
-        : kind === 'gang'
+        : kind === 'gang' || kind === 'jakeBoss'
           ? currentBattlePlanet
           : 1
     )
@@ -288,7 +342,9 @@ export function useGameController() {
                   ? save.gymProgress.dark
                   : kind === 'lightGym'
                     ? save.gymProgress.light
-                    : 2
+                    : kind === 'jakeBoss'
+                      ? 2
+                      : 2
     const encounterName = kind === 'fireGym'
       ? trainerPhase === 2 ? 'Gym Leader Sol' : `Fire Gym Trainer ${trainerPhase + 1}`
       : kind === 'grassGym'
@@ -305,7 +361,9 @@ export function useGameController() {
                   ? trainerPhase === 2 ? 'Gym Leader Nyx' : `Dark Gym Trainer ${trainerPhase + 1}`
                   : kind === 'lightGym'
                     ? trainerPhase === 2 ? 'Gym Leader Auriel' : `Light Gym Trainer ${trainerPhase + 1}`
-                    : 'Dark Gang Captain'
+                    : kind === 'jakeBoss'
+                      ? 'Dark Gang Leader Jake'
+                      : 'Dark Gang Captain'
     const enemyTeam = getOpponentTeam(kind, trainerPhase)
     const enemy = enemyTeam[0]
     enemyTeam.forEach((dragon) => markSeen(dragon.speciesId))
@@ -318,7 +376,9 @@ export function useGameController() {
       enemyName: encounterName,
       log: [{
         side: 'system',
-        text: kind === 'gang' && originPlanet
+        text: kind === 'jakeBoss'
+          ? `Jake emerges from his fortress and sends out ${speciesById[enemy.speciesId].name}!`
+          : kind === 'gang' && originPlanet
           ? `The Dark Gang ambushed you! ${encounterName} sent out ${speciesById[enemy.speciesId].name}!`
           : `${encounterName} sent out ${speciesById[enemy.speciesId].name}!`,
       }],
@@ -327,7 +387,9 @@ export function useGameController() {
       caught: false,
       catchAttempts: 0,
     })
-    if (kind === 'gang' && originPlanet) {
+    if (kind === 'jakeBoss') {
+      setEventQueue([{ kind: 'ambush', captainName: 'Dark Gang Leader Jake', fortress: true }])
+    } else if (kind === 'gang' && originPlanet) {
       setEventQueue([{ kind: 'ambush', captainName: encounterName }])
     }
     setBattleBusy(false)
@@ -419,7 +481,9 @@ export function useGameController() {
       return
     }
 
-    const enemyHp = Math.max(0, battle.enemy.hp - result.damage)
+    const enemyHp = battle.kind === 'lightEncounter'
+      ? Math.max(1, battle.enemy.hp - result.damage)
+      : Math.max(0, battle.enemy.hp - result.damage)
     const effect = effectivenessText(result.effectiveness)
     const enemyTeamAfterHit = battle.enemyTeam.map((enemy, index) =>
       index === battle.enemyActiveIndex ? { ...enemy, hp: enemyHp } : enemy,
@@ -488,10 +552,13 @@ export function useGameController() {
         setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Frost' }])
       }
       if (battle.kind === 'darkGym' && leaderBattle && !save.badges.includes('Eclipse')) {
-        setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Eclipse' }])
+        setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Eclipse' }, { kind: 'jakeReveal' }])
       }
       if (battle.kind === 'lightGym' && leaderBattle && !save.badges.includes('Radiant')) {
         setEventQueue((queue) => [...queue, { kind: 'badge', badge: 'Radiant' }])
+      }
+      if (battle.kind === 'jakeBoss') {
+        setEventQueue((queue) => [...queue, { kind: 'jakeVictory' }])
       }
 
       setSave((current) => {
@@ -530,7 +597,7 @@ export function useGameController() {
             dark: battle.kind === 'darkGym' ? Math.min(2, current.gymProgress.dark + (leaderBattle ? 0 : 1)) as 0 | 1 | 2 : current.gymProgress.dark,
             light: battle.kind === 'lightGym' ? Math.min(2, current.gymProgress.light + (leaderBattle ? 0 : 1)) as 0 | 1 | 2 : current.gymProgress.light,
           },
-          darkGangDefeated: battle.kind === 'gang' ? true : registered.darkGangDefeated,
+          darkGangDefeated: battle.kind === 'jakeBoss' ? true : registered.darkGangDefeated,
           storyStep: leaderBattle && battle.kind === 'lightGym'
             ? Math.max(23, registered.storyStep)
             : leaderBattle && battle.kind === 'darkGym'
@@ -581,13 +648,18 @@ export function useGameController() {
   }
 
   const tryCapture = () => {
-    if (!save || !battle || battle.kind !== 'wild' || battle.finished || battleBusy || battle.catchAttempts >= 3) return
+    if (!save || !battle || (battle.kind !== 'wild' && battle.kind !== 'lightEncounter') || battle.finished || battleBusy) return
+    if (battle.kind === 'wild' && battle.catchAttempts >= 3) return
     setBattleBusy(true)
     const catchAttempts = battle.catchAttempts + 1
-    const hpRatio = battle.enemy.hp / battle.enemy.maxHp
-    const chance = 0.35 + (1 - hpRatio) * 0.55
+    const captureAttempt = resolveCaptureAttempt(
+      battle.enemy.hp,
+      battle.enemy.maxHp,
+      catchAttempts,
+      battle.kind === 'wild',
+    )
     const species = speciesById[battle.enemy.speciesId]
-    if (Math.random() < chance) {
+    if (captureAttempt.caught) {
       const caughtIndividual = { ...battle.enemy, hp: battle.enemy.maxHp }
       const joinedParty = save.party.length < 4
       setSave((current) => {
@@ -598,6 +670,12 @@ export function useGameController() {
         if (next.currentPlanet === 2 && wildCaptures > next.mossgroveCaptureBaseline) {
           next = advanceStoryStep(next, 4)
         }
+        if (battle.kind === 'lightEncounter' && !next.lightEncountersCaught?.includes(battlePlanet)) {
+          next = {
+            ...next,
+            lightEncountersCaught: [...(next.lightEncountersCaught ?? []), battlePlanet],
+          }
+        }
         return next
       })
       setBattle({
@@ -606,7 +684,10 @@ export function useGameController() {
         won: true,
         caught: true,
         catchAttempts,
-        log: [...battle.log, { side: 'player', text: `Gotcha! ${species.name} joined your ${joinedParty ? 'Party' : 'Reserve'}!` }],
+        log: [...battle.log, {
+          side: 'player',
+          text: `Gotcha! ${species.name} joined your ${joinedParty ? 'Party' : 'Reserve'}!`,
+        }],
       })
       setEventQueue((queue) => [
         ...queue,
@@ -615,8 +696,7 @@ export function useGameController() {
       setBattleBusy(false)
       return
     }
-    const ranAway = doesWildDragonRunAway(catchAttempts)
-    if (ranAway) {
+    if (captureAttempt.escaped) {
       setBattle((current) => current ? {
         ...current,
         catchAttempts,
@@ -637,7 +717,12 @@ export function useGameController() {
     setBattle((current) => current ? {
       ...current,
       catchAttempts,
-      log: [...current.log, { side: 'system', text: `${species.name} broke free! ${3 - catchAttempts} ${catchAttempts === 2 ? 'try' : 'tries'} left.` }],
+      log: [...current.log, {
+        side: 'system',
+        text: battle.kind === 'lightEncounter'
+          ? `${species.name} broke free! Stay determined and try again.`
+          : `${species.name} broke free! ${3 - catchAttempts} ${catchAttempts === 2 ? 'try' : 'tries'} left.`,
+      }],
     } : current)
     enemyTurn(activePartyIndex)
   }
@@ -660,6 +745,12 @@ export function useGameController() {
 
   const runFromBattle = () => {
     if (battleBusy) return
+    if (battle?.kind === 'lightEncounter' && !battle.won) {
+      setToast('The rare Light dragon slipped away. The encounter may appear again later.')
+      setBattle(null)
+      setViewState(battlePlanet === 1 ? 'planet1' : battlePlanet === 3 ? 'planet3' : battlePlanet === 5 ? 'planet5' : 'planet7')
+      return
+    }
     setBattle(null)
     setSave((current) => current ? { ...current, currentPlanet: battlePlanet } : current)
     setView(battlePlanet === 1 ? 'planet1' : battlePlanet === 2 ? 'planet2' : battlePlanet === 3 ? 'planet3' : battlePlanet === 4 ? 'planet4' : battlePlanet === 5 ? 'planet5' : battlePlanet === 6 ? 'planet6' : battlePlanet === 7 ? 'planet7' : 'planet8')
@@ -696,8 +787,12 @@ export function useGameController() {
     setDragonNickname,
     moveDragon,
     startGame,
+    finishIntro,
     resetGame,
     debugUnlockAll,
+    unlockScreenOpen,
+    applyUnlocks,
+    closeUnlockScreen: () => setUnlockScreenOpen(false),
     dismissEvent,
     healParty,
     beginWildBattle,

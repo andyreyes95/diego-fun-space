@@ -108,7 +108,54 @@ export function doesWildDragonRunAway(attempt: number, roll: () => number = Math
   return roll() < runChance
 }
 
-export type TrainerBattleKind = 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang'
+export function getCaptureChance(currentHp: number, maxHp: number): number {
+  if (maxHp <= 0) return 0.15
+  const hpRatio = Math.min(1, Math.max(0, currentHp / maxHp))
+  return 0.15 + (1 - hpRatio) * 0.75
+}
+
+export interface CaptureAttemptResult {
+  caught: boolean
+  escaped: boolean
+  chance: number
+}
+
+export function resolveCaptureAttempt(
+  currentHp: number,
+  maxHp: number,
+  attempt: number,
+  canEscape: boolean,
+  roll: () => number = Math.random,
+  itemMultiplier = 1,
+): CaptureAttemptResult {
+  const chance = Math.min(1, getCaptureChance(currentHp, maxHp) * itemMultiplier)
+  const caught = roll() < chance
+  return {
+    caught,
+    escaped: !caught && canEscape && doesWildDragonRunAway(attempt, roll),
+    chance,
+  }
+}
+
+export function getLightEncounterPlanet(planet: number): 1 | 3 | 5 | 7 | null {
+  return planet === 1 || planet === 3 || planet === 5 || planet === 7 ? planet : null
+}
+
+export function doesLightEncounterAppear(roll: () => number = Math.random): boolean {
+  return roll() < 0.3
+}
+
+export function getLightEncounter(planet: 1 | 3 | 5 | 7): { speciesId: string; level: number } {
+  const encounters = {
+    1: { speciesId: 'lumopod', level: 6 },
+    3: { speciesId: 'gleamlet', level: 14 },
+    5: { speciesId: 'prismglow', level: 24 },
+    7: { speciesId: 'haloflare', level: 34 },
+  } as const
+  return encounters[planet]
+}
+
+export type TrainerBattleKind = 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss'
 
 export function applyKnockoutExperience(dragon: DragonInstance, defeatedLevel: number): {
   instance: DragonInstance
@@ -185,6 +232,14 @@ export function getOpponentTeam(kind: TrainerBattleKind, phase: 0 | 1 | 2 = 2): 
       [['solcrest', 37], ['dawnflare', 39], ['prismarch', 39], ['radianthalo', 41]],
     ] as const
     return teams[phase].map(([speciesId, level]) => createDragon(speciesId, level))
+  }
+  if (kind === 'jakeBoss') {
+    return [
+      createDragon('nightfang', 34),
+      createDragon('voidscale', 38),
+      createDragon('noctilith', 38),
+      createDragon('umbrawyrm', 42),
+    ]
   }
   return [
     createDragon('shadee', 8),

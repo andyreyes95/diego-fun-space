@@ -1,5 +1,6 @@
 import { speciesById, typeColors, typeNames } from '../../data'
 import { DragonIcon } from '../DragonIcon'
+import { BadgeIcon } from '../BadgeIcon'
 import type { BattleEvent } from '../../types'
 
 interface EventScreenProps {
@@ -10,6 +11,31 @@ interface EventScreenProps {
 
 export function EventScreen({ event, currentPlanet, onDismiss }: EventScreenProps) {
   const planetClass = `event-planet-${currentPlanet}`
+
+  if (event.kind === 'lightEncounter') {
+    const species = speciesById[event.speciesId]
+    return (
+      <main className={`celebration-screen catch-celebration ${planetClass}`}>
+        <div className="celebration-rays" aria-hidden="true" />
+        <section className="celebration-card catch-card" role="dialog" aria-modal="true" aria-labelledby="light-encounter-title">
+          <p className="eyebrow">A rare Light Dragon appears</p>
+          <h1 id="light-encounter-title">A radiant presence emerges…</h1>
+          <div className="catch-reveal">
+            <div className="catch-sparkles" aria-hidden="true">
+              <span>✦</span><span>✦</span><span>✦</span><span>✦</span><span>✦</span><span>✦</span>
+            </div>
+            <DragonIcon species={species} size={230} battleMode />
+          </div>
+          <div className="detail-pills">
+            <span style={{ background: typeColors.light }}>{typeNames.light}</span>
+            <span>Story encounter</span>
+          </div>
+          <p>{species.name}, a mysterious Light dragon rarely seen on this planet, has chosen to reveal itself. It will not faint—earn its trust by weakening it, then catch it.</p>
+          <button className="primary-button" type="button" onClick={onDismiss}>Face {species.name}</button>
+        </section>
+      </main>
+    )
+  }
 
   if (event.kind === 'evolution') {
     const before = speciesById[event.beforeId]
@@ -89,20 +115,57 @@ export function EventScreen({ event, currentPlanet, onDismiss }: EventScreenProp
     )
   }
 
+  if (event.kind === 'jakeVictory') {
+    return (
+      <main className="celebration-screen jake-victory-celebration event-planet-7">
+        <div className="jake-victory-rays" aria-hidden="true" />
+        <section className="celebration-card jake-victory-card" role="dialog" aria-modal="true" aria-labelledby="jake-victory-title">
+          <p className="eyebrow">Dark Gang defeated</p>
+          <h1 id="jake-victory-title">Jake's shadow has fallen!</h1>
+          <div className="jake-victory-reveal">
+            <img src="/assets/map-locations/umbralis/jake-fortress.png" alt="" />
+            <span className="jake-victory-seal"><BadgeIcon type="dark" size={64} /></span>
+          </div>
+          <h2>The Dark Gang is over</h2>
+          <p>Jake's strongest dragons could not stop you. Umbralis is free from the gang at last—and one major obstacle between you and Champion Mark is gone.</p>
+          <button className="primary-button" type="button" onClick={onDismiss}>Restore peace to Umbralis</button>
+        </section>
+      </main>
+    )
+  }
+
+  if (event.kind === 'jakeReveal') {
+    return (
+      <main className="celebration-screen jake-reveal-celebration event-planet-7">
+        <section className="celebration-card ambush-card jake-reveal-card" role="dialog" aria-modal="true" aria-labelledby="jake-reveal-title">
+          <p className="eyebrow">A hidden threat</p>
+          <h1 id="jake-reveal-title">The fortress awakens</h1>
+          <div className="jake-reveal-art">
+            <img src="/assets/map-locations/umbralis/jake-fortress.png" alt="" />
+          </div>
+          <p>The Eclipse Badge opens the way, but your journey is not finished on Umbralis. Jake, leader of the Dark Gang, is waiting in the fortress above. Defeat him before continuing toward Luminara.</p>
+          <button className="primary-button" type="button" onClick={onDismiss}>Find Jake's fortress</button>
+        </section>
+      </main>
+    )
+  }
+
   if (event.kind === 'ambush') {
     return (
       <main className="celebration-screen ambush-event event-planet-dark">
         <div className="ambush-warning" aria-hidden="true">!</div>
         <section className="celebration-card ambush-card" role="dialog" aria-modal="true" aria-labelledby="ambush-title">
-          <p className="eyebrow">Dark Gang Ambush</p>
-          <h1 id="ambush-title">You've been ambushed!</h1>
+          <p className="eyebrow">{event.fortress ? 'Dark Gang Fortress' : 'Dark Gang Ambush'}</p>
+          <h1 id="ambush-title">{event.fortress ? 'Jake awaits inside' : "You've been ambushed!"}</h1>
           <div className="ambush-emblem" aria-hidden="true">
             <span />
             <strong>✦</strong>
             <span />
           </div>
-          <p>{event.captainName} has cornered you during your wild exploration. Defeat the Gang's team to escape safely.</p>
-          <button className="primary-button" type="button" onClick={onDismiss}>Face the Dark Gang</button>
+          <p>{event.fortress
+            ? 'With the Eclipse Badge earned, the fortress gates open. Defeat Jake and end the Dark Gang’s threat to Umbralis.'
+            : `${event.captainName} has cornered you during your wild exploration. Defeat the Gang's team to escape safely.`}</p>
+          <button className="primary-button" type="button" onClick={onDismiss}>{event.fortress ? 'Challenge Jake' : 'Face the Dark Gang'}</button>
         </section>
       </main>
     )
@@ -120,44 +183,44 @@ export function EventScreen({ event, currentPlanet, onDismiss }: EventScreenProp
           {badgeType === 'fire' ? (
             <>
               <span className="badge-wing left" />
-              <span className="badge-gem">✦</span>
+              <span className="badge-gem"><BadgeIcon type="fire" size={46} /></span>
               <span className="badge-wing right" />
             </>
           ) : badgeType === 'grass' ? (
             <>
               <span className="badge-leaf left" />
-              <span className="badge-gem">♧</span>
+              <span className="badge-gem"><BadgeIcon type="grass" size={42} /></span>
               <span className="badge-leaf right" />
             </>
           ) : badgeType === 'electric' ? (
-            <span className="badge-bolt">Ϟ</span>
+            <span className="badge-bolt"><BadgeIcon type="electric" size={48} /></span>
           ) : badgeType === 'cloud' ? (
-            <span className="badge-cloud">☁</span>
+            <span className="badge-cloud"><BadgeIcon type="cloud" size={50} /></span>
           ) : badgeType === 'water' ? (
-            <span className="badge-wave">≈</span>
+            <span className="badge-wave"><BadgeIcon type="water" size={47} /></span>
           ) : badgeType === 'ice' ? (
-            <span className="badge-snowflake">❄</span>
+            <span className="badge-snowflake"><BadgeIcon type="ice" size={48} /></span>
           ) : badgeType === 'dark' ? (
-            <span className="badge-eclipse">◐</span>
+            <span className="badge-eclipse"><BadgeIcon type="dark" size={46} /></span>
           ) : (
-            <span className="badge-radiant">✦</span>
+            <span className="badge-radiant"><BadgeIcon type="light" size={48} /></span>
           )}
         </div>
         <h2>{badgeName}</h2>
         <p>{badgeType === 'fire'
           ? 'Emberfall recognizes your courage. Fire dragons will remember your brave start.'
           : badgeType === 'grass'
-            ? 'Mossgrove recognizes your teamwork. Voltspire now shines on the starlane.'
+            ? 'Mossgrove recognizes your teamwork. Voltspire is now visible in the Starcrest System.'
             : badgeType === 'electric'
               ? 'Voltspire recognizes your precision. Cloudrest now rises into view.'
               : badgeType === 'cloud'
-                ? 'Cloudrest recognizes your adaptability. Tidehaven now appears on the starlane.'
+                ? 'Cloudrest recognizes your adaptability. Tidehaven is now visible in the Starcrest System.'
                 : badgeType === 'water'
                   ? 'Tidehaven recognizes your resolve. Frostveil now glows beneath the aurora.'
                   : badgeType === 'ice'
                     ? 'Frostveil recognizes your calm under pressure. Umbralis now appears beyond the moonlit route.'
                     : badgeType === 'dark'
-                      ? 'Umbralis recognizes your courage in the dark. Luminara now shines on the starlane.'
+                      ? 'Umbralis recognizes your courage in the dark. Luminara now shines in the Starcrest System.'
                       : 'Luminara recognizes your compassion. The path to the champion can finally begin.'}</p>
         <button className="primary-button" type="button" onClick={onDismiss}>Add to my badges</button>
       </section>

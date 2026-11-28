@@ -1,7 +1,7 @@
 import type { GameSave } from '../types'
 
 export const questSteps = [
-  'Catch your first wild dragon',
+  'Begin on Emberfall by catching your first wild dragon',
   'Challenge Sol for the Ember Badge',
   'Travel to Mossgrove',
   'Catch more dragons on your journey',
@@ -21,6 +21,7 @@ export const questSteps = [
   'Travel to Umbralis',
   'Explore Umbralis and prepare your team',
   'Challenge Nyx for the Eclipse Badge',
+  'Defeat Jake at the Dark Gang Fortress',
   'Travel to Luminara',
   'Explore Luminara and prepare your team',
   'Challenge Auriel for the Radiant Badge',
@@ -65,9 +66,10 @@ export function getQuestObjective(save: GameSave): QuestObjective {
   if (completed >= 17 && (save.storyStep >= 18 || save.currentPlanet === 7)) completed = 18
   if (completed >= 18 && save.gymProgress.dark >= 2) completed = 19
   if (completed >= 19 && save.badges.includes('Eclipse')) completed = 20
-  if (completed >= 20 && (save.storyStep >= 21 || save.currentPlanet === 8)) completed = 21
-  if (completed >= 21 && save.gymProgress.light >= 2) completed = 22
-  if (completed >= 22 && save.badges.includes('Radiant')) completed = 23
+  if (completed >= 20 && save.darkGangDefeated) completed = 21
+  if (completed >= 21 && (save.storyStep >= 21 || save.currentPlanet === 8)) completed = 22
+  if (completed >= 22 && save.gymProgress.light >= 2) completed = 23
+  if (completed >= 23 && save.badges.includes('Radiant')) completed = 24
 
   return {
     title: questSteps[Math.min(completed, questSteps.length - 1)],

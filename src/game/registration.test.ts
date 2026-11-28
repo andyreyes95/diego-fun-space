@@ -104,5 +104,9 @@ describe('save migration', () => {
     expect(migrated.gymProgress).toEqual({ fire: 0, grass: 0, electric: 0, cloud: 0, water: 0, ice: 0, dark: 0, light: 0 })
     expect(migrated.party[0].instanceId).toBeTruthy()
   })
+
+  it('repairs invalid current planet indices during migration', () => {
+    expect(migrateSave({ ...makeSave(), currentPlanet: 99 } as unknown as Partial<GameSave>).currentPlanet).toBe(1)
+  })
 })
 

@@ -14,7 +14,7 @@ src/
       BattleScreen.tsx
       EventScreen.tsx
       DexView.tsx
-      PlanetMap.tsx
+      SolarMap.tsx
       TitleScreen.tsx
       WorldScreens.tsx
     DragonIcon.tsx
@@ -66,8 +66,8 @@ public/
       frostveil-layered.png
       umbralis-layered.png
       luminara-layered.png
-      planet-map.png
-       map-locations/           # transparent layered planet destinations
+      solar-system-space.png
+    map-locations/           # transparent layered planet destinations
       emberfall/
         wild.png
         gym.png

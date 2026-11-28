@@ -8,7 +8,7 @@ export type DragonType =
   | 'cloud'
   | 'dark'
 
-export type View = 'title' | 'town' | 'planet1' | 'planet2' | 'planet3' | 'planet4' | 'planet5' | 'planet6' | 'planet7' | 'planet8' | 'battle' | 'dex' | 'team' | 'map'
+export type View = 'title' | 'intro' | 'town' | 'planet1' | 'planet2' | 'planet3' | 'planet4' | 'planet5' | 'planet6' | 'planet7' | 'planet8' | 'battle' | 'dex' | 'team' | 'map'
 
 export interface DragonSpecies {
   id: string
@@ -47,7 +47,7 @@ export interface DragonInstance {
 }
 
 export interface BattleState {
-  kind: 'wild' | 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang'
+  kind: 'wild' | 'lightEncounter' | 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss'
   trainerPhase?: 0 | 1 | 2
   enemy: DragonInstance
   enemyTeam: DragonInstance[]
@@ -68,9 +68,12 @@ export interface BattleLogEntry {
 export type BattleEvent =
   | { kind: 'evolution'; beforeId: string; afterId: string }
   | { kind: 'badge'; badge: 'Ember' | 'Bloom' | 'Spark' | 'Breeze' | 'Tide' | 'Frost' | 'Eclipse' | 'Radiant' }
+  | { kind: 'lightEncounter'; speciesId: string }
+  | { kind: 'jakeVictory' }
+  | { kind: 'jakeReveal' }
   | { kind: 'catch'; speciesId: string; joinedParty: boolean }
   | { kind: 'escape'; speciesId: string; attempts: number }
-  | { kind: 'ambush'; captainName: string }
+  | { kind: 'ambush'; captainName: string; fortress?: boolean }
 
 export interface GameSave {
   saveVersion: number
@@ -96,4 +99,5 @@ export interface GameSave {
   darkGangDefeated: boolean
   currentPlanet: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
   mossgroveCaptureBaseline: number
+  lightEncountersCaught?: number[]
 }

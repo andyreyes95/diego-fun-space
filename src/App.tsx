@@ -1,12 +1,14 @@
 import { BottomNav, GameHeader } from './components/GameChrome'
 import { BattleScreen } from './components/screens/BattleScreen'
 import { EventScreen } from './components/screens/EventScreen'
+import { OpeningStory } from './components/screens/OpeningStory'
 import { DexView } from './components/screens/DexView'
-import { PlanetMap } from './components/screens/PlanetMap'
+import { SolarMap } from './components/screens/SolarMap'
 import { TeamScreen } from './components/screens/TeamScreen'
 import { TitleScreen } from './components/screens/TitleScreen'
 import { PlanetScreen, TownScreen } from './components/screens/WorldScreens'
 import { useGameController } from './hooks/useGameController'
+import { UnlockScreen } from './components/UnlockScreen'
 
 function App() {
   const game = useGameController()
@@ -24,6 +26,10 @@ function App() {
   }
 
   const currentPlanet = game.save.currentPlanet
+
+  if (game.view === 'intro') {
+    return <OpeningStory save={game.save} onFinish={game.finishIntro} />
+  }
 
   if (game.view === 'battle' && game.battle) {
     const activeIndex = game.save.party[game.activePartyIndex]?.hp > 0
@@ -68,7 +74,11 @@ function App() {
       />
 
       {game.view === 'town' && (
-        <TownScreen save={game.save} onTravel={() => game.setView('planet1')} />
+        <TownScreen
+          save={game.save}
+          onTravel={() => game.setView('planet1')}
+          onReplayStory={() => game.setView('intro')}
+        />
       )}
 
       {game.view === 'planet1' && (
@@ -104,7 +114,7 @@ function App() {
       )}
 
       {game.view === 'map' && (
-        <PlanetMap save={game.save} onNavigate={game.setView} onToast={game.showToast} />
+        <SolarMap save={game.save} onNavigate={game.setView} onToast={game.showToast} />
       )}
 
       {game.view === 'dex' && (
@@ -136,6 +146,10 @@ function App() {
         onReset={game.resetGame}
         onUnlockAll={game.debugUnlockAll}
       />
+
+      {game.unlockScreenOpen && (
+        <UnlockScreen save={game.save} onApply={game.applyUnlocks} onClose={game.closeUnlockScreen} />
+      )}
 
       {game.toast && <div className="toast" role="status">{game.toast}</div>}
     </main>

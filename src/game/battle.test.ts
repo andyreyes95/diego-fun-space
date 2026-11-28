@@ -1,9 +1,39 @@
 import { describe, expect, it } from 'vitest'
 import { createDragon, dragonSpecies } from '../data'
-import { applyKnockoutExperience, doesWildDragonRunAway, evolveInstance, gainExperience, getOpponentTeam, getWildEncounter, getWildEncounterLevel, isDarkGangAmbush, resolveAttack } from './battle'
+import { applyKnockoutExperience, doesLightEncounterAppear, doesWildDragonRunAway, evolveInstance, gainExperience, getCaptureChance, getLightEncounter, getLightEncounterPlanet, getOpponentTeam, getWildEncounter, getWildEncounterLevel, isDarkGangAmbush, resolveAttack, resolveCaptureAttempt } from './battle'
 import { speciesById } from '../data'
 
 describe('battle rules', () => {
+  it('scales capture chance from 15% at full HP to 90% at no HP', () => {
+    expect(getCaptureChance(100, 100)).toBeCloseTo(0.15)
+    expect(getCaptureChance(50, 100)).toBeCloseTo(0.525)
+    expect(getCaptureChance(25, 100)).toBeCloseTo(0.7125)
+    expect(getCaptureChance(0, 100)).toBeCloseTo(0.9)
+  })
+
+  it('resolves catch success, escape, and future item modifiers', () => {
+    const rolls = [() => 0.1, () => 0.5]
+    expect(resolveCaptureAttempt(100, 100, 1, true, rolls.shift()!)).toMatchObject({ caught: true, escaped: false, chance: 0.15 })
+    expect(resolveCaptureAttempt(100, 100, 1, true, rolls.shift()!, 2)).toMatchObject({ caught: false, escaped: false, chance: 0.3 })
+    expect(resolveCaptureAttempt(100, 100, 3, true, () => 0.9)).toMatchObject({ caught: false, escaped: true })
+    expect(resolveCaptureAttempt(100, 100, 3, false, () => 0.9)).toMatchObject({ caught: false, escaped: false })
+  })
+
+  it('maps only story planets to the four rare Light encounters', () => {
+    expect([1, 2, 3, 4, 5, 6, 7, 8].map(getLightEncounterPlanet)).toEqual([1, null, 3, null, 5, null, 7, null])
+    expect(([1, 3, 5, 7] as const).map((planet) => getLightEncounter(planet)).map((entry) => entry.speciesId)).toEqual([
+      'lumopod',
+      'gleamlet',
+      'prismglow',
+      'haloflare',
+    ])
+  })
+
+  it('gives each uncaught Light encounter a 30% appearance chance', () => {
+    expect(doesLightEncounterAppear(() => 0.299)).toBe(true)
+    expect(doesLightEncounterAppear(() => 0.3)).toBe(false)
+  })
+
   it('resolves missed attacks without damage', () => {
     const attacker = createDragon('embbite', 5)
     const defender = createDragon('puddlefin', 5)
@@ -53,6 +83,14 @@ describe('battle rules', () => {
       expect(team).toHaveLength(4)
       expect(team.every((dragon) => speciesById[dragon.speciesId].type === testCase.type)).toBe(true)
     }
+  })
+
+  it('gives Jake a distinct fortress boss team', () => {
+    const team = getOpponentTeam('jakeBoss')
+    expect(team).toHaveLength(4)
+    expect(team.every((dragon) => speciesById[dragon.speciesId].type === 'dark')).toBe(true)
+    expect(team.at(-1)?.speciesId).toBe('umbrawyrm')
+    expect(team.at(-1)?.level).toBe(42)
   })
 
   it('uses two stage 1/2 trainer battles before an all-stage-3 leader battle', () => {

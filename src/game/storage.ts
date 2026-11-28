@@ -5,6 +5,8 @@ import { createInstanceId } from './registration'
 export const SAVE_KEY = 'starcrest-dragons-save-v1'
 export const SAVE_VERSION = 3
 
+const validPlanetIds = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const
+
 function ensureInstanceIds(instances: DragonInstance[]): DragonInstance[] {
   return instances.map((dragon) => ({
     ...dragon,
@@ -49,9 +51,16 @@ export function migrateSave(parsed: Partial<GameSave> & { bench?: DragonInstance
     },
     storyStep: parsed.storyStep ?? 0,
     darkGangDefeated: parsed.darkGangDefeated ?? false,
-    currentPlanet: parsed.currentPlanet ?? 1,
+    currentPlanet: validPlanetIds.includes(parsed.currentPlanet as typeof validPlanetIds[number])
+      ? parsed.currentPlanet!
+      : 1,
     mossgroveCaptureBaseline: parsed.mossgroveCaptureBaseline
       ?? (parsed.currentPlanet === 2 ? getCapturedTotal(parsed.captureCounts, parsed.starterId) : 0),
+    lightEncountersCaught: parsed.lightEncountersCaught?.filter((planet) =>
+      planet === 1 || planet === 3 || planet === 5 || planet === 7,
+    ) ?? caught
+      .filter((speciesId) => ['lumopod', 'gleamlet', 'prismglow', 'haloflare'].includes(speciesId))
+      .map((speciesId) => ({ lumopod: 1, gleamlet: 3, prismglow: 5, haloflare: 7 })[speciesId]!),
   }
 }
 

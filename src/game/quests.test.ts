@@ -24,7 +24,7 @@ function save(overrides: Partial<GameSave> = {}): GameSave {
 
 describe('quest progression', () => {
   it('starts by asking for the first wild capture', () => {
-    expect(getQuestObjective(save())).toMatchObject({ completed: 0, title: 'Catch your first wild dragon' })
+    expect(getQuestObjective(save())).toMatchObject({ completed: 0, title: 'Begin on Emberfall by catching your first wild dragon' })
   })
 
   it('does not skip the Ember badge even if the player caught extras early', () => {
@@ -104,20 +104,24 @@ describe('quest progression', () => {
     }
     expect(getQuestObjective(readyForNyx)).toMatchObject({ completed: 19, title: 'Challenge Nyx for the Eclipse Badge' })
 
-    const eclipseComplete = getQuestObjective({ ...readyForNyx, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse'], storyStep: 20 })
-    expect(eclipseComplete).toMatchObject({ completed: 20, title: 'Travel to Luminara', finished: false })
+    const eclipseState = { ...readyForNyx, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse'], storyStep: 20 }
+    const eclipseComplete = getQuestObjective(eclipseState)
+    expect(eclipseComplete).toMatchObject({ completed: 20, title: 'Defeat Jake at the Dark Gang Fortress', finished: false })
 
-    const inLuminara = { ...readyForNyx, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse'], storyStep: 21, currentPlanet: 8 as const }
-    expect(getQuestObjective(inLuminara)).toMatchObject({ completed: 21, title: 'Explore Luminara and prepare your team' })
+    const jakeDefeated = { ...eclipseState, darkGangDefeated: true }
+    expect(getQuestObjective(jakeDefeated)).toMatchObject({ completed: 21, title: 'Travel to Luminara' })
+
+    const inLuminara = { ...readyForNyx, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse'], darkGangDefeated: true, storyStep: 21, currentPlanet: 8 as const }
+    expect(getQuestObjective(inLuminara)).toMatchObject({ completed: 22, title: 'Explore Luminara and prepare your team' })
 
     const readyForAuriel = {
       ...inLuminara,
       gymProgress: { fire: 0 as const, grass: 0 as const, electric: 2 as const, cloud: 2 as const, water: 2 as const, ice: 2 as const, dark: 2 as const, light: 2 as const },
     }
-    expect(getQuestObjective(readyForAuriel)).toMatchObject({ completed: 22, title: 'Challenge Auriel for the Radiant Badge' })
+    expect(getQuestObjective(readyForAuriel)).toMatchObject({ completed: 23, title: 'Challenge Auriel for the Radiant Badge' })
 
     const objective = getQuestObjective({ ...readyForAuriel, badges: ['Ember', 'Bloom', 'Spark', 'Breeze', 'Tide', 'Frost', 'Eclipse', 'Radiant'], storyStep: 23 })
     expect(objective.finished).toBe(true)
-    expect(objective.completed).toBe(23)
+    expect(objective.completed).toBe(24)
   })
 })

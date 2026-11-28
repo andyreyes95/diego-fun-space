@@ -1,6 +1,7 @@
 import type { View } from '../types'
 import type { ReactNode } from 'react'
 import { Planet, ScanSmiley, Strategy } from '@phosphor-icons/react'
+import { BadgeIcon } from './BadgeIcon'
 
 interface GameHeaderProps {
   caughtCount: number
@@ -11,7 +12,7 @@ interface GameHeaderProps {
 }
 
 export function GameHeader({ caughtCount, seenCount, badgeNames, badges, onHome }: GameHeaderProps) {
-  const badgeSymbols = ['◆', '♧', 'Ϟ', '☁', '❉', '◐', '✦', '☀']
+  const badgeTypes = ['fire', 'grass', 'electric', 'cloud', 'water', 'ice', 'dark', 'light'] as const
 
   return (
     <header className="game-header">
@@ -36,7 +37,7 @@ export function GameHeader({ caughtCount, seenCount, badgeNames, badges, onHome 
               title={badges.includes(badgeNames[index]) ? `${badgeNames[index]} Badge earned` : `${badgeNames[index]} Badge locked`}
               aria-label={badges.includes(badgeNames[index]) ? `${badgeNames[index]} Badge earned` : `${badgeNames[index]} Badge locked`}
             >
-              {badgeSymbols[index]}
+              <BadgeIcon type={badgeTypes[index]} size={15} />
             </span>
           ))}
         </span>
@@ -75,7 +76,7 @@ export function BottomNav({ view, currentPlanet, setView, onReset, onUnlockAll }
       {navButton('team', 'Team', <Strategy size={35} weight="fill" />)}
       <button className="nav-button" type="button" onClick={onReset}>Reset</button>
       {/* Temporary localhost debug cheat; the controller omits this action on other hosts. */}
-      {onUnlockAll && <button className="nav-button" type="button" onClick={onUnlockAll}>Unlock all</button>}
+      {onUnlockAll && <button className="nav-button" type="button" onClick={onUnlockAll}>Unlock</button>}
     </nav>
   )
 }

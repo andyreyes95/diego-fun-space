@@ -51,7 +51,7 @@ export function BattleScreen({
 
   const activeSpecies = speciesById[active.speciesId]
   const enemySpecies = speciesById[battle.enemy.speciesId]
-  const fixedBattleVariant = battle.kind === 'gang'
+  const fixedBattleVariant = battle.kind === 'gang' || battle.kind === 'jakeBoss'
     ? 'fixed-gang-dark'
     : battle.kind === 'fireGym'
       ? 'fixed-gym-emberfall'
@@ -84,7 +84,7 @@ export function BattleScreen({
                           : save.currentPlanet === 7
                             ? 'fixed-wild-umbralis'
                             : 'fixed-wild-luminara'
-  const battleBackgroundClass = battle.kind === 'gang'
+  const battleBackgroundClass = battle.kind === 'gang' || battle.kind === 'jakeBoss'
     ? 'battle-gang-dark'
     : battle.kind === 'fireGym'
       ? 'battle-gym-emberfall'
@@ -125,8 +125,8 @@ export function BattleScreen({
           <button className="icon-button" type="button" onClick={onRun} aria-label="Leave battle">×</button>
         )}
         <div>
-          <span>{battle.enemyName} Battle</span>
-          {battle.kind !== 'wild' && <strong>{battle.kind === 'gang' ? 'Dark Gang' : battle.trainerPhase === 2 ? 'Gym Leader' : `Gym Trainer ${(battle.trainerPhase ?? 0) + 1}`}</strong>}
+          <span>{battle.kind === 'lightEncounter' ? 'Rare Light Encounter' : `${battle.enemyName} Battle`}</span>
+          {battle.kind !== 'wild' && battle.kind !== 'lightEncounter' && <strong>{battle.kind === 'jakeBoss' ? 'Dark Gang Fortress' : battle.kind === 'gang' ? 'Dark Gang' : battle.trainerPhase === 2 ? 'Gym Leader' : `Gym Trainer ${(battle.trainerPhase ?? 0) + 1}`}</strong>}
         </div>
       </header>
       <section className="battle-arena fixed-battle-arena">
@@ -197,12 +197,12 @@ export function BattleScreen({
                   <small style={{ color: typeColors[move.type] }}>{typeNames[move.type]} · {move.power} power</small>
                 </button>
               ))}
-              {battle.kind === 'wild' && (
-                <button type="button" className="capture-button" onClick={onTryCapture} disabled={busy || battle.catchAttempts >= 3}>
-                  Catch · {3 - battle.catchAttempts} left
+              {(battle.kind === 'wild' || battle.kind === 'lightEncounter') && (
+                <button type="button" className="capture-button" onClick={onTryCapture} disabled={busy || (battle.kind === 'wild' && battle.catchAttempts >= 3)}>
+                  {battle.kind === 'lightEncounter' ? 'Catch' : `Catch · ${3 - battle.catchAttempts} left`}
                 </button>
               )}
-              {battle.kind !== 'gang' && (
+              {battle.kind !== 'gang' && battle.kind !== 'jakeBoss' && (
                 <button type="button" className="run-button" onClick={onRun} disabled={busy}>Run</button>
               )}
             </div>

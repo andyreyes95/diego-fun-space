@@ -5,15 +5,17 @@ import { QuestCard } from '../QuestCard'
 interface TownScreenProps {
   save: GameSave
   onTravel: () => void
+  onReplayStory: () => void
 }
 
-export function TownScreen({ save, onTravel }: TownScreenProps) {
+export function TownScreen({ save, onTravel, onReplayStory }: TownScreenProps) {
   return (
     <section className="world-view town-view">
       <div className="world-copy">
         <p className="eyebrow">Home planet · Willowvale</p>
         <h1>Welcome home, {save.playerName}.</h1>
-        <p>Your dream begins here. Choose a route, meet other tamers, and prepare for Planet Emberfall.</p>
+        <p>Your road to Champion Mark begins here. Prepare your team for eight Gym Badges, starting on Emberfall.</p>
+        <button className="world-copy-link" type="button" onClick={onReplayStory}>Replay your story</button>
       </div>
       <div className="town-map" aria-label="Willowvale town map">
         <div className="house house-left"><span>Lab</span></div>
@@ -36,7 +38,7 @@ interface PlanetScreenProps {
   planet: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
   onViewChange: (view: View) => void
   onWildBattle: (planet: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8) => void
-  onTrainerBattle: (kind: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang') => void
+  onTrainerBattle: (kind: 'fireGym' | 'grassGym' | 'electricGym' | 'cloudGym' | 'waterGym' | 'iceGym' | 'darkGym' | 'lightGym' | 'gang' | 'jakeBoss') => void
   onHeal: () => void
   onToast: (message: string) => void
 }
@@ -313,6 +315,25 @@ export function PlanetScreen({ save, planet, onViewChange, onWildBattle, onTrain
       <div className="planet-map layered-planet-map" aria-label="Umbralis locations">
         <MapLocationCard className="planet-location-card wild-location" artSrc="/assets/map-locations/umbralis/wild.png" artAlt="Umbralis moonlit wild trail" eyebrow="Explore" title="Wild dragons" onClick={() => onWildBattle(7)} />
         <MapLocationCard className="planet-location-card gym-location" artSrc="/assets/map-locations/umbralis/gym.png" artAlt="Umbralis Dark Gym" eyebrow={save.badges.includes('Eclipse') ? 'Badge earned' : `Dark Gym · ${save.gymProgress.dark + 1} / 3`} title={save.gymProgress.dark === 2 ? 'Challenge Nyx' : `Battle Trainer ${save.gymProgress.dark + 1}`} onClick={() => onTrainerBattle('darkGym')} />
+        <MapLocationCard
+          className={save.badges.includes('Eclipse') ? 'planet-location-card jake-fortress-location' : 'planet-location-card jake-fortress-location locked'}
+          artSrc="/assets/map-locations/umbralis/jake-fortress.png"
+          artAlt="Jake's Dark Gang fortress"
+          eyebrow={save.darkGangDefeated ? 'Gang defeated' : save.badges.includes('Eclipse') ? 'Story objective · Defeat Jake' : 'Locked · Eclipse Badge'}
+          title={save.darkGangDefeated ? 'Jake defeated' : 'Challenge Jake'}
+          disabled={!save.badges.includes('Eclipse')}
+          onClick={() => {
+            if (save.darkGangDefeated) {
+              onToast('Jake and the Dark Gang have already been defeated.')
+              return
+            }
+            if (!save.badges.includes('Eclipse')) {
+              onToast('Jake’s fortress unlocks after you defeat Nyx and earn the Eclipse Badge.')
+              return
+            }
+            onTrainerBattle('jakeBoss')
+          }}
+        />
         <MapLocationCard className="planet-location-card healing-location" artSrc="/assets/map-locations/umbralis/healing.png" artAlt="Umbralis healing center" eyebrow="Healing Center" title="Rest your team" onClick={onHeal} />
         <MapLocationCard className="planet-location-card market-location" artSrc="/assets/map-locations/umbralis/market.png" artAlt="Umbralis market" eyebrow="Market" title="Coming soon" onClick={() => onToast('The Umbralis market is not open yet.')} />
         <MapLocationCard className="planet-location-card portal-location" artSrc="/assets/map-locations/umbralis/portal.png" artAlt="Portal to other planets" eyebrow="Travel" title="Planet Map" onClick={() => onViewChange('map')} />
